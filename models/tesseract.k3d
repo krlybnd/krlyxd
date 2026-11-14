@@ -1,0 +1,40 @@
+k3d 1
+layer geo
+outerx = box at=0,-20,9 d=2 h=2 w=42
+outerx2 = pattern outerx n=2 step=0,40,0
+outer-x = pattern outerx2 n=2 step=0,0,40
+outery = box at=-20,0,9 d=42 h=2 w=2
+outery2 = pattern outery n=2 step=40,0,0
+outer-y = pattern outery2 n=2 step=0,0,40
+outerz = box at=-20,-20,9 d=2 h=42 w=2
+outerz2 = pattern outerz n=2 step=40,0,0
+outer-z = pattern outerz2 n=2 step=0,40,0
+  expect faces=24 volume=672
+innerx = box at=0,-8,21 d=2 h=2 w=18
+innerx2 = pattern innerx n=2 step=0,16,0
+inner-x = pattern innerx2 n=2 step=0,0,16
+innery = box at=-8,0,21 d=18 h=2 w=2
+innery2 = pattern innery n=2 step=16,0,0
+inner-y = pattern innery2 n=2 step=0,0,16
+innerz = box at=-8,-8,21 d=2 h=18 w=2
+innerz2 = pattern innerz n=2 step=16,0,0
+inner-z = pattern innerz2 n=2 step=0,16,0
+  expect faces=24 volume=288
+strut1 = cylinder at=8,8,38 r=0.8 to=20,20,50
+  expect contains=8,8,38 contains=20,20,50 meets=inner-z meets=outer-z
+strut2 = cylinder at=-8,8,38 r=0.8 to=-20,20,50
+  expect contains=-8,8,38 contains=-20,20,50 meets=inner-z meets=outer-z
+strut3 = cylinder at=-8,-8,38 r=0.8 to=-20,-20,50
+  expect contains=-8,-8,38 contains=-20,-20,50 meets=inner-z meets=outer-z
+strut4 = cylinder at=8,-8,38 r=0.8 to=20,-20,50
+  expect contains=8,-8,38 contains=20,-20,50 meets=inner-z meets=outer-z
+strut5 = cylinder at=8,8,22 r=0.8 to=20,20,10
+  expect contains=8,8,22 contains=20,20,10 meets=inner-z meets=outer-z
+strut6 = cylinder at=-8,8,22 r=0.8 to=-20,20,10
+  expect contains=-8,8,22 contains=-20,20,10 meets=inner-z meets=outer-z
+strut7 = cylinder at=-8,-8,22 r=0.8 to=-20,-20,10
+  expect contains=-8,-8,22 contains=-20,-20,10 meets=inner-z meets=outer-z
+strut8 = cylinder at=8,-8,22 r=0.8 to=20,-20,10
+  expect contains=8,-8,22 contains=20,-20,10 meets=inner-z meets=outer-z
+layer ai
+strut1 note="each strut joins a corner of the inner cube to the same corner of the outer one"

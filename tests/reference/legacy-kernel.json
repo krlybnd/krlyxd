@@ -1,0 +1,683 @@
+{
+ "about": "Numbers measured on the pre-rebuild kernel (branch legacy-opengeometry) before its code was removed. They are the only external oracle for the rebuilt kernel besides closed forms.",
+ "recorded": "2026-11-13",
+ "build": "debug, rustc 1.100.0",
+ "unit_suite": {
+  "command": "cargo test --lib -- --skip two_million_entity",
+  "passed": 444,
+  "failed": 0,
+  "filtered_out": 1,
+  "seconds": 75.8
+ },
+ "not_run": [
+  "integration tests under tests/ (tests/step_oracle needed a baseline file that was never present)"
+ ],
+ "conventions": {
+  "up_axis": "Y",
+  "cuboid": "width along X, height along Y, depth along Z, base centred on the origin",
+  "ray": "origin [0,10,50], direction [0,0,-1]"
+ },
+ "protocol_cases": {
+  "box 40x20x10": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    }
+   ],
+   "errors": [],
+   "volume": 8000.0,
+   "area": 2800.0,
+   "faces": [
+    "bottom: plane n=-y at (0,0,0)",
+    "top: plane n=+y at (0,20,0)",
+    "left: plane n=-x at (-20,10,0)",
+    "right: plane n=+x at (20,10,0)",
+    "front: plane n=+z at (0,10,5)",
+    "back: plane n=-z at (0,10,-5)"
+   ],
+   "edges": [
+    "bottom|front",
+    "bottom|left",
+    "front|left",
+    "bottom|right",
+    "front|right",
+    "back|bottom",
+    "back|left",
+    "back|right",
+    "front|top",
+    "left|top",
+    "right|top",
+    "back|top"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 10 > [back] air"
+  },
+  "cylinder r3 h10": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "c",
+      "primitive": {
+       "kind": "Cylinder",
+       "radius": 3,
+       "height": 10
+      }
+     }
+    }
+   ],
+   "errors": [],
+   "volume": 282.7433388230814,
+   "area": 245.04422698000383,
+   "faces": [
+    "lateral: cylinder r=3 axis=+y through (0,0,0) at (3,5,0)",
+    "lower_cap: plane n=-y at (3,0,0)",
+    "upper_cap: plane n=+y at (3,10,0)"
+   ],
+   "edges": [
+    "lateral|lower_cap",
+    "lateral|upper_cap",
+    "lateral|lateral"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 47 > [lateral] solid 6 > [lateral] air"
+  },
+  "sphere r5": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "s",
+      "primitive": {
+       "kind": "Sphere",
+       "radius": 5
+      }
+     }
+    }
+   ],
+   "errors": [
+    {
+     "method": "create",
+     "message": "SingularParameterization"
+    },
+    {
+     "method": "faces",
+     "message": "SingularParameterization"
+    }
+   ],
+   "volume": 523.5987755982989,
+   "area": 314.1592653589793,
+   "edges": [
+    "free-0",
+    "free-1",
+    "skin|skin"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "cone r4 h9": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "k",
+      "primitive": {
+       "kind": "Cone",
+       "radiusBottom": 4,
+       "radiusTop": 0,
+       "height": 9
+      }
+     }
+    }
+   ],
+   "errors": [],
+   "volume": 150.7964473723101,
+   "area": 174.02987972292934,
+   "faces": [
+    "lateral: cone half-angle=23.9625° axis=-y apex (0,9,0) at (2,4.5,0)",
+    "upper_cap: plane n=-y at (4,0,0)"
+   ],
+   "edges": [
+    "free-0",
+    "lateral|upper_cap",
+    "lateral|lateral"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "frustum r4 r2 h9": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "f",
+      "primitive": {
+       "kind": "Cone",
+       "radiusBottom": 4,
+       "radiusTop": 2,
+       "height": 9
+      }
+     }
+    }
+   ],
+   "errors": [],
+   "volume": 263.8937829015426,
+   "area": 236.61617189065083,
+   "faces": [
+    "lateral: cone half-angle=12.5288° axis=-y apex (0,18,0) at (3,4.5,0)",
+    "lower_cap: plane n=+y at (2,9,0)",
+    "upper_cap: plane n=-y at (4,0,0)"
+   ],
+   "edges": [
+    "lateral|lower_cap",
+    "lateral|upper_cap",
+    "lateral|lateral"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "torus R6 r2": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "t",
+      "primitive": {
+       "kind": "Torus",
+       "majorRadius": 6,
+       "minorRadius": 2
+      }
+     }
+    }
+   ],
+   "errors": [],
+   "volume": 473.7410112522891,
+   "area": 473.7410112522892,
+   "faces": [
+    "skin: torus R=6 r=2 axis=+y at (8,2,0)"
+   ],
+   "edges": [
+    "skin|skin#1",
+    "skin|skin#2"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "box minus through cylinder": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    },
+    {
+     "method": "create",
+     "params": {
+      "id": "d",
+      "at": [
+       0,
+       -5,
+       0
+      ],
+      "primitive": {
+       "kind": "Cylinder",
+       "radius": 3,
+       "height": 30
+      }
+     }
+    },
+    {
+     "method": "subtract",
+     "params": {
+      "id": "b",
+      "tools": [
+       "d"
+      ]
+     }
+    }
+   ],
+   "errors": [],
+   "edit_text": "ok. new faces: d:lateral. gone: -.",
+   "volume": 7434.513322353837,
+   "area": 3120.442450666159,
+   "faces": [
+    "bottom: plane n=-y at (-17.94,0,4.5)",
+    "top: plane n=+y at (-17.94,20,4.5)",
+    "left: plane n=-x at (-20,10,0)",
+    "right: plane n=+x at (20,10,0)",
+    "front: plane n=+z at (0,10,5)",
+    "back: plane n=-z at (0,10,-5)",
+    "d:lateral: cylinder r=3 axis=+y through (0,0,0) at (3,10,0)"
+   ],
+   "edges": [
+    "bottom|front",
+    "bottom|left",
+    "front|left",
+    "bottom|right",
+    "front|right",
+    "back|bottom",
+    "back|left",
+    "back|right",
+    "front|top",
+    "left|top",
+    "right|top",
+    "back|top",
+    "bottom|d:lateral",
+    "d:lateral|top",
+    "d:lateral|d:lateral"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 2 > [d:lateral] air 6 > [d:lateral] solid 2 > [back] air"
+  },
+  "box minus flush cylinder (coincident caps)": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    },
+    {
+     "method": "create",
+     "params": {
+      "id": "d",
+      "primitive": {
+       "kind": "Cylinder",
+       "radius": 3,
+       "height": 20
+      }
+     }
+    },
+    {
+     "method": "subtract",
+     "params": {
+      "id": "b",
+      "tools": [
+       "d"
+      ]
+     }
+    }
+   ],
+   "errors": [
+    {
+     "method": "subtract",
+     "message": "Geometry(UnresolvedIntersection(\"cylinder/cuboid containment boundary is below geometric resolution\"))"
+    }
+   ],
+   "volume": 8000.0,
+   "area": 2800.0,
+   "faces": [
+    "bottom: plane n=-y at (0,0,0)",
+    "top: plane n=+y at (0,20,0)",
+    "left: plane n=-x at (-20,10,0)",
+    "right: plane n=+x at (20,10,0)",
+    "front: plane n=+z at (0,10,5)",
+    "back: plane n=-z at (0,10,-5)"
+   ],
+   "edges": [
+    "bottom|front",
+    "bottom|left",
+    "front|left",
+    "bottom|right",
+    "front|right",
+    "back|bottom",
+    "back|left",
+    "back|right",
+    "front|top",
+    "left|top",
+    "right|top",
+    "back|top"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 10 > [back] air"
+  },
+  "box union cylinder": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    },
+    {
+     "method": "create",
+     "params": {
+      "id": "d",
+      "at": [
+       0,
+       10,
+       0
+      ],
+      "primitive": {
+       "kind": "Cylinder",
+       "radius": 3,
+       "height": 20
+      }
+     }
+    },
+    {
+     "method": "union",
+     "params": {
+      "id": "b",
+      "tools": [
+       "d"
+      ]
+     }
+    }
+   ],
+   "errors": [],
+   "edit_text": "ok. new faces: d:lateral, d:upper_cap. gone: -.",
+   "volume": 8282.74333882308,
+   "area": 2988.495559215387,
+   "faces": [
+    "bottom: plane n=-y at (0,0,0)",
+    "top: plane n=+y at (-17.94,20,4.5)",
+    "left: plane n=-x at (-20,10,0)",
+    "right: plane n=+x at (20,10,0)",
+    "front: plane n=+z at (0,10,5)",
+    "back: plane n=-z at (0,10,-5)",
+    "d:lateral: cylinder r=3 axis=+y through (0,10,0) at (3,25,0)",
+    "d:upper_cap: plane n=+y at (3,30,0)"
+   ],
+   "edges": [
+    "bottom|front",
+    "bottom|left",
+    "front|left",
+    "bottom|right",
+    "front|right",
+    "back|bottom",
+    "back|left",
+    "back|right",
+    "front|top",
+    "left|top",
+    "right|top",
+    "back|top",
+    "d:lateral|top",
+    "d:lateral|d:upper_cap",
+    "d:lateral|d:lateral"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 10 > [back] air"
+  },
+  "sphere intersect sphere (lens, d=6)": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "s",
+      "primitive": {
+       "kind": "Sphere",
+       "radius": 5
+      }
+     }
+    },
+    {
+     "method": "create",
+     "params": {
+      "id": "u",
+      "at": [
+       6,
+       0,
+       0
+      ],
+      "primitive": {
+       "kind": "Sphere",
+       "radius": 5
+      }
+     }
+    },
+    {
+     "method": "intersect",
+     "params": {
+      "id": "s",
+      "tools": [
+       "u"
+      ]
+     }
+    }
+   ],
+   "errors": [
+    {
+     "method": "create",
+     "message": "SingularParameterization"
+    },
+    {
+     "method": "create",
+     "message": "SingularParameterization"
+    }
+   ],
+   "edit_text": "ok. new faces: u:skin. gone: -.",
+   "volume": 108.90854532444617,
+   "area": 125.66370614359174,
+   "faces": [
+    "skin: sphere r=5 center (0,0,0) at (4.4721,2.2361,0)",
+    "u:skin: sphere r=5 center (6,0,0) at (1.5279,2.2361,0)"
+   ],
+   "edges": [
+    "skin|u:skin",
+    "free-1",
+    "skin|skin",
+    "free-3",
+    "u:skin|u:skin"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "sphere minus sphere (d=6)": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "s",
+      "primitive": {
+       "kind": "Sphere",
+       "radius": 5
+      }
+     }
+    },
+    {
+     "method": "create",
+     "params": {
+      "id": "u",
+      "at": [
+       6,
+       0,
+       0
+      ],
+      "primitive": {
+       "kind": "Sphere",
+       "radius": 5
+      }
+     }
+    },
+    {
+     "method": "subtract",
+     "params": {
+      "id": "s",
+      "tools": [
+       "u"
+      ]
+     }
+    }
+   ],
+   "errors": [
+    {
+     "method": "create",
+     "message": "SingularParameterization"
+    },
+    {
+     "method": "create",
+     "message": "SingularParameterization"
+    }
+   ],
+   "edit_text": "ok. new faces: u:skin. gone: -.",
+   "volume": 414.6902302738527,
+   "area": 314.1592653589793,
+   "faces": [
+    "skin: sphere r=5 center (0,0,0) at (-2.2361,4.4721,0)",
+    "u:skin: sphere r=5 center (6,0,0) at (1.5279,2.2361,0)"
+   ],
+   "edges": [
+    "skin|u:skin",
+    "free-1",
+    "skin|skin",
+    "free-3",
+    "u:skin|u:skin"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air"
+  },
+  "box chamfer front|top 2": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    },
+    {
+     "method": "chamfer",
+     "params": {
+      "id": "b",
+      "edges": [
+       "front|top"
+      ],
+      "distance": 2
+     }
+    }
+   ],
+   "errors": [],
+   "edit_text": "ok. new faces: chamfer(front|top). gone: -.",
+   "volume": 7920.0,
+   "area": 2749.1370849898476,
+   "faces": [
+    "bottom: plane n=-y at (0,0,0)",
+    "top: plane n=+y at (0,20,-1)",
+    "left: plane n=-x at (-20,11.6,0.6)",
+    "right: plane n=+x at (20,11.6,0.6)",
+    "front: plane n=+z at (0,9,5)",
+    "back: plane n=-z at (0,10,-5)",
+    "chamfer(front|top): plane n=(0,0.7071,0.7071) at (0,19,4)"
+   ],
+   "edges": [
+    "bottom|left",
+    "back|bottom",
+    "bottom|right",
+    "bottom|front",
+    "chamfer(front|top)|top",
+    "right|top",
+    "back|top",
+    "left|top",
+    "front|left",
+    "chamfer(front|top)|left",
+    "back|left",
+    "back|right",
+    "chamfer(front|top)|right",
+    "front|right",
+    "chamfer(front|top)|front"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 10 > [back] air"
+  },
+  "box fillet back|top 3": {
+   "steps": [
+    {
+     "method": "create",
+     "params": {
+      "id": "b",
+      "primitive": {
+       "kind": "Cuboid",
+       "width": 40,
+       "height": 20,
+       "depth": 10
+      }
+     }
+    },
+    {
+     "method": "fillet",
+     "params": {
+      "id": "b",
+      "edges": [
+       "back|top"
+      ],
+      "radius": 3
+     }
+    }
+   ],
+   "errors": [],
+   "edit_text": "ok. new faces: fillet(back|top). gone: -.",
+   "volume": 7922.743338823082,
+   "area": 2744.6327261565416,
+   "faces": [
+    "left: plane n=-x at (-20,11.4,-0.4)",
+    "right: plane n=+x at (20,11.4,-0.4)",
+    "top: plane n=+y at (0,20,1.5)",
+    "fillet(back|top): cylinder r=3 axis=-x through (20,17,-2) at (0,19.1213,-4.1213)",
+    "back: plane n=-z at (0,8.5,-5)",
+    "bottom: plane n=-y at (0,0,0)",
+    "front: plane n=+z at (0,10,5)"
+   ],
+   "edges": [
+    "right|top",
+    "left|top",
+    "front|top",
+    "fillet(back|top)|right",
+    "fillet(back|top)|left",
+    "fillet(back|top)|top",
+    "back|right",
+    "back|left",
+    "back|fillet(back|top)",
+    "bottom|right",
+    "bottom|left",
+    "back|bottom",
+    "front|right",
+    "front|left",
+    "bottom|front"
+   ],
+   "ray_from_0_10_50_towards_minus_z": "air 45 > [front] solid 10 > [back] air"
+  }
+ },
+ "corinthian2": {
+  "command": "cargo run --example corinthian2",
+  "output": [
+   "fluted shaft: 102.055515ms",
+   "exact parts done: 5.642301404s",
+   "MODEL BUILT: 49 bodies, 17 shapes, 11.589390838s",
+   "shaft volume: kernel 6.001370331  closed form 6.001370331  diff 6.39e-14",
+   "shaft-flutes faces: 50",
+   "bounds base: x -0.720..0.720  y 0.160..0.500  z -0.720..0.720",
+   "bounds shaft-flutes: x -0.498..0.498  y 0.950..8.300  z -0.498..0.498",
+   "bounds bell: x -0.600..0.600  y 8.750..9.850  z -0.600..0.600",
+   "bounds abacus: x -0.820..0.820  y 9.850..10.040  z -0.820..0.820",
+   "bounds leaf-low-3: x -0.647..-0.192  y 8.760..9.103  z -0.647..-0.192",
+   "bounds volute-1-2: x -0.626..-0.509  y 9.249..9.856  z 0.170..0.687",
+   "ray across shaft at y=4: air 1.54 > [side-0-0] solid 0.92 > [side-0-24] air",
+   "probe on a leaf (1376 faces), 120 rays: exhaustive 48 hits in 22.578832106s; box-tree 48 hits in 7.724121ms  -> x2923.2",
+   "find `cylinder r:1.5` on the abacus: 6 faces",
+   "triangles for display: 54164 (tessellated 17 shapes); total 43.749992306s"
+  ],
+  "ended": "panicked after tessellation while writing its mesh to a hard-coded path that does not exist on this machine; the STEP export step was not reached"
+ }
+}

@@ -1,0 +1,18 @@
+[package]
+name = "krly3d-view"
+description = "Looking at a krly3d model: the camera, the ray-casting renderer and the queries render, view, silhouette and pick"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+nalgebra = { workspace = true }
+rayon = { workspace = true }
+
+[dev-dependencies]
+krly3d-std = { workspace = true, features = ["testing"] }
+
+[lints]
+workspace = true

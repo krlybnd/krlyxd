@@ -1,0 +1,12 @@
+[package]
+name = "krly3d-core"
+description = "Shared vocabulary of the krly3d kernel: ids, outcomes, errors, tolerances, clocks, math aliases"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+nalgebra = { workspace = true }
+
+[lints]
+workspace = true

@@ -1,0 +1,24 @@
+[package]
+name = "krlyvis-cli"
+description = "The krlyvis command line: the transports of krly3d (shell, JSON-RPC, MCP) over the vision session"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krlyvis"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-cli = { workspace = true }
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+krlyvis-kernel = { workspace = true }
+krlyvis-std = { workspace = true }
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+krly3d-std = { workspace = true }
+serde_json = { workspace = true }

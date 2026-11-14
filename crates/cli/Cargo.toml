@@ -1,0 +1,21 @@
+[package]
+name = "krly3d-cli"
+description = "Transports over the one interface of the krly3d kernel: a command line, JSON-RPC and MCP on stdio"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+krly3d-std = { workspace = true }
+krly3d-view = { workspace = true }
+krly3d-exchange = { workspace = true }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

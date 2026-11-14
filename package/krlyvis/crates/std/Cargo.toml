@@ -1,0 +1,16 @@
+[package]
+name = "krlyvis-std"
+description = "Every capability shipped with krlyvis, one plugin per file"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+krlyvis-kernel = { workspace = true }
+nalgebra = { workspace = true }
+png = { workspace = true }
+zune-jpeg = { workspace = true }
+
+[lints]
+workspace = true

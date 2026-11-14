@@ -1,0 +1,13 @@
+[package]
+name = "krlyvis-kernel"
+description = "Contracts and orchestration of krlyvis, the image reader of krly3d; every capability is a plugin registered from outside"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+nalgebra = { workspace = true }
+
+[lints]
+workspace = true

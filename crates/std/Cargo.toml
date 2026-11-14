@@ -1,0 +1,18 @@
+[package]
+name = "krly3d-std"
+description = "Every capability shipped with krly3d, one plugin per file"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+nalgebra = { workspace = true }
+
+[features]
+# The helpers plugin crates use in their tests: a standard context and checked tool runs.
+testing = []
+
+[lints]
+workspace = true

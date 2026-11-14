@@ -1,0 +1,56 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/core",
+    "crates/kernel",
+    "crates/std",
+    "crates/cli",
+    "crates/view",
+    "crates/exchange",
+    "package/krlyvis/crates/kernel",
+    "package/krlyvis/crates/std",
+    "package/krlyvis/crates/cli",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace.dependencies]
+krly3d-core = { path = "crates/core" }
+krly3d-kernel = { path = "crates/kernel" }
+krly3d-std = { path = "crates/std" }
+krly3d-view = { path = "crates/view" }
+krly3d-exchange = { path = "crates/exchange" }
+krly3d-cli = { path = "crates/cli" }
+krlyvis-kernel = { path = "package/krlyvis/crates/kernel" }
+krlyvis-std = { path = "package/krlyvis/crates/std" }
+png = "0.17"
+rayon = "1.12"
+serde_json = "1.0"
+zune-jpeg = "0.4"
+nalgebra = "0.35"
+
+[profile.release]
+codegen-units = 1
+
+[workspace.lints.rust]
+warnings = "deny"
+unreachable_pub = "deny"
+
+[workspace.lints.clippy]
+all = { level = "deny", priority = -1 }
+wildcard_imports = "deny"
+todo = "deny"
+unimplemented = "deny"
+dbg_macro = "deny"
+iter_over_hash_type = "deny"
+cognitive_complexity = "deny"
+ptr_arg = "deny"
+cloned_instead_of_copied = "deny"
+implicit_clone = "deny"
+unwrap_used = "deny"
+expect_used = "deny"
+panic = "deny"
+unreachable = "deny"

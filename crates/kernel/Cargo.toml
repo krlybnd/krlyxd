@@ -1,0 +1,13 @@
+[package]
+name = "krly3d-kernel"
+description = "Contracts and orchestration of the krly3d kernel; every capability is a plugin registered from outside"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+nalgebra = { workspace = true }
+
+[lints]
+workspace = true

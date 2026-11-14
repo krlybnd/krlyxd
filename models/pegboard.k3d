@@ -1,0 +1,14 @@
+k3d 1
+layer geo
+plate = box d=40 h=10 w=60
+  expect faces=6 volume=24000
+peg = cylinder at=20,10,10 h=6 r=3
+pegs = pattern peg n=3 step=-20,0,0
+  expect faces=+6 volume=+339.292±0.001
+ring-section = profile path="M 4,0 L 6,0 L 6,2 L 4,2 Z" plane=xz
+washer = revolve ring-section
+  expect faces=4 volume=125.664±0.001
+ball = sphere at=0,-10,14 r=4
+  expect faces=1 area=201.062±0.001
+layer ai
+plate#top note="pegs stand on this face"
