@@ -16,12 +16,9 @@ import type {
   Source,
   UsageCall,
 } from "./ai/expert-types.ts";
-import { type CadRecipe, validateCadRecipe } from "./ai/cad-recipe.ts";
-import { cadGuidance } from "./ai/cad-guidance.ts";
+import { buildCadDraft, type CadDraft } from "./cad-draft.ts";
 import { reviewCad } from "./ai/cad-review.ts";
-import { executeCadAttempt } from "./cad-execution.ts";
 import {
-  buildCad,
   character,
   type ConstructionData,
   demo,
@@ -62,7 +59,7 @@ export type WorkflowOutcome = {
 };
 export type WorkflowDependencies = {
   research?: typeof cachedResearch;
-  buildCad?: typeof buildCad;
+  buildCadDraft?: typeof buildCadDraft;
   reviewCad?: typeof reviewCad;
   searchImages?: typeof searchImages;
   fetchImageCandidate?: typeof fetchImageCandidate;
@@ -84,7 +81,7 @@ const State = Annotation.Root({
   height: Annotation<number>(),
   pixelUnit: Annotation<number>(),
   seed: Annotation<[number, number] | undefined>(),
-  design: Annotation<CadRecipe | undefined>(),
+  design: Annotation<CadDraft | undefined>(),
   cadAttempts: Annotation<number>(),
   cadFailure: Annotation<
     {
@@ -97,6 +94,21 @@ const State = Annotation.Root({
     } | undefined
   >(),
 });
+
+function meshBounds(positions: number[]): { min: [number, number, number]; max: [number, number, number] } {
+  const min: [number, number, number] = [Infinity, Infinity, Infinity];
+  const max: [number, number, number] = [-Infinity, -Infinity, -Infinity];
+  for (let i = 0; i < positions.length; i++) {
+    const axis = i % 3;
+    min[axis] = Math.min(min[axis], positions[i]);
+    max[axis] = Math.max(max[axis], positions[i]);
+  }
+  if (positions.length < 9 || positions.length % 3 ||
+    min.some((value, axis) => !Number.isFinite(value) || value >= max[axis])) {
+    throw new ConnectError("A CAD-háló befoglaló mérete érvénytelen.", Code.DataLoss);
+  }
+  return { min, max };
+}
 
 export async function workflow(
   input: WorkflowInput,
@@ -127,12 +139,10 @@ export async function workflow(
       nominal ? ` ${nominal.toUpperCase()}` : ""
     } nominal dimensions mm manufacturer dimension table`
     : undefined;
-  let currentRecipe: CadRecipe | undefined;
+  let currentDraft: CadDraft | undefined;
   let intentReview: Awaited<ReturnType<typeof reviewCad>> | undefined;
   let cadSignal: AbortSignal | undefined;
-  let verifiedCad:
-    | Extract<Awaited<ReturnType<typeof executeCadAttempt>>, { ok: true }>
-    | undefined;
+  let verifiedCad: Awaited<ReturnType<typeof buildCadDraft>> | undefined;
   let flushed = -1;
   let planRepairUsed = calls.some((call) => call.stage === "cad_repair");
   const flushUsage = async () => {
@@ -461,10 +471,10 @@ export async function workflow(
       // One deadline spans both native attempts and the optional model repair.
       cadSignal ??= AbortSignal.any([signal, AbortSignal.timeout(120_000)]);
       cadSignal.throwIfAborted();
-      currentRecipe = validateCadRecipe(state.design);
+      currentDraft = state.design;
       verifiedCad = undefined;
       intentReview = undefined;
-      return { design: currentRecipe };
+      return { design: currentDraft };
     })
     .addNode("cad_execute", async (state) => {
       const control = cadSignal!;
@@ -473,43 +483,48 @@ export async function workflow(
         kind: "status",
         phase: "cad_validate",
         text: state.cadAttempts
-          ? "A javított terv natív építése és geometriai ellenőrzése…"
-          : "A terv natív próbája: csak a sikeresen ellenőrzött építési lépéseket mutatom meg.",
+          ? "A javított típusos cél natív keresése és geometriai ellenőrzése…"
+          : "A típusos célból natív tervet keresek és ellenőrzök…",
       });
-      const attempt = await executeCadAttempt(
-        state.design!,
-        control,
-        dependencies.buildCad ?? buildCad,
-      );
-      if (!attempt.ok) {
+      try {
+        verifiedCad = await (dependencies.buildCadDraft ?? buildCadDraft)(state.design!, control);
+      } catch (error) {
+        if (!(error instanceof ConnectError) ||
+          ![Code.InvalidArgument, Code.FailedPrecondition].includes(error.code)) throw error;
         return {
-          cadFailure: attempt.failure,
+          cadFailure: { code: "verification" as const, message: error.rawMessage.slice(0, 600) },
           cadAttempts: state.cadAttempts + 1,
         };
       }
-      verifiedCad = attempt;
       return { cadFailure: undefined, cadAttempts: state.cadAttempts + 1 };
     })
     .addNode("cad_review", async () => {
       const control = cadSignal!;
       control.throwIfAborted();
       const checked = verifiedCad!;
+      const mesh = checked.response.mesh;
+      if (!mesh) {
+        throw new ConnectError(checked.response.previewIssue || "A natív CAD-háló nem elérhető.", Code.Unavailable);
+      }
       await emit({
         kind: "status",
         phase: "cad_review",
         text:
-          "A kérés, a recept és a mért méretek külön ellenőrzése; kép és webkeresés nélkül…",
+          "A kérés, a típusos cél és a mért méretek külön ellenőrzése; kép és webkeresés nélkül…",
       });
       let review;
       try {
         review = await (dependencies.reviewCad ?? reviewCad)({
           text: input.text,
           answers: input.answers,
-          recipe: currentRecipe!,
+          draft: currentDraft!,
+          plan: checked.response.plan.map((node) => ({
+            id: node.id, operation: node.operation, inputs: node.inputs,
+          })),
           measurements: {
-            bounds: checked.report.bounds,
-            volume: checked.report.volume,
-            area: checked.report.area,
+            bounds: meshBounds(mesh.positions),
+            volume: mesh.volume,
+            area: mesh.area,
           },
           signal: control,
           onUsage,
@@ -550,7 +565,7 @@ export async function workflow(
           },
           researchAllowed: false,
           repair: {
-            recipe: state.design!,
+            draft: state.design!,
             code: state.cadFailure!.code,
             reason: state.cadFailure!.message,
           },
@@ -566,14 +581,14 @@ export async function workflow(
           return {
             action: "reply" as const,
             reply:
-              "A javító kör változatlan tervet adott, ezért nem futtatom újra ugyanazt a hibát. Nem készült új modell.",
+              "A javító kör változatlan követelményeket adott, ezért nem futtatom újra ugyanazt a hibát. Nem készült új modell.",
           };
         }
         await emit({
           kind: "status",
           phase: "cad_repair",
           text: result.summary ||
-            "A javított terv elkészült; ismét natív ellenőrzés következik.",
+            "A javított típusos cél elkészült; ismét natív ellenőrzés következik.",
         });
         return { design: result.design };
       }
@@ -588,13 +603,13 @@ export async function workflow(
         kind: "status",
         phase: "cad_failed",
         text:
-          "A javított terv sem ment át minden ellenőrzésen. A korábbi modell megmarad.",
+          "A típusos cél nem ment át minden ellenőrzésen. A korábbi modell megmarad.",
       });
       return {
         action: "reply" as const,
         reply: `A modell nem készült el: ${
           state.cadFailure!.message
-        } Az egyszeri javító kört felhasználtam; nem indítok további fizetős próbálkozást. A korábbi elkészült modell megmaradt.`,
+        } Nem indítok további fizetős próbálkozást. A korábbi elkészült modell megmaradt.`,
       };
     })
     .addNode("cad_publish", async () => {
@@ -606,30 +621,33 @@ export async function workflow(
         text:
           "A natív geometriai vizsgálat és a külön szöveges tervellenőrzés sikeres. A mért méretek a jelentésben vannak.",
       });
-      for (const event of checked.events) {
-        cadSignal!.throwIfAborted();
-        if (event.mesh) {
-          await emit({
-            kind: "mesh",
-            phase: event.kind,
-            text: event.text ?? "Ellenőrzött építési lépés",
-            mesh: event.mesh,
-            construction: event.construction,
-          });
-        } else if (event.artifact) {
-          await emit({
-            kind: "artifact",
-            phase: "artifact",
-            text: event.artifact.name,
-            artifact: event.artifact,
-          });
-        }
-      }
+      const mesh = checked.response.mesh;
+      if (!mesh) throw new ConnectError("A CAD-háló nem elérhető.", Code.Unavailable);
+      await emit({
+        kind: "mesh",
+        phase: "validated",
+        text: "A típusos célból szintetizált, natívan ellenőrzött modell.",
+        mesh: { ...mesh, units: "m" },
+      });
+      await emit({
+        kind: "artifact",
+        phase: "artifact",
+        text: "design.typ",
+        artifact: {
+          name: "design.typ",
+          mime: "text/plain; charset=utf-8",
+          bytes: new TextEncoder().encode(checked.source),
+        },
+      });
       for (
         const [name, value] of [
           ["design.validation.json", {
-            ...checked.report,
-            designIntent: "reviewed",
+            status: checked.response.status,
+            modelId: checked.response.modelId,
+            revision: checked.response.revision,
+            plan: checked.response.plan,
+            checks: checked.response.checks,
+            geometryVerified: checked.response.geometryVerified,
             intentReview: { method: "language_model", ...intentReview },
           }],
           ["design.sources.json", {
@@ -637,7 +655,7 @@ export async function workflow(
             units: "mm",
             standardsCertified: false,
             evidence: found ?? null,
-            modelingMethods: cadGuidance(input.text),
+            synthesis: "bounded_typed_search",
           }],
         ] as const
       ) {
@@ -655,7 +673,7 @@ export async function workflow(
       verifiedCad = undefined;
       return {
         reply:
-          "Kép nélkül elkészült a natív CAD-modell. Az ellenőrzött építési lépések visszajátszhatók; a recept, a mért geometriai adatok és a források letölthetők. A numerikus ellenőrzés nem igazolja önmagában a teljes tervezési szándékot vagy a szabványmegfelelőséget.",
+          "Kép nélkül elkészült a típusos követelményekből keresett natív CAD-modell. A .typ forrás, a mért próbák és a forrásadatok letölthetők. A véges próbák nem bizonyítják a teljes alakazonosságot vagy a szabványmegfelelőséget.",
       };
     })
     .addNode("geometry", async (state) => {

@@ -351,8 +351,10 @@ npx playwright test --config e2e/expert.config.ts character.spec.ts
 
 ## Szöveges CAD és kutatási költség
 
-Kép nélkül is építhető modell. Saját, teljes méretsor esetén egy szakértői
-hívás készíti a validált műveleti tervet; a geometria a natív kernelben épül.
+Kép nélkül is építhető modell. Saját, teljes méretsor esetén a szakértői
+hívás típusos `.typ` specifikációt és célfeltételeket javasol, kész
+műveleti terv nélkül. A `krlysci` ellenőrzi a szerződést, majd a natív
+CAD-ellenőrző korlátos kereséssel állít elő és próbál ki terveket.
 Az Építés módban felismert számozott szabványjelölés (például ISO 7089 M8)
 először egy szöveges méretkeresést kap, majd egy tervezői hívást. A keresésbe
 csak a nyilvános szabványazonosító és névleges méret kerül. Ha a beszélgetési
@@ -365,17 +367,16 @@ kerülnek. Gateway, modell vagy kulcs változása külön partíció; megszakít
 és hibás kutatást nem tárolunk. Cache-találatkor nincs új kutatási AI-hívás
 vagy kitalált használati tétel. A felület külön jelzi az újrafelhasználást;
 a tervezői hívás tényleges költsége továbbra is szerepel. A kereső kimenete
-600, a tervezőé 1800 tokenre korlátozott; ez felső kimeneti korlát, nem teljes
+600, a tervezőé 3000 tokenre korlátozott; ez felső kimeneti korlát, nem teljes
 bemeneti token- vagy dollárkeret.
 
-A letölthető `design.recipe.json` tartalmazza a méreteket és műveletneveket,
-a `design.k3d` a natív modellt, a `design.sources.json` a felhasznált forrásokat.
-Az utóbbi nem szabványmegfelelőségi igazolás. Minden lépés az addigi receptből
-épül; a végső modell pozitív térfogata és zárt háromszöghálója ellenőrzött.
-A kézi, külső CAD/DWG/STEP-import továbbra sincs bekötve a tervező eszközébe.
-
-Az átmenő furat külön `through_hole` művelet: a terv a céltestet, az XY
-helyet és a sugarat adja meg. A vágóhenger mélységét a host számítja a céltest
-Z-kiterjedéséből, mindkét oldali túlfutással. Így az AI-nak nem kell középpont
-és alapsík között átszámolnia a furatot, és három furat négy logikai lépésből
-építhető (alaptest + három furat). A furatok itt +Z irányúak.
+A letölthető `design.typ` a típusos követelményeket, a
+`design.validation.json` a megtalált tervet és a natív ellenőrzéseket, a
+`design.sources.json` a forrásokat tartalmazza. A véges próbák nem bizonyítanak
+globális optimumot, teljes alakazonosságot vagy szabványmegfelelőséget.
+A jelenlegi szintézis középre helyezett kör/téglalap/gyűrű XY profilból,
++Z kihúzásból és legfeljebb két test egyesítéséből/kivonásából épít.
+Menet, ferde fogazás, tetszőleges eltolás, furatkiosztás és fillet még nem
+támogatott ezen a szöveges úton; ilyen kérésre a rendszer nem publikálhat
+egyszerűbb, félrevezető modellt. A kézi, külső CAD/DWG/STEP-import továbbra
+sincs bekötve a tervező eszközébe.

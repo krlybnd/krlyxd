@@ -1,5 +1,4 @@
 import { expert } from "./expert.ts";
-import type { CadRecipe } from "./cad-recipe.ts";
 import type { ExpertInput, UsageCall } from "./expert-types.ts";
 import { AI_LIMITS } from "./provider.ts";
 import {
@@ -81,56 +80,13 @@ function input(onUsage: (call: UsageCall) => void = () => {}): ExpertInput {
   };
 }
 
-Deno.test("expert: circle and polar holes need no model trigonometry; one admission repair retains both costs", () =>
+Deno.test("expert: typed requirement draft accepts one admission repair and retains both costs", () =>
   run(async () => {
-    const recipe: CadRecipe = {
-      units: "mm",
-      steps: [
-        {
-          type: "sketch_circle",
-          id: "circle",
-          title: "Kör",
-          center: [0, 0],
-          radius: 82.5,
-          z: 0,
-        },
-        {
-          type: "extrude",
-          id: "disc",
-          title: "Korong",
-          inputs: ["circle"],
-          height: 20,
-        },
-        {
-          type: "through_hole",
-          id: "bore",
-          title: "Nyílás",
-          inputs: ["disc"],
-          center: [0, 0, 0],
-          radius: 30.75,
-          size: null,
-          height: null,
-        },
-        {
-          type: "circular_hole_pattern",
-          id: "holes",
-          title: "Körkiosztás",
-          inputs: ["bore"],
-          center: [0, 0],
-          patternRadius: 62.5,
-          radius: 9,
-          count: 4,
-          startAngle: 45,
-        },
-      ],
+    const draft = {
+      spec: '#cad_spec("ring", parameters: (R: 15mm), requirements: (require("positive", R > 0mm)))',
+      target: '#cad_target("ring", spec_hash: "__SPEC_HASH__", checks: (require_span("width", x, 2*R, 2*R)))',
     };
-    const decision = {
-      ...args,
-      action: "design",
-      height: null,
-      pixelUnit: null,
-      design: recipe,
-    };
+    const decision = { ...args, action: "design", height: null, pixelUnit: null, design: draft };
     let calls = 0;
     const usage: UsageCall[] = [];
     globalThis.fetch = (_url, init) => {
@@ -139,52 +95,28 @@ Deno.test("expert: circle and polar holes need no model trigonometry; one admiss
       if (calls === 2) {
         assert(body.messages.at(-1).content.includes("cadAdmissionFeedback"));
         assert(!body.messages.at(-1).content.includes("private reasoning"));
-        assert(!JSON.stringify(body.tools).includes('"enum":["research"]'));
       }
-      const design = calls === 1
-        ? {
-          ...recipe,
-          steps: [{ ...recipe.steps[0], radius: 0 }, ...recipe.steps.slice(1)],
-        }
-        : recipe;
-      return Promise.resolve(
-        Response.json(completion({ ...decision, design })),
-      );
+      const design = calls === 1 ? { ...draft, spec: "" } : draft;
+      return Promise.resolve(Response.json(completion({ ...decision, design })));
     };
-    equal(
-      (await expert({
-        ...input((c) => usage.push(c)),
-        text: "Karima a megadott méretekkel",
-      })).design,
-      recipe,
-    );
+    equal((await expert({ ...input((c) => usage.push(c)), text: "15 mm-es gyűrű" })).design, draft);
     equal(calls, 2);
     equal(usage.map((c) => c.stage), ["expert", "cad_repair"]);
     assert(usage.every((c) => c.tokensKnown));
   }));
 
-Deno.test("expert: invalid CAD correction stops after one attempt; exhausted budget never retries", () =>
+Deno.test("expert: malformed typed draft stops after one admission repair", () =>
   run(async () => {
     for (const allowed of [true, false]) {
       let calls = 0;
       globalThis.fetch = () => {
         calls++;
-        return Promise.resolve(
-          Response.json(
-            completion({
-              ...args,
-              action: "design",
-              height: null,
-              pixelUnit: null,
-              design: { units: "mm", steps: [] },
-            }),
-          ),
-        );
+        return Promise.resolve(Response.json(completion({
+          ...args, action: "design", height: null, pixelUnit: null,
+          design: { spec: "", target: "" },
+        })));
       };
-      await rejects(
-        () => expert({ ...input(), planRepairAllowed: allowed }),
-        "invalid_response",
-      );
+      await rejects(() => expert({ ...input(), planRepairAllowed: allowed }), "invalid_response");
       equal(calls, allowed ? 2 : 1);
     }
   }));
@@ -244,7 +176,7 @@ Deno.test("expert: one strict decision, authoritative settings and billed usage"
           JSON.stringify(body.tools),
         ),
       );
-      assert(body.messages[0].content.includes("involute"));
+      assert(body.messages[0].content.includes("__SPEC_HASH__"));
       assert(body.messages[0].content.includes("one or more"));
       assert(body.messages[0].content.includes("Hungarian"));
       return Promise.resolve(

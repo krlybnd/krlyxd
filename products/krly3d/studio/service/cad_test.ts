@@ -1,6 +1,7 @@
 import { create } from "@bufbuild/protobuf";
 import { CadRequestSchema } from "../gen/krly/studio/v1/studio_pb.ts";
 import { CadDocuments } from "./cad.ts";
+import { prepareCadDraft } from "./cad-draft.ts";
 
 function assert(value: unknown, message: string): asserts value {
   if (!value) throw new Error(message);
@@ -56,6 +57,29 @@ Deno.test("typed CAD review keeps a checked Studio model across undo and redo", 
       sessionId, action: "redo", modelId: start.modelId, baseRevision: 0,
     }), signal);
     assert(redone.revision === 1 && redone.reviewed, "redo restores reviewed model");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("typed target-only draft is bound to its spec and synthesized without a recipe", async () => {
+  const science = Deno.env.get("KRLYSCI_BIN");
+  if (!science) return;
+  const original = await Deno.readTextFile(new URL("../../../../cad-knowledge/cases/solid-ring.typ", import.meta.url));
+  const [spec, rest] = original.split("#cad_plan(");
+  const target = `#cad_target(${rest.split("#cad_target(")[1]}`.replace(/spec_hash: "[0-9a-f]{64}"/, 'spec_hash: "__SPEC_HASH__"');
+  const signal = new AbortController().signal;
+  const source = await prepareCadDraft({ spec, target }, signal, science);
+  assert(!source.includes("#cad_plan("), "the model must not provide a feature plan");
+  assert(!source.includes("__SPEC_HASH__"), "the parser owns the semantic hash");
+  const root = await Deno.makeTempDir({ prefix: "studio-cad-synth-test-" });
+  try {
+    const docs = new CadDocuments({ root, science });
+    const state = await docs.apply(create(CadRequestSchema, {
+      sessionId: crypto.randomUUID(), action: "start", source,
+    }), signal);
+    assert(state.status === "tested" && state.plan.length > 0, "native search found a plan");
+    assert(state.mesh?.indices.length && state.mesh.openEdges === 0, "synthesized solid is visible");
   } finally {
     await Deno.remove(root, { recursive: true });
   }

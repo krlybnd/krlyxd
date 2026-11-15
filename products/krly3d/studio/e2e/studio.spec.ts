@@ -248,34 +248,26 @@ test('text-only build can be submitted without forcing an image upload', async (
   expect(requestValue).toMatchObject({ mode: 'build', text: prompt, attachmentIds: [] });
 });
 
-test('text CAD shows Origó and Lépések as same-level feature-tree branches and reveals the streamed operations', async ({ page }) => {
+test('text CAD presents the verified typed result and editable requirements', async ({ page }) => {
   await page.route('**/krly.studio.v1.StudioService/Run', async route => {
-    const mesh = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1], indices: [0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3], volume: 1 / 6, area: 2.36, openEdges: 0, source: 'brep-session:text-cad', units: 'mm' };
+    const mesh = { positions: [0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1], indices: [0, 2, 1, 0, 1, 3, 0, 3, 2, 1, 2, 3], volume: 1 / 6, area: 2.36, openEdges: 0, source: 'brep-session:typed-cad', units: 'm' };
     const values = [
-      { runId: 'text-cad-tree', seq: 0, kind: 'status', phase: 'accepted', text: 'Kérés fogadva.' },
-      { runId: 'text-cad-tree', seq: 1, kind: 'mesh', phase: 'construction_step', text: '1/2 · Henger · Külső palást', mesh },
-      { runId: 'text-cad-tree', seq: 2, kind: 'mesh', phase: 'editable_proposal', text: '2/2 · Kivágás · Furat', mesh },
-      { runId: 'text-cad-tree', seq: 3, kind: 'artifact', phase: 'artifact', text: 'design.k3d', artifact: { id: 'design', name: 'design.k3d', mime: 'text/plain', size: 100 } },
-      { runId: 'text-cad-tree', seq: 4, kind: 'completed', phase: 'completed', text: 'Kész.' },
+      { runId: 'typed-cad', seq: 0, kind: 'status', phase: 'accepted', text: 'Kérés fogadva.' },
+      { runId: 'typed-cad', seq: 1, kind: 'mesh', phase: 'validated', text: 'Típusos cél ellenőrizve.', mesh },
+      { runId: 'typed-cad', seq: 2, kind: 'artifact', phase: 'artifact', text: 'design.typ', artifact: { id: 'design', name: 'design.typ', mime: 'text/plain', size: 100 } },
+      { runId: 'typed-cad', seq: 3, kind: 'completed', phase: 'completed', text: 'Kész.' },
     ].map(value => grpcFrame(toBinary(RunResponseSchema, create(RunResponseSchema, value))));
     const trailers = grpcFrame(new TextEncoder().encode('grpc-status: 0\r\n'), 0x80);
     await route.fulfill({ status: 200, contentType: 'application/grpc-web+proto', body: Buffer.concat([...values, trailers]) });
   });
   await page.getByRole('button', { name: /Alkatrész leírása vagy rajz/ }).click();
-  await page.getByLabel('Üzenet a Studiónak', { exact: true }).fill('Szövegből tervezz meg egy furatos hengert.');
+  await page.getByLabel('Üzenet a Studiónak', { exact: true }).fill('15 mm külső és 6 mm belső sugarú gyűrű, 8 mm magas.');
   const response = rpcResponse(page, 'Run');
   await page.getByRole('button', { name: 'Modell építése', exact: true }).click();
   await completedRun(await response);
-  const tree = page.getByRole('tree', { name: 'CAD modellfa' });
-  await expect(tree).toBeVisible();
-  const origin = tree.getByRole('treeitem', { name: /Origó · \(0, 0, 0\)/ });
-  const steps = tree.getByRole('treeitem', { name: /Lépések/ });
-  await expect(origin).toBeVisible();
-  await expect(steps).toBeVisible();
-  await expect(tree.locator(':scope > .generic-tree-root')).toHaveCount(1);
-  await expect(tree.locator(':scope > details.steps-folder')).toHaveCount(1);
-  await expect(tree).toContainText('Henger · Külső palást');
-  await expect(tree).toContainText('Kivágás · Furat');
+  await expect(page.getByText('Zárt háló', { exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /design\.typ/ })).toBeVisible();
+  await expect(page.getByRole('tree', { name: 'CAD modellfa' })).toHaveCount(0);
 });
 
 test.describe('upload rejection', () => {

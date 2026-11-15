@@ -54,7 +54,7 @@ function voiceError(message: string): string {
 const phases: Record<string, string> = {
   accepted: 'KÉRÉS FOGADVA', understand: 'ÉRTELMEZÉS', plan: 'MŰVELETI ÖSSZEFOGLALÓ',
   geometry: 'GEOMETRIAI ESZKÖZ', started: 'NATÍV FELDOLGOZÁS', evidence: 'KONTÚR',
-  coarse_preview: 'KORAI HÁLÓ', editable_proposal: 'B-REP MODELL', preview: 'ELŐNÉZET',
+  coarse_preview: 'KORAI HÁLÓ', editable_proposal: 'B-REP MODELL', validated: 'ELLENŐRZÖTT MODELL', preview: 'ELŐNÉZET',
   validation: 'ELLENŐRZÉS', completed: 'BEFEJEZVE', failed: 'HIBA',
   construction_step: 'ÉPÍTÉSI LÉPÉS', sampling: 'TÉRFOGAT MINTAVÉTELEZÉSE',
   field_mesh: 'TÉRBELI HÁLÓ', final_mesh: 'TÉRBELI MESH', printing: 'STL ÉS ELLENŐRZÉS', print_validation: 'NYOMTATÁSI JELENTÉS',
@@ -284,7 +284,10 @@ export function App() {
           dispatchModel({ type: 'preview', runId: id, snapshot: prepareModel(event.mesh, id, event.text || 'Geometriai lépés', { key: `${id}:${event.seq}`, phase: event.phase }, event.construction) });
           latestMeshPhase = event.phase;
         }
-        if (event.kind === 'completed' && affectsGeometry && latestMeshPhase !== (requestedMode === 'character' ? 'final_mesh' : 'editable_proposal')) {
+        if (event.kind === 'completed' && affectsGeometry &&
+          !(requestedMode === 'character'
+            ? latestMeshPhase === 'final_mesh'
+            : latestMeshPhase === 'editable_proposal' || latestMeshPhase === 'validated')) {
           throw new Error('A szolgáltatás nem küldött végleges geometriát. A korai háló nem végleges modell.');
         }
         if (event.kind === 'error' || event.kind === 'completed') { terminal = event.kind; break; }

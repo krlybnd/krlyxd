@@ -1,4 +1,4 @@
-import { buildCadConstruction, type CadConstructionData } from "./native_construction.ts";
+import type { CadConstructionData } from "./native_construction.ts";
 /** External application adapter. Rust retains its in-process shared-memory path.
  *
  * No caller paths, executable overrides, shell, or inherited environment. Artifacts
@@ -6,11 +6,6 @@ import { buildCadConstruction, type CadConstructionData } from "./native_constru
  * producer owns the child and workspace, including while the iterator is paused.
  * Errors reject iteration; completed is published only after a successful exit.
  */
-import {
-  encodeCadRecipe,
-  validateCadRecipe,
-  type CadRecipe,
-} from "./ai/cad-recipe.ts";
 
 export type NativeEvent = {
   kind: string;
@@ -22,7 +17,7 @@ export type NativeEvent = {
     area: number;
     openEdges: number;
     source: string;
-    units?: "mm";
+    units?: "mm" | "m";
   };
   artifact?: { name: string; mime: string; bytes: Uint8Array };
   details?: Record<string, unknown>;
@@ -1080,113 +1075,6 @@ export async function* demo(
       kind: "completed",
       details: { demo: true, variant, source: finalMesh.source },
     });
-  });
-}
-
-/** Build a bounded text-authored feature recipe with the exact native B-rep kernel. */
-export async function* buildCad(
-  rawRecipe: CadRecipe,
-  signal: AbortSignal,
-): AsyncGenerator<NativeEvent> {
-  // Validate and snapshot the complete recipe once, before any async work.
-  const recipe = validateCadRecipe(rawRecipe);
-  const bytes = encodeCadRecipe(recipe);
-  const recipeBytes = new TextEncoder().encode(JSON.stringify(recipe, null, 2) + "\n");
-  yield* bridge(signal, async (scope, emit) => {
-    const model = `${scope.directory}/design.k3d`;
-    const request = `${scope.directory}/request.json`;
-    emit({ kind: "started", text: "A szöveges CAD-receptet a natív kernel ellenőrzi." });
-
-    let finalMesh: NativeEvent["mesh"];
-    const solidSteps = recipe.steps.filter(step => step.type !== "sketch" && step.type !== "sketch_circle").length;
-    let solidIndex = 0;
-    for (const [index, step] of recipe.steps.entries()) {
-      if (step.type === "sketch" || step.type === "sketch_circle") continue;
-      solidIndex++;
-      scope.control.signal.throwIfAborted();
-      // The CLI evaluates the whole document, including nodes not requested.
-      // A prefix avoids executing future features before their preview stage.
-      // Do not revalidate prefixes: cutters may be disconnected until a boolean.
-      await Deno.writeFile(model, encodeCadRecipe({
-        units: recipe.units,
-        steps: recipe.steps.slice(0, index + 1),
-      }));
-      await Deno.writeTextFile(
-        request,
-        JSON.stringify({
-          request_id: "studio-text-cad",
-          protocol: { major: 2, minor: 0 },
-          api: { major: 2, minor: 0 },
-          timeout_ms: NATIVE_LIMITS.timeoutMs,
-          input: {
-            node: step.id,
-            triangles: true,
-            tolerance: { value: 0.05, unit: "model" },
-          },
-        }),
-      );
-      let sequence = 0;
-      let operation: string | undefined;
-      let source: string | undefined;
-      let mesh: NativeEvent["mesh"];
-      await runProcess(scope, "mesh", ["--model", model, "--request", request], (record) => {
-        for (const key of ["protocol", "api"]) {
-          const version = object(record[key], key);
-          require(version.major === 2 && version.minor === 0, "Unsupported mesh protocol/API");
-        }
-        require(record.seq === sequence && record.request_id === "studio-text-cad", "Invalid text CAD mesh sequence");
-        const identity = text(record.operation_id, "operation id");
-        operation ??= identity;
-        require(identity === operation, "Text CAD mesh operation identity changed");
-        const body = object(record.body, "mesh event body");
-        if (sequence === 0) {
-          require(body.kind === "started", "Native text CAD mesh did not start");
-          source = text(object(body.provenance, "mesh provenance").source, "mesh source");
-        } else {
-          require(sequence === 1 && body.kind === "completed", `Native text CAD mesh did not complete: ${JSON.stringify(body).slice(0, 4096)}`);
-          mesh = parseMesh(body.result);
-          mesh.units = "mm";
-          require(mesh.volume > 0 && mesh.openEdges === 0, "A text CAD feature did not produce a closed solid");
-          require(mesh.source === source, "Text CAD mesh source changed");
-        }
-        sequence++;
-      });
-      require(sequence === 2 && mesh !== undefined, "Native text CAD mesh ended before completed");
-      const final = index === recipe.steps.length - 1;
-      const operationLabel: Record<CadRecipe["steps"][number]["type"], string> = {
-        box: "Doboz",
-        cylinder: "Henger",
-        sphere: "Gömb",
-        torus: "Tórusz",
-        union: "Egyesítés",
-        subtract: "Kivágás",
-        through_hole: "Átmenő furat",
-        circular_hole_pattern: "Körkiosztás",
-        sketch_circle: "Körvázlat",
-        extrude_profile: "Vázlat kihúzása",
-        sketch: "Vázlat", extrude: "Kihúzás", pocket: "Zsebkivágás", fillet: "Lekerekítés",
-      };
-      emit({
-        kind: final ? "editable_proposal" : "construction_step",
-        text: `${solidIndex}/${solidSteps} · ${operationLabel[step.type]} · ${step.title}`,
-        construction: buildCadConstruction(recipe, index),
-        mesh,
-        details: { node: step.id, step: index + 1, steps: recipe.steps.length, units: "mm" },
-      });
-      finalMesh = mesh;
-    }
-    require(finalMesh !== undefined, "Text CAD recipe has no final mesh");
-    emit({
-      kind: "artifact",
-      artifact: { name: "design.k3d", mime: "text/plain; charset=utf-8", bytes },
-      details: { stage: "editable_proposal", units: "mm" },
-    });
-    emit({
-      kind: "artifact",
-      artifact: { name: "design.recipe.json", mime: "application/json", bytes: recipeBytes },
-      details: { stage: "editable_proposal", units: "mm" },
-    });
-    emit({ kind: "completed", text: `${recipe.steps.length} natív CAD-lépés milliméterben elkészült.` });
   });
 }
 

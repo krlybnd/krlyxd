@@ -1,6 +1,6 @@
 // Plain application contracts; protobuf is only the outer transport adapter.
 import type { PlanInput, PlanResult } from "./provider.ts";
-import type { CadRecipe } from "./cad-recipe.ts";
+import type { CadDraft } from "../cad-draft.ts";
 
 export type UsageCall = {
   id: string;
@@ -34,7 +34,7 @@ export type ExpertInput = PlanInput & {
   /** Shared workflow budget: schema and native repairs consume the same one turn. */
   planRepairAllowed?: boolean;
   repair?: {
-    recipe: CadRecipe;
+    draft: CadDraft;
     code:
       | "boolean_contact"
       | "unsupported_geometry"
@@ -48,5 +48,5 @@ export type ExpertResult = Omit<PlanResult, "action"> & {
   action: "reply" | "reconstruct" | "ask" | "research" | "design";
   question?: ExpertQuestion;
   searchQuery?: string;
-  design?: CadRecipe;
+  design?: CadDraft;
 };

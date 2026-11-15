@@ -44,4 +44,4 @@ Az első tesztpár: ismert paraméter cseréje kijelölt feature-en megőrzött 
 
 ## Kódkivételi következmény
 
-A jelenlegi [expert.ts](../../../products/krly3d/studio/service/ai/expert.ts), [cad-recipe.ts](../../../products/krly3d/studio/service/ai/cad-recipe.ts) és [cad-review.ts](../../../products/krly3d/studio/service/ai/cad-review.ts) aktív újmodell-útvonalat szolgálnak ki. Ebből ma nem következik biztonságos teljes törlés. Funkciónként kell kiváltani és a fogyasztókat átvezetni; a review-delta és általános szintézis kapuja előtt törölt planner csak működő funkciót venne el.
+A dokumentum készítésekor az [expert.ts](../../../products/krly3d/studio/service/ai/expert.ts), a korábbi `cad-recipe.ts` és a [cad-review.ts](../../../products/krly3d/studio/service/ai/cad-review.ts) még aktív kézi receptútvonalat szolgált ki. A [későbbi migráció](p1-typed-chat-migration.md) ezt a szöveges utat átvezette a típusos, korlátos szintézisre és kivette a receptet. A review-delta és általános szintézis kapuja továbbra is nyitott; a kivétel nem teljes képességparitás.

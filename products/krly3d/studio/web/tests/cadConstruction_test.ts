@@ -1,7 +1,6 @@
 import { create, equals, fromBinary, fromJson, toBinary, toJson } from '@bufbuild/protobuf';
 import { ConstructionSchema } from '../../gen/krly/studio/v1/studio_pb.ts';
 import { buildCadConstruction } from '../../service/native_construction.ts';
-import { validateCadRecipe } from '../../service/ai/cad-recipe.ts';
 import { arcSweep, expandCadStages, featureLabels, sketchDisplayPoints, validateCadConstruction } from '../src/cadConstruction.ts';
 import { prepareModel } from '../src/model.ts';
 import { RevealTimeline } from '../src/reveal.ts';
@@ -21,7 +20,7 @@ Deno.test('circle and hole-pattern v2 metadata round-trip through protobuf binar
   for (const [count, startAngle] of [[1, 0], [6, 30], [16, -450], [6, 720000], [6, Number.MAX_VALUE]]) {
     const input = circleRecipe(); input.steps[4].count = count; input.steps[4].startAngle = startAngle;
     const original = JSON.stringify(input);
-    const data = create(ConstructionSchema, buildCadConstruction(validateCadRecipe(input), 4));
+    const data = create(ConstructionSchema, buildCadConstruction(input, 4));
     const binary = fromBinary(ConstructionSchema, toBinary(ConstructionSchema, data));
     const json = fromJson(ConstructionSchema, toJson(ConstructionSchema, data));
     for (const restored of [binary, json]) {
