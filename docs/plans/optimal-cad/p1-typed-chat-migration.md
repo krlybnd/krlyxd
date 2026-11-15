@@ -22,8 +22,9 @@ source. SHA-256 of the removed originals:
 - `service/ai/cad-guidance.ts`: `21bb56a56ed31b3b07ecb60611a109f41d305781f40ab3015b38fe9bff1c67f5` (26 lines; no remaining callers)
 - Recipe-only tests: `service/ai/cad-recipe_test.ts` (715), `service/cad-execution_test.ts` (438), `service/cad-parametric_test.ts` (723).
 
-Measured with physical newline-delimited source lines, comparing this
-baseline with the migrated files: `cad-recipe.ts` 784→0,
+Measured with physical newline-delimited source lines at migration commit
+`f733dcc`, comparing the baseline with the migrated files:
+`cad-recipe.ts` 784→0,
 `cad-execution.ts` 245→0, `cad-guidance.ts` 26→0,
 `native.ts` 1491→1379, `expert.ts`
 755→533, `cad-review.ts` 235→228, `workflow.ts` 823→841, and new
@@ -32,6 +33,17 @@ lines**. The affected service test files, including the new typed tests,
 change by **−3,298 lines**. These counts are separate: deleting old tests
 does not itself simplify production. Presentation-only construction v2 code
 remains, so this is not the entire cleanup promised by P5.
+
+Follow-up: a live ring prompt produced two `require("positive", …)` predicates.
+The strict reader rejected the duplicate name before native synthesis. Studio
+now renames only duplicate literal requirement labels, keeps every predicate
+and dimension unchanged, and reruns the strict reader before binding the
+target hash. A malformed expression still fails. The expert prompt also asks
+for distinct labels. The emitted `design.typ` contains the corrected labels,
+and parser diagnostics no longer expose a transient `/tmp` path. The full
+workflow test proves this case reaches a checked mesh with one AI call. This
+follow-up adds 35 production lines; the net reduction in the same production
+files is now **−1,238 lines** relative to the original baseline.
 
 The migration intentionally narrows the conversational builder's *supported*
 geometry to the currently verified native search grammar: centred disk,

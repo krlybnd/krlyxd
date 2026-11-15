@@ -9,11 +9,32 @@ export type CadDraft = { spec: string; target: string };
 
 const HASH_MARKER = "__SPEC_HASH__";
 const MAX_SOURCE = 65_536;
+const REQUIRE_ID = /\brequire\s*\(\s*"([^"\\\r\n]*)"\s*,/g;
 
 function declaration(source: string, name: "cad_spec" | "cad_target"): boolean {
   const trimmed = source.trim();
   return trimmed.startsWith(`#${name}(`) && trimmed.length <= MAX_SOURCE &&
     (trimmed.match(/#cad_[a-z_]+\s*\(/g) ?? []).length === 1;
+}
+
+/** Correct only duplicate literal labels, never predicates or dimensions.
+ * The strict Typst reader rechecks the result before any native operation.
+ */
+function uniqueRequirementIds(spec: string): string {
+  const reserved = new Set([...spec.matchAll(REQUIRE_ID)].map((match) => match[1]));
+  const seen = new Set<string>();
+  return spec.replace(REQUIRE_ID, (call, id: string) => {
+    if (!seen.has(id)) {
+      seen.add(id);
+      return call;
+    }
+    let suffix = 2;
+    let replacement = `${id}#${suffix}`;
+    while (reserved.has(replacement)) replacement = `${id}#${++suffix}`;
+    reserved.add(replacement);
+    seen.add(replacement);
+    return call.replace(`"${id}"`, `"${replacement}"`);
+  });
 }
 
 async function runScience(binary: string, source: string, signal: AbortSignal): Promise<unknown> {
@@ -36,9 +57,10 @@ async function runScience(binary: string, source: string, signal: AbortSignal): 
       const output = await child.output();
       signal.throwIfAborted();
       if (!output.success) {
+        const reason = new TextDecoder().decode(output.stderr).trim()
+          .replaceAll(`${path}:`, "").trim().slice(0, 1200);
         throw new ConnectError(
-          new TextDecoder().decode(output.stderr).trim().slice(0, 1200) ||
-            "A típusos CAD-leírás érvénytelen.",
+          reason || "A típusos CAD-leírás érvénytelen.",
           Code.FailedPrecondition,
         );
       }
@@ -68,7 +90,18 @@ export async function prepareCadDraft(
     draft.spec.length + draft.target.length > MAX_SOURCE) {
     throw new ConnectError("Egy specifikáció és egy célfeltétel szükséges, kész terv nélkül.", Code.InvalidArgument);
   }
-  const first = await runScience(science, `${draft.spec.trim()}\n`, signal);
+  let spec = draft.spec.trim();
+  let first: unknown;
+  try {
+    first = await runScience(science, `${spec}\n`, signal);
+  } catch (error) {
+    if (!(error instanceof ConnectError) || error.code !== Code.FailedPrecondition ||
+      !/^duplicate requirement /u.test(error.rawMessage)) throw error;
+    const corrected = uniqueRequirementIds(spec);
+    if (corrected === spec || corrected.length + draft.target.length > MAX_SOURCE) throw error;
+    spec = corrected;
+    first = await runScience(science, `${spec}\n`, signal);
+  }
   if (!first || typeof first !== "object" || !("spec" in first) ||
     !first.spec || typeof first.spec !== "object" ||
     !("semantic_hash" in first.spec) ||
@@ -78,7 +111,7 @@ export async function prepareCadDraft(
     !("target" in first) || first.target !== null) {
     throw new ConnectError("A típusos specifikáció nem tervfüggetlen.", Code.FailedPrecondition);
   }
-  const source = `${draft.spec.trim()}\n${draft.target.replace(HASH_MARKER, first.spec.semantic_hash).trim()}\n`;
+  const source = `${spec}\n${draft.target.replace(HASH_MARKER, first.spec.semantic_hash).trim()}\n`;
   const complete = await runScience(science, source, signal);
   if (!complete || typeof complete !== "object" ||
     !("plan" in complete) || complete.plan !== null ||

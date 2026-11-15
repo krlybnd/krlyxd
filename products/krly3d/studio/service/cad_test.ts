@@ -84,3 +84,43 @@ Deno.test("typed target-only draft is bound to its spec and synthesized without 
     await Deno.remove(root, { recursive: true });
   }
 });
+
+Deno.test("duplicate requirement labels are repaired locally before typed synthesis", async () => {
+  const science = Deno.env.get("KRLYSCI_BIN");
+  if (!science) return;
+  const original = await Deno.readTextFile(new URL("../../../../cad-knowledge/cases/solid-ring.typ", import.meta.url));
+  const [rawSpec, rest] = original.split("#cad_plan(");
+  const spec = rawSpec.replace('require("outer",', 'require("positive",')
+    .replace('require("height",', 'require("positive",');
+  const target = `#cad_target(${rest.split("#cad_target(")[1]}`
+    .replace(/spec_hash: "[0-9a-f]{64}"/, 'spec_hash: "__SPEC_HASH__"');
+  const source = await prepareCadDraft({ spec, target }, new AbortController().signal, science);
+  assert(source.includes('require("positive",'), "first requirement retains its name");
+  assert(source.includes('require("positive#2",'), "second requirement gets a stable unique name");
+  assert(!source.includes("__SPEC_HASH__"), "target binds to the corrected spec hash");
+  const root = await Deno.makeTempDir({ prefix: "studio-cad-duplicate-test-" });
+  try {
+    const state = await new CadDocuments({ root, science }).apply(create(CadRequestSchema, {
+      sessionId: crypto.randomUUID(), action: "start", source,
+    }), new AbortController().signal);
+    assert(state.status === "tested" && state.mesh?.indices.length, "corrected requirements build a checked solid");
+  } finally {
+    await Deno.remove(root, { recursive: true });
+  }
+});
+
+Deno.test("typed CAD parser errors do not expose a temporary source path", async () => {
+  const science = Deno.env.get("KRLYSCI_BIN");
+  if (!science) return;
+  let message = "";
+  try {
+    await prepareCadDraft({
+      spec: '#cad_spec("bad", parameters: (R: 15mm), requirements: (require("positive", R > )))',
+      target: '#cad_target("bad", spec_hash: "__SPEC_HASH__", checks: (require_span("width", x, 2*R, 2*R)))',
+    }, new AbortController().signal, science);
+  } catch (error) {
+    message = error instanceof Error ? error.message : String(error);
+  }
+  assert(message.length > 0 && !message.includes("/tmp/studio-cad-draft-"),
+    "the parser error must be visible without the transient workspace path");
+});

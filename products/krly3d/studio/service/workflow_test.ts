@@ -45,15 +45,20 @@ const question = {
   }],
 };
 
-Deno.test("text build sends requirements through typed synthesis, not a feature recipe", () =>
+Deno.test("text build repairs duplicate labels locally without a second paid expert call", () =>
   isolated(async () => {
     if (!Deno.env.get("KRLYSCI_BIN")) return;
     configureLiteLLM();
     const original = await Deno.readTextFile(new URL("../../../../cad-knowledge/cases/solid-ring.typ", import.meta.url));
-    const spec = original.split("#cad_plan(")[0];
+    const spec = original.split("#cad_plan(")[0]
+      .replace('require("outer",', 'require("positive",')
+      .replace('require("height",', 'require("positive",');
     const target = `#cad_target(${original.split("#cad_target(")[1]}`
       .replace(/spec_hash: "[0-9a-f]{64}"/, 'spec_hash: "__SPEC_HASH__"');
-    globalThis.fetch = () => Promise.resolve(Response.json({
+    let providerCalls = 0;
+    globalThis.fetch = () => {
+      providerCalls++;
+      return Promise.resolve(Response.json({
       choices: [{ finish_reason: "tool_calls", message: { tool_calls: [{
         type: "function", function: { name: "studio_expert", arguments: JSON.stringify({
           reply: "A gyűrű specifikációja elkészült.", summary: "Típusos cél keresése.",
@@ -62,13 +67,16 @@ Deno.test("text build sends requirements through typed synthesis, not a feature 
         }) },
       }] } }],
       usage: { prompt_tokens: 20, completion_tokens: 10, total_tokens: 30 },
-    }, { headers: { "x-litellm-response-cost": "0.000024" } }));
+      }, { headers: { "x-litellm-response-cost": "0.000024" } }));
+    };
     const events: WorkflowEvent[] = [];
     const result = await workflow({ ...input, mode: "build", text: "15 mm outer, 6 mm inner, 8 mm tall ring" },
       new AbortController().signal, async (event) => { events.push(event); });
     assert(result.reply.includes("típusos követelményekből"));
+    equal(providerCalls, 1);
     assert(events.some((event) => event.kind === "mesh" && event.mesh?.indices.length));
-    assert(events.some((event) => event.artifact?.name === "design.typ"));
+    const design = events.find((event) => event.artifact?.name === "design.typ")?.artifact;
+    assert(design?.bytes && new TextDecoder().decode(design.bytes).includes('require("positive#2",'));
     assert(!events.some((event) => event.artifact?.name === "design.recipe.json"));
   }));
 function decision(action: string) {

@@ -61,6 +61,8 @@ require_span("width", x, width, width),
 require_material("inside", x, y, z, true)))
 Expressions can use typed parameters, mm units, arithmetic and pi. Use meaningful
 independent checks for the requested material shape, not only volume or title.
+Every require(...) label must be unique within its declaration: use distinct
+names such as "outer_positive", "inner_positive" and "height_positive".
 This first bounded search supports disk, rectangle and annulus XY regions,
 +Z extrusion, and union/difference of at most two solids with up to six positive
 length parameters. It does not support displaced centres, hole patterns, rigid
