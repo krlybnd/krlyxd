@@ -77,6 +77,7 @@ fn endpoint(invocation: &Invocation) -> Result<Box<dyn Endpoint>, String> {
 fn session(invocation: &Invocation, peers: &[SharedPeer]) -> Result<Session, String> {
     let mut builder = krly3d_std::standard();
     krly3d_view::register(&mut builder);
+    builder.plugin::<krly3d_view::ports::render::Render>(krly3d_view_mesh::Raster);
     krly3d_exchange::register(&mut builder);
     for peer in peers {
         builder.plugin::<krly3d_kernel::ports::peer::Peer>(PeerAdapter::new(peer));

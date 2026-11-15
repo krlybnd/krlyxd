@@ -38,7 +38,7 @@ fn decode(bytes: &[u8]) -> Result<Gray, Error> {
         ColorType::Rgba => 4,
         ColorType::Indexed => return Err(Error::format("a palette was left unexpanded")),
     };
-    let values = buffer[..frame.buffer_size()].chunks_exact(channels).map(|pixel| grey(pixel)).collect();
+    let values = buffer[..frame.buffer_size()].chunks_exact(channels).map(grey).collect();
     Gray::new(width, height, values)
 }
 

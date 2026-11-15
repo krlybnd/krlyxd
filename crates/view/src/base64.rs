@@ -5,6 +5,26 @@ const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 
 pub fn encode(bytes: &[u8]) -> String {
     let mut text = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    append(&mut text, bytes);
+    text
+}
+
+/// Split on complete triples so that checking never inserts padding inside the text.
+pub(crate) fn encode_checked(
+    bytes: &[u8],
+    check: &impl Fn() -> Result<(), krly3d_core::Error>,
+) -> Result<String, krly3d_core::Error> {
+    check()?;
+    let mut text = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for batch in bytes.chunks(3 * 1024) {
+        check()?;
+        append(&mut text, batch);
+    }
+    check()?;
+    Ok(text)
+}
+
+fn append(text: &mut String, bytes: &[u8]) {
     for group in bytes.chunks(3) {
         // Three bytes are four digits of six bits; a last group that is short is padded.
         let mut word = 0_u32;
@@ -19,7 +39,6 @@ pub fn encode(bytes: &[u8]) -> String {
             }
         }
     }
-    text
 }
 
 #[cfg(test)]
@@ -49,5 +68,29 @@ mod tests {
         let encoded = encode(&[0x89, b'P', b'N', b'G', b'\r', b'\n', 0x1a, b'\n', 0, 0, 0, 13]);
 
         assert_eq!(encoded, "iVBORw0KGgoAAAAN");
+    }
+
+    #[test]
+    fn checked_batches_preserve_padding_and_stop_mid_encoding() {
+        use krly3d_core::{CallStop, Error};
+        use std::cell::Cell;
+
+        let bytes: Vec<u8> = (0..7000).map(|at| at as u8).collect();
+        for size in [0, 1, 2, 3, 3071, 3072, 3073, 6145, 7000] {
+            assert_eq!(super::encode_checked(&bytes[..size], &|| Ok(())).unwrap(), encode(&bytes[..size]));
+        }
+        for stop in [CallStop::Cancelled, CallStop::DeadlineExceeded] {
+            let checks = Cell::new(0);
+            let result = super::encode_checked(&bytes, &|| {
+                checks.set(checks.get() + 1);
+                if checks.get() == 3 {
+                    Err(Error::from(stop))
+                } else {
+                    Ok(())
+                }
+            });
+            assert_eq!(result, Err(Error::from(stop)));
+            assert_eq!(checks.get(), 3);
+        }
     }
 }

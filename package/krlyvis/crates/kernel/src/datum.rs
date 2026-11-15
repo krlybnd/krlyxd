@@ -59,7 +59,24 @@ impl Datum {
             "pixels" => Some(shape.pixels as f64),
             "width" => Some(span(0)),
             "height" => Some(span(1)),
-            "area" => Some(area(&world)),
+            "area" => Some(
+                area(&world)
+                    - shape
+                        .polygons
+                        .iter()
+                        .skip(1)
+                        .map(|polygon| {
+                            let points: Vec<_> = polygon
+                                .iter()
+                                .map(|pixel| match self {
+                                    Self::Placed { frame, .. } => frame.world(pixel),
+                                    _ => [pixel.x, pixel.y],
+                                })
+                                .collect();
+                            area(&points)
+                        })
+                        .sum::<f64>(),
+            ),
             _ => None,
         }
     }
@@ -118,12 +135,46 @@ impl Datum {
                         Value::List(frame.axes.iter().map(|axis| Value::from(AXIS_NAMES[*axis])).collect()),
                     ),
                     ("unit", Value::from(frame.unit())),
+                    ("material_area", Value::from(self.measure("area").unwrap_or(0.0))),
+                    // Coordinates are a polyline derived from pixels (possibly simplified),
+                    // never a declaration of subpixel measurement accuracy. The complete
+                    // polygons/pixels below are the replayable reference snapshot.
+                    (
+                        "evidence",
+                        Value::map([
+                            ("kind", "raster".into()),
+                            ("source", "krlyvis.placed-pixel-outline/1".into()),
+                            ("uncertainty", "unknown".into()),
+                            ("pixel_unit", frame.unit().into()),
+                            ("threshold", shape.threshold.into()),
+                            (
+                                "coordinates",
+                                "pixel-derived polyline; simplification and image measurement error unknown"
+                                    .into(),
+                            ),
+                        ]),
+                    ),
                     ("polygons", Value::List(shape.polygons.iter().map(|polygon| world(polygon)).collect())),
                     ("pixels", Value::List(shape.polygons.iter().map(|polygon| pixels(polygon)).collect())),
                 ])
             }
         }
     }
+}
+
+fn pair(numbers: [f64; 2]) -> Value {
+    Value::List(numbers.iter().map(|number| Value::from(*number)).collect())
+}
+
+/// The area a closed polygon encloses, whichever way it runs.
+fn area(polygon: &[[f64; 2]]) -> f64 {
+    let doubled: f64 = (0..polygon.len())
+        .map(|i| {
+            let (a, b) = (polygon[i], polygon[(i + 1) % polygon.len()]);
+            a[0] * b[1] - b[0] * a[1]
+        })
+        .sum();
+    0.5 * doubled.abs()
 }
 
 #[cfg(test)]
@@ -134,6 +185,27 @@ mod tests {
     use crate::ports::outline::Shape;
     use std::sync::Arc;
 
+    #[test]
+    fn material_area_subtracts_holes_and_scales_with_frame() {
+        let rect = |low: f64, high: f64| {
+            vec![Pixel::new(low, low), Pixel::new(high, low), Pixel::new(high, high), Pixel::new(low, high)]
+        };
+        let shape = Arc::new(Shape {
+            polygons: vec![rect(0.0, 4.0), rect(1.0, 3.0)],
+            pixels: 12,
+            threshold: 0.5,
+            dark: true,
+        });
+        assert_eq!(Datum::Outline { shape: Arc::clone(&shape) }.measure("area"), Some(12.0));
+        let frame = Frame::through(
+            View::Top,
+            [0, 1],
+            (Pixel::new(0.0, 0.0), [0.0, 0.0]),
+            (Pixel::new(4.0, 4.0), [1.0, 1.0]),
+        )
+        .unwrap();
+        assert_eq!(Datum::Placed { shape, frame }.measure("area"), Some(0.75));
+    }
     #[test]
     fn a_placed_outline_tells_its_extent_across_a_station() {
         // A diamond of pixels, placed one pixel to one unit in a side view.
@@ -155,19 +227,4 @@ mod tests {
         assert!((low + 15.0).abs() < 1e-9 && (high + 5.0).abs() < 1e-9, "{low} {high}");
         assert!(placed.extent_at(1, 5.0).is_none() && placed.extent_at(0, 25.0).is_none());
     }
-}
-
-fn pair(numbers: [f64; 2]) -> Value {
-    Value::List(numbers.iter().map(|number| Value::from(*number)).collect())
-}
-
-/// The area a closed polygon encloses, whichever way it runs.
-fn area(polygon: &[[f64; 2]]) -> f64 {
-    let doubled: f64 = (0..polygon.len())
-        .map(|i| {
-            let (a, b) = (polygon[i], polygon[(i + 1) % polygon.len()]);
-            a[0] * b[1] - b[0] * a[1]
-        })
-        .sum();
-    0.5 * doubled.abs()
 }

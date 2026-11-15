@@ -1,0 +1,61 @@
+# Standalone optional profile. Does not modify an existing gateway.
+# Keep the Osirsys model aliases stable; supply credentials in the proxy process.
+model_list:
+  - model_name: eu.anthropic.claude-sonnet-4-6
+    litellm_params:
+      model: bedrock/converse/eu.anthropic.claude-sonnet-4-6
+      aws_region_name: eu-central-1
+      rpm: 60
+      tpm: 200000
+    model_info:
+      mode: chat
+  - model_name: eu.anthropic.claude-haiku-4-5-20251001-v1:0
+    litellm_params:
+      model: bedrock/converse/eu.anthropic.claude-haiku-4-5-20251001-v1:0
+      aws_region_name: eu-central-1
+      rpm: 120
+      tpm: 200000
+    model_info:
+      mode: chat
+  - model_name: amazon.titan-embed-text-v2:0
+    litellm_params:
+      model: bedrock/amazon.titan-embed-text-v2:0
+      aws_region_name: eu-central-1
+    model_info:
+      mode: embedding
+  - model_name: my-grok-fast
+    litellm_params:
+      model: openai/grok-4.20-non-reasoning
+      api_base: https://api.x.ai/v1
+      api_key: os.environ/XAI_API_KEY
+      drop_params: true
+    model_info:
+      mode: chat
+  - model_name: my-grok
+    litellm_params:
+      model: openai/grok-4.7
+      api_base: https://api.x.ai/v1
+      api_key: os.environ/XAI_API_KEY
+      drop_params: true
+    model_info:
+      mode: chat
+  # New explicit transcription route; the reference chat aliases do not supply STT.
+  - model_name: speech-to-text
+    litellm_params:
+      model: openai/whisper-1
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: audio_transcription
+
+litellm_settings:
+  num_retries: 0
+  request_timeout: 45
+  store_model_in_db: false
+  set_verbose: false
+  turn_off_message_logging: true
+  success_callback: []
+  failure_callback: []
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_prompts_in_spend_logs: false

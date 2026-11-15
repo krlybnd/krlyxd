@@ -1,0 +1,577 @@
+{
+  "version": 1,
+  "units": "mm",
+  "bounds": {
+    "min": [
+      -32,
+      -25,
+      -2
+    ],
+    "max": [
+      54,
+      21,
+      107
+    ]
+  },
+  "cell_size": 0.65,
+  "nodes": [
+    {
+      "type": "ellipsoid",
+      "center": [
+        0,
+        0,
+        28
+      ],
+      "radii": [
+        19,
+        14,
+        24
+      ]
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        0,
+        -1,
+        59
+      ],
+      "radii": [
+        24,
+        17,
+        20
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 0,
+      "b": 1,
+      "k": 6
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        -12,
+        -7,
+        4.5
+      ],
+      "radii": [
+        9,
+        13,
+        5
+      ],
+      "rotation": [
+        0,
+        0,
+        -14
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 2,
+      "b": 3,
+      "k": 3
+    },
+    {
+      "type": "capsule",
+      "a": [
+        -16,
+        -6,
+        39
+      ],
+      "b": [
+        -13,
+        -15,
+        24
+      ],
+      "radius": 5.5
+    },
+    {
+      "type": "smooth_union",
+      "a": 4,
+      "b": 5,
+      "k": 4
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        -17,
+        0,
+        82.5
+      ],
+      "radii": [
+        4.9,
+        4.2,
+        20
+      ],
+      "rotation": [
+        0,
+        -23,
+        -2
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 6,
+      "b": 7,
+      "k": 3
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        -16,
+        -13,
+        54.5
+      ],
+      "radii": [
+        5,
+        2.7,
+        4.5
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 8,
+      "b": 9,
+      "k": 1
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        -9,
+        -16,
+        63
+      ],
+      "radii": [
+        3.1,
+        1.9,
+        4
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 10,
+      "b": 11,
+      "k": 0.8
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        -9.7,
+        -17.65,
+        64.4
+      ],
+      "radii": [
+        0.85,
+        0.7,
+        1.1
+      ]
+    },
+    {
+      "type": "subtract",
+      "a": 12,
+      "b": 13
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        12,
+        -7,
+        4.5
+      ],
+      "radii": [
+        9,
+        13,
+        5
+      ],
+      "rotation": [
+        0,
+        0,
+        14
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 14,
+      "b": 15,
+      "k": 3
+    },
+    {
+      "type": "capsule",
+      "a": [
+        16,
+        -6,
+        39
+      ],
+      "b": [
+        13,
+        -15,
+        24
+      ],
+      "radius": 5.5
+    },
+    {
+      "type": "smooth_union",
+      "a": 16,
+      "b": 17,
+      "k": 4
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        17,
+        0,
+        82.5
+      ],
+      "radii": [
+        4.9,
+        4.2,
+        20
+      ],
+      "rotation": [
+        0,
+        23,
+        2
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 18,
+      "b": 19,
+      "k": 3
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        16,
+        -13,
+        54.5
+      ],
+      "radii": [
+        5,
+        2.7,
+        4.5
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 20,
+      "b": 21,
+      "k": 1
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        9,
+        -16,
+        63
+      ],
+      "radii": [
+        3.1,
+        1.9,
+        4
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 22,
+      "b": 23,
+      "k": 0.8
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        8.3,
+        -17.65,
+        64.4
+      ],
+      "radii": [
+        0.85,
+        0.7,
+        1.1
+      ]
+    },
+    {
+      "type": "subtract",
+      "a": 24,
+      "b": 25
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        0,
+        -18,
+        57
+      ],
+      "radii": [
+        2.1,
+        1.5,
+        1.4
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 26,
+      "b": 27,
+      "k": 0.6
+    },
+    {
+      "type": "capsule",
+      "a": [
+        -4,
+        -16.5,
+        53
+      ],
+      "b": [
+        -2,
+        -17.1,
+        51.8
+      ],
+      "radius": 0.85
+    },
+    {
+      "type": "subtract",
+      "a": 28,
+      "b": 29
+    },
+    {
+      "type": "capsule",
+      "a": [
+        -2,
+        -17.1,
+        51.8
+      ],
+      "b": [
+        0,
+        -17.25,
+        52.6
+      ],
+      "radius": 0.85
+    },
+    {
+      "type": "subtract",
+      "a": 30,
+      "b": 31
+    },
+    {
+      "type": "capsule",
+      "a": [
+        0,
+        -17.25,
+        52.6
+      ],
+      "b": [
+        2,
+        -17.1,
+        51.8
+      ],
+      "radius": 0.85
+    },
+    {
+      "type": "subtract",
+      "a": 32,
+      "b": 33
+    },
+    {
+      "type": "capsule",
+      "a": [
+        2,
+        -17.1,
+        51.8
+      ],
+      "b": [
+        4,
+        -16.5,
+        53
+      ],
+      "radius": 0.85
+    },
+    {
+      "type": "subtract",
+      "a": 34,
+      "b": 35
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        19.5,
+        10.0,
+        23.5
+      ],
+      "half_size": [
+        3.5,
+        2.8,
+        9.300537618869138
+      ],
+      "radius": 0.9,
+      "rotation": [
+        0,
+        53.74616226255522,
+        0
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 36,
+      "b": 37,
+      "k": 1.2
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        23.5,
+        10.0,
+        33.5
+      ],
+      "half_size": [
+        3.5,
+        2.8,
+        5.70087712549569
+      ],
+      "radius": 0.9,
+      "rotation": [
+        0,
+        -37.874983651098205,
+        0
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 38,
+      "b": 39,
+      "k": 1.2
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        28.5,
+        10.0,
+        44.5
+      ],
+      "half_size": [
+        3.5,
+        2.8,
+        10.700467279516348
+      ],
+      "radius": 0.9,
+      "rotation": [
+        0,
+        52.59464336859145,
+        0
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 40,
+      "b": 41,
+      "k": 1.2
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        33.0,
+        10.0,
+        56.5
+      ],
+      "half_size": [
+        5,
+        2.8,
+        6.800735254367722
+      ],
+      "radius": 0.9,
+      "rotation": [
+        0,
+        -36.02737338510361,
+        0
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 42,
+      "b": 43,
+      "k": 1.2
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        36.0,
+        10.0,
+        67.5
+      ],
+      "half_size": [
+        5,
+        2.8,
+        8.902246907382429
+      ],
+      "radius": 0.9,
+      "rotation": [
+        0,
+        51.84277341263094,
+        0
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 44,
+      "b": 45,
+      "k": 1.2
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        0,
+        12.5,
+        33
+      ],
+      "radii": [
+        11,
+        2,
+        1.8
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 46,
+      "b": 47,
+      "k": 0.8
+    },
+    {
+      "type": "ellipsoid",
+      "center": [
+        0,
+        10.5,
+        41
+      ],
+      "radii": [
+        11,
+        2,
+        1.8
+      ]
+    },
+    {
+      "type": "smooth_union",
+      "a": 48,
+      "b": 49,
+      "k": 0.8
+    },
+    {
+      "type": "rounded_box",
+      "center": [
+        0,
+        0,
+        80
+      ],
+      "half_size": [
+        100,
+        100,
+        80
+      ],
+      "radius": 0
+    },
+    {
+      "type": "intersection",
+      "a": 50,
+      "b": 51
+    }
+  ],
+  "root": 52
+}

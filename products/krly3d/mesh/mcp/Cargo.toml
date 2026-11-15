@@ -1,0 +1,28 @@
+[package]
+name = "krly3d-mesh-mcp"
+description = "Independent MCP stdio adapter for cancellable mesh operations"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-mesh-mcp"
+path = "src/main.rs"
+
+[dependencies]
+krly-mcp-json = { path = "../../../../crates/mcp-json" }
+krly3d-mesh = { path = "../api" }
+krly3d-mesh-engine = { path = "../engine" }
+krlyxd = { path = "../../../../crates/krlyxd" }
+serde_json = { workspace = true, features = ["raw_value"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[dev-dependencies]
+krly3d-core = { path = "../../../../crates/core" }
+krly3d-kernel = { path = "../../../../crates/kernel" }
+krly3d-std = { path = "../../../../crates/std" }
+
+[lints]
+workspace = true

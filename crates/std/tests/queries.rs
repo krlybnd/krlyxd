@@ -304,6 +304,87 @@ fn a_batch_may_ask_right_after_it_makes() {
 }
 
 #[test]
+fn mesh_preserves_legacy_text_defaults_exactness_and_flattened_triangles() {
+    let mut session = session();
+    made(&mut session, "box", Params::new().with("id", "part").with("w", 6.0).with("d", 4.0).with("h", 2.0));
+    let default = session.call("mesh", &Params::new().with("node", "part"));
+    let explicit = session
+        .call("mesh", &Params::new().with("node", "part").with("tolerance", 0.05).with("triangles", false));
+    assert_eq!(default, explicit);
+    assert!(default.ok);
+    assert_eq!(default.text, "12 triangles, 8 points, volume 48, area 88, 0 open sides");
+    assert_eq!(default.exact, Exactness::Sampled { samples: 12 });
+    assert_eq!(
+        default.data,
+        Value::map([
+            ("area", 88.0.into()),
+            ("open", 0.0.into()),
+            ("points", 8.0.into()),
+            ("triangles", 12.0.into()),
+            ("volume", 48.0.into())
+        ])
+    );
+    assert_eq!(session.call("mesh", &Params::new().with("node", "part@1").with("tolerance", 0.1)), default);
+    let full = session.call("mesh", &Params::new().with("node", "part").with("triangles", true));
+    assert!(full.ok);
+    assert_eq!(full.text, default.text);
+    assert_eq!(
+        entry(&full.data, "coordinates"),
+        &Value::List(
+            [
+                -3., -2., 0., 3., -2., 0., -3., -2., 2., 3., -2., 2., 3., 2., 0., 3., 2., 2., -3., 2., 0.,
+                -3., 2., 2.
+            ]
+            .into_iter()
+            .map(Value::from)
+            .collect()
+        )
+    );
+    assert_eq!(
+        entry(&full.data, "corners"),
+        &Value::List(
+            [
+                6., 1., 0., 1., 6., 4., 3., 5., 7., 7., 2., 3., 6., 0., 2., 2., 7., 6., 0., 1., 3., 3., 2.,
+                0., 1., 4., 5., 5., 3., 1., 4., 6., 7., 7., 5., 4.
+            ]
+            .into_iter()
+            .map(Value::from)
+            .collect()
+        )
+    );
+}
+
+#[test]
+fn mesh_preserves_legacy_missing_node_tolerance_type_and_unknown_parameter_errors() {
+    let mut session = session();
+    made(&mut session, "box", Params::new().with("id", "part").with("w", 6.0).with("d", 4.0).with("h", 2.0));
+    for (params, kind, message) in [
+        (Params::new().with("node", "missing"), "not found", "not found: there is no node `missing`"),
+        (
+            Params::new().with("node", "part").with("tolerance", 0.0),
+            "input",
+            "input: a mesh tolerance must be above the length tolerance, got 0",
+        ),
+        (
+            Params::new().with("node", "part").with("triangles", "yes"),
+            "input",
+            "input: `mesh`: `triangles` must be true or false, got Text(\"yes\")",
+        ),
+        (
+            Params::new().with("node", "part").with("extra", 2.0),
+            "input",
+            "input: `mesh` has no parameter `extra`; it takes node, tolerance, triangles",
+        ),
+    ] {
+        let reply = session.call("mesh", &params);
+        assert!(!reply.ok);
+        assert_eq!(reply.text, message);
+        assert_eq!(reply.data, Value::map([("error", Value::from(kind))]));
+        assert_eq!(reply.exact, Exactness::Exact);
+    }
+}
+
+#[test]
 fn every_node_of_every_model_file_answers_every_question() {
     let folder = std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("../../models");
     let mut files: Vec<_> = std::fs::read_dir(&folder).unwrap().map(|entry| entry.unwrap().path()).collect();

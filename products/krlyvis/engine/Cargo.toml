@@ -1,0 +1,18 @@
+[package]
+name = "krlyvis-engine"
+description = "Stateless drawing evidence through the existing krlyvis providers"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly2d-api.workspace = true
+krlyvis-api = { path = "../api" }
+krlyvis-kernel = { workspace = true }
+krlyvis-std = { workspace = true }
+krly3d-core = { workspace = true }
+serde_json = { workspace = true }
+sha2 = "0.10"
+
+[lints]
+workspace = true

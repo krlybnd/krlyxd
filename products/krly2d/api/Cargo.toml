@@ -1,0 +1,12 @@
+[package]
+name = "krly2d-api"
+description = "Bounded immutable native planar geometry contract"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krlyxd = { workspace = true }
+
+[lints]
+workspace = true

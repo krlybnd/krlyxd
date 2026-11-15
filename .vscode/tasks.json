@@ -1,0 +1,29 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Studio: Deno service",
+      "type": "shell",
+      "command": "npm",
+      "args": ["--prefix", "products/krly3d/studio", "run", "service"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Studio: React UI",
+      "type": "shell",
+      "command": "npm",
+      "args": ["--prefix", "products/krly3d/studio", "run", "dev"],
+      "isBackground": true,
+      "problemMatcher": []
+    },
+    {
+      "label": "Studio: build",
+      "type": "shell",
+      "command": "npm",
+      "args": ["--prefix", "products/krly3d/studio", "run", "build"],
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

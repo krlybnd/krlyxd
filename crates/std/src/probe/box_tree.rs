@@ -7,7 +7,7 @@
 
 use super::{face_hits, settled};
 use krly3d_core::math::bounds::Bounds;
-use krly3d_core::{Attempt, Id};
+use krly3d_core::{Attempt, Error, Id};
 use krly3d_kernel::ports::probe::{Hit, Probe, ProbeRequest, Ray, RAYS};
 use krly3d_kernel::topo::{face_bounds, Body, FaceId};
 use krly3d_kernel::{Context, Plugin};
@@ -29,19 +29,27 @@ impl Plugin<Probe> for BoxTree {
             Attempt::Declined(reason) => return Attempt::Declined(reason),
             Attempt::Failed(error) => return Attempt::Failed(error),
         };
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
         let mut per_ray = Vec::with_capacity(request.rays.len());
         let (mut faces, mut pending) = (Vec::new(), Vec::new());
         for ray in &request.rays {
-            tree.pierced(ray, &mut faces, &mut pending);
+            if let Err(error) = tree.pierced(cx, ray, &mut faces, &mut pending) {
+                return Attempt::Failed(error);
+            }
             let mut hits = Vec::new();
             for face in &faces {
+                if let Err(error) = cx.check_control() {
+                    return Attempt::Failed(error);
+                }
                 if let Err(unanswered) = face_hits(cx, &request.body, *face, ray, &mut hits) {
                     return unanswered;
                 }
             }
             per_ray.push(settled(hits, ray, cx.accuracy()));
         }
-        Attempt::Done(per_ray)
+        cx.publish_control(|| per_ray).into()
     }
 }
 
@@ -65,6 +73,9 @@ enum Below {
 
 impl Tree {
     fn over(cx: &Context, body: &Arc<Body>) -> Attempt<Self> {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
         // A hit counts when it lies within the length tolerance of an edge, so a face
         // reaches that far beyond its exact box; as much again covers the round-off of
         // the box test itself.
@@ -72,6 +83,9 @@ impl Tree {
         let mut tree = Self { nodes: Vec::new(), unbounded: Vec::new() };
         let mut boxes = Vec::with_capacity(body.faces.len());
         for face in 0..body.faces.len() {
+            if let Err(error) = cx.check_control() {
+                return Attempt::Failed(error);
+            }
             match face_bounds(cx, body, face) {
                 Attempt::Done(bounds) if bounds.is_empty() => tree.unbounded.push(face),
                 Attempt::Done(bounds) => boxes.push((face, bounds.grown(margin))),
@@ -80,39 +94,58 @@ impl Tree {
             }
         }
         if !boxes.is_empty() {
-            tree.grow(boxes);
+            if let Err(error) = tree.grow(cx, boxes) {
+                return Attempt::Failed(error);
+            }
         }
         Attempt::Done(tree)
     }
 
     /// Adds the node around `boxes` with everything below it, and returns its number.
-    fn grow(&mut self, mut boxes: Vec<(FaceId, Bounds)>) -> usize {
-        let bounds = boxes.iter().fold(Bounds::empty(), |around, (_, one)| around.union(one));
+    fn grow(&mut self, cx: &Context, mut boxes: Vec<(FaceId, Bounds)>) -> Result<usize, Error> {
+        cx.check_control()?;
+        let mut bounds = Bounds::empty();
+        for batch in boxes.chunks(64) {
+            cx.check_control()?;
+            bounds = batch.iter().fold(bounds, |around, (_, one)| around.union(one));
+        }
         let node = self.nodes.len();
         self.nodes.push(Node { bounds, below: Below::Faces(Vec::new()) });
         if boxes.len() <= LEAF {
             self.nodes[node].below = Below::Faces(boxes.into_iter().map(|(face, _)| face).collect());
-            return node;
+            return Ok(node);
         }
         // Halved at the median along the direction in which the node is longest.
         let size = bounds.size();
         let axis = (0..3).max_by(|a, b| size[*a].total_cmp(&size[*b])).unwrap_or(0);
         boxes.sort_by(|a, b| a.1.center()[axis].total_cmp(&b.1.center()[axis]));
+        cx.check_control()?;
         let far = boxes.split_off(boxes.len() / 2);
-        let near = self.grow(boxes);
-        let far = self.grow(far);
+        let near = self.grow(cx, boxes)?;
+        let far = self.grow(cx, far)?;
         self.nodes[node].below = Below::Halves(near, far);
-        node
+        Ok(node)
     }
 
     /// Fills `faces` with the faces whose boxes the line of the ray passes through.
     /// `pending` is working space, kept by the caller from ray to ray.
-    fn pierced(&self, ray: &Ray, faces: &mut Vec<FaceId>, pending: &mut Vec<usize>) {
+    fn pierced(
+        &self,
+        cx: &Context,
+        ray: &Ray,
+        faces: &mut Vec<FaceId>,
+        pending: &mut Vec<usize>,
+    ) -> Result<(), Error> {
+        cx.check_control()?;
         faces.clear();
-        faces.extend_from_slice(&self.unbounded);
+        for batch in self.unbounded.chunks(64) {
+            cx.check_control()?;
+            faces.extend_from_slice(batch);
+        }
         pending.clear();
         pending.extend((!self.nodes.is_empty()).then_some(0));
         while let Some(node) = pending.pop() {
+            cx.check_control()?;
             let node = &self.nodes[node];
             if node.bounds.line(&ray.origin, &ray.direction).is_none() {
                 continue;
@@ -125,6 +158,7 @@ impl Tree {
         // Where two faces share a hit on their common edge, the one asked first reports
         // it; asking in face order keeps that the same as in the reference probe.
         faces.sort_unstable();
+        cx.check_control()
     }
 }
 
@@ -284,6 +318,53 @@ mod tests {
         assert_eq!(before, Attempt::declined("no tree was kept"));
         assert!(Arc::ptr_eq(&kept, &kept_later));
         assert_eq!(first, second);
+    }
+
+    #[test]
+    fn an_expired_partial_tree_is_not_cached_and_a_fresh_call_retries() {
+        use krly3d_core::{CallControl, CallStop, Clock, Error};
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use std::time::Duration;
+
+        struct Expiring {
+            checks: AtomicUsize,
+            at: AtomicUsize,
+        }
+        impl Clock for Expiring {
+            fn now(&self) -> Duration {
+                let check = self.checks.fetch_add(1, Ordering::SeqCst) + 1;
+                Duration::from_secs(u64::from(check >= self.at.load(Ordering::SeqCst)))
+            }
+        }
+
+        let base = context();
+        let body = made(&base, "box", Params::new().with("w", 60.0).with("d", 40.0).with("h", 10.0), &[]);
+        let clock = Arc::new(Expiring { checks: AtomicUsize::new(0), at: AtomicUsize::new(usize::MAX) });
+        let control = Arc::new(CallControl::with_deadline(clock.clone(), Duration::from_secs(1)));
+        let controlled = base.with_call_control(control);
+        // Measure one real face. Stop at the start of the next face in Tree::over,
+        // after the first box was produced but before the tree can be published.
+        krly3d_kernel::topo::face_bounds(&controlled, &body, 0).into_result().unwrap();
+        let first_face = clock.checks.swap(0, Ordering::SeqCst);
+        clock.at.store(first_face + 4, Ordering::SeqCst);
+        let request = ProbeRequest {
+            body: Arc::clone(&body),
+            rays: vec![Ray { origin: Point3::new(-100.0, 0.0, 5.0), direction: Vec3::x() }],
+        };
+        assert_eq!(
+            BoxTree.call(&controlled, &request),
+            Attempt::Failed(Error::from(CallStop::DeadlineExceeded))
+        );
+        assert_eq!(
+            base.derived::<Tree>(&body, || Attempt::declined("no partial tree")).map(|_| ()),
+            Attempt::declined("no partial tree")
+        );
+        let retry = base.with_call_control(Arc::new(CallControl::new()));
+        assert_eq!(BoxTree.call(&retry, &request), Exhaustive.call(&base, &request));
+        assert!(matches!(
+            base.derived::<Tree>(&body, || Attempt::declined("tree missing")),
+            Attempt::Done(_)
+        ));
     }
 
     #[test]

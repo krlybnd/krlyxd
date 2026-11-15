@@ -1,0 +1,36 @@
+# Studio aliases keep application code independent of upstream model names.
+model_list:
+  - model_name: studio-fast
+    litellm_params:
+      model: openai/gpt-4.1-mini
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: chat
+  - model_name: studio-image-search
+    litellm_params:
+      model: openai/gpt-6-astra
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: chat
+  - model_name: studio-speech
+    litellm_params:
+      model: openai/gpt-transcribe
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: audio_transcription
+  - model_name: studio-embedding
+    litellm_params:
+      model: openai/text-embedding-3-small
+      api_key: os.environ/OPENAI_API_KEY
+    model_info:
+      mode: embedding
+litellm_settings:
+  num_retries: 0
+  request_timeout: 45
+  set_verbose: false
+  turn_off_message_logging: true
+  success_callback: []
+  failure_callback: []
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  store_prompts_in_spend_logs: false

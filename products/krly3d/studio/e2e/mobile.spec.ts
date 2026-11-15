@@ -1,0 +1,31 @@
+import { expect } from '@playwright/test';
+import { completedRun, expectNoHorizontalOverflow, expectRendered, nativeMesh, rpcResponse, test } from './helpers.ts';
+
+test('mobile tabs keep a real native result and its controls usable without horizontal overflow', async ({ page }) => {
+  const tabs = page.getByRole('navigation', { name: 'Munkaterületek' });
+  const viewport = page.getByRole('region', { name: 'Modell és 3D munkatér' });
+  const chat = page.getByRole('complementary', { name: 'Beszélgetés és végrehajtás' });
+  await expect(tabs).toBeVisible();
+  await expect(viewport).toBeVisible();
+  await expect(chat).toBeHidden();
+  await expectNoHorizontalOverflow(page);
+  const response = rpcResponse(page, 'Run');
+  await page.getByRole('button', { name: 'Demó betöltése', exact: true }).click();
+  await tabs.getByRole('button', { name: 'Beszélgetés', exact: true }).click();
+  const events = await completedRun(await response);
+  const mesh = nativeMesh(events);
+  await expect(chat).toBeVisible();
+  await expect(viewport).toBeHidden();
+  await expect(page.getByRole('button', { name: /Végrehajtás befejezve/ })).toBeVisible();
+  const artifact = page.getByRole('button', { name: /^plate-with-hole\.k3d/ });
+  await expect(artifact).toBeVisible();
+  await expect(page.getByRole('textbox', { name: 'Üzenet a Studiónak' })).toBeInViewport();
+  await expectNoHorizontalOverflow(page);
+  await tabs.getByRole('button', { name: 'Modell', exact: true }).click();
+  await expect(chat).toBeHidden();
+  await expectRendered(page, mesh);
+  await page.getByRole('button', { name: 'Modell illesztése', exact: true }).click();
+  await page.getByRole('button', { name: 'Drótváz', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Drótváz', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expectNoHorizontalOverflow(page);
+});

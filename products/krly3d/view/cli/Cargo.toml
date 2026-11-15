@@ -1,0 +1,18 @@
+[package]
+name = "krly3d-view-cli"
+description = "View rendering and bounded operations over a single-shot command line"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-view"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-view-api = { path = "../api" }
+krly3d-view-renderer = { path = "../renderer" }
+serde_json = "1.0"
+
+[lints]
+workspace = true

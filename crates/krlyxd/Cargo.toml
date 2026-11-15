@@ -1,0 +1,12 @@
+[package]
+name = "krlyxd"
+description = "Domain-neutral identifiers, numerical primitives, clocks and cooperative call control"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+nalgebra = { workspace = true }
+
+[lints]
+workspace = true

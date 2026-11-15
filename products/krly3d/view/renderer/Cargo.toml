@@ -1,0 +1,22 @@
+[package]
+name = "krly3d-view-renderer"
+description = "Typed local view execution over pinned B-rep snapshots"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krlyxd = { workspace = true }
+krly3d-view-api = { workspace = true }
+krly3d-brep-engine = { workspace = true }
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+krly3d-view = { workspace = true }
+krly3d-view-mesh = { workspace = true }
+
+[dev-dependencies]
+krly3d-std = { workspace = true }
+png = { workspace = true }
+
+[lints]
+workspace = true

@@ -4,8 +4,10 @@
 //! reached over JSON-RPC and joined to this one is a third (see [`crate::peer`]). The
 //! dialects, the shell form and the command line work with all of them alike.
 
+use krly3d_core::CallControl;
 use krly3d_kernel::schema::Params;
 use krly3d_kernel::{Method, Reply, Session};
+use std::sync::Arc;
 
 pub trait Endpoint {
     /// The name a client knows the server by.
@@ -19,6 +21,12 @@ pub trait Endpoint {
 
     /// Calls `method`; whatever goes wrong comes back as a reply with `ok` false.
     fn call(&mut self, method: &str, args: &Params) -> Reply;
+
+    /// Opt-in cooperative cancellation. Existing endpoints retain their call behavior;
+    /// implementations that delegate local calls must forward the control as well.
+    fn call_with_control(&mut self, method: &str, args: &Params, _control: Arc<CallControl>) -> Reply {
+        self.call(method, args)
+    }
 }
 
 const INSTRUCTIONS: &str = "krly3d is an exact B-rep geometry kernel. Tools add statements to one model \
@@ -41,5 +49,33 @@ impl Endpoint for Session {
 
     fn call(&mut self, method: &str, args: &Params) -> Reply {
         Session::call(self, method, args)
+    }
+
+    fn call_with_control(&mut self, method: &str, args: &Params, control: Arc<CallControl>) -> Reply {
+        Session::call_with_control(self, method, args, control)
+    }
+}
+
+/// A connection's control, presented to unchanged dialects through `Endpoint::call`.
+pub(crate) struct Controlled<'a> {
+    pub(crate) endpoint: &'a mut dyn Endpoint,
+    pub(crate) control: Arc<CallControl>,
+}
+
+impl Endpoint for Controlled<'_> {
+    fn name(&self) -> &str {
+        self.endpoint.name()
+    }
+
+    fn instructions(&self) -> String {
+        self.endpoint.instructions()
+    }
+
+    fn methods(&self) -> Vec<Method> {
+        self.endpoint.methods()
+    }
+
+    fn call(&mut self, method: &str, args: &Params) -> Reply {
+        self.endpoint.call_with_control(method, args, Arc::clone(&self.control))
     }
 }

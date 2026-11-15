@@ -18,6 +18,8 @@ use krly3d_kernel::schema::{Kind, Param, Params, Schema, Value};
 use krly3d_kernel::{Context, Plugin};
 use std::sync::Arc;
 
+mod report;
+
 pub struct Raster;
 
 impl Plugin<Likeness> for Raster {
@@ -47,6 +49,11 @@ impl Plugin<Query> for LikenessQuery {
                 Param::optional("nodes", Kind::Texts, Value::List(Vec::new()), "the nodes compared together, as name or name@version; every node when left out"),
                 Param::required("against", Kind::Text, "the drawing, as peer:node, such as vis:top"),
                 Param::optional("method", Kind::Text, "raster", "the likeness plugin"),
+                Param::optional("report", Kind::Text, "legacy", "legacy reply or stations: versioned evidence across local u/v, with per-station matches when tolerance is given"),
+                Param::alternative("frame", Kind::Numbers, "with report=stations: ox,oy,ux,uy,vx,vy; orthonormal local basis in the drawing's world-axis plane; identity by default"),
+                Param::alternative("tolerance", Kind::Number, "with report=stations: nonnegative endpoint threshold in world units; raster needs at least the effective cell; omitted means no verdict"),
+                Param::optional("precision", Kind::Text, "raster", "raster or contour; contour requires an explicit peer evidence source; raster contours retain the pixel floor, vector subpixel tolerance requires declared uncertainty"),
+                Param::optional("stairs", Kind::Text, "none", "none or pixel-diagonal: explicitly add one effective pixel diagonal to each raster station threshold"),
             ],
         })
     }
@@ -57,6 +64,7 @@ impl Plugin<Query> for LikenessQuery {
 }
 
 fn answered(cx: &Context, request: &QueryRequest) -> Result<Answer, Error> {
+    let options = report::options(&request.params)?;
     let against = request.params.text("against")?;
     let (peer, node) =
         against.split_once(':').filter(|(peer, node)| !peer.is_empty() && !node.is_empty()).ok_or_else(
@@ -64,7 +72,39 @@ fn answered(cx: &Context, request: &QueryRequest) -> Result<Answer, Error> {
         )?;
     let reply = ask(cx, peer, "polygons", Params::new().with("node", node)).into_result()?;
     let drawing = drawing_of(&reply.data)?;
-    let shapes = crate::built(request)?.into_iter().map(|(_, built)| Arc::clone(&built.shape)).collect();
+    let built = crate::built(request)?;
+    let shapes = built.iter().map(|(_, built)| Arc::clone(&built.shape)).collect();
+    if let Some(options) = options {
+        use krly3d_kernel::model::NodeRef;
+        use krly3d_kernel::ports::likeness::report::{station_likeness, DrawingEvidence, StationRequest};
+        let evidence = DrawingEvidence::from_value(&reply.data)?;
+        let method = request.params.text("method")?;
+        let found = station_likeness(
+            cx,
+            method,
+            &StationRequest {
+                comparison: LikenessRequest { shapes, drawing: drawing.clone() },
+                options,
+                evidence,
+            },
+        )
+        .into_result()?;
+        let nodes = built
+            .iter()
+            .map(|(name, _)| {
+                let mut node = NodeRef::parse(name)?;
+                if node.version.is_none() {
+                    node.version = request
+                        .model
+                        .nodes()
+                        .find(|(name, _)| *name == node.name)
+                        .map(|(_, count)| count as u32);
+                }
+                Ok(node.to_string())
+            })
+            .collect::<Result<_, Error>>()?;
+        return Ok(report::answer(&found, against, method, nodes, &drawing, reply.data, reply.exact));
+    }
     let found =
         likeness(cx, request.params.text("method")?, &LikenessRequest { shapes, drawing: drawing.clone() })
             .into_result()?;
@@ -127,18 +167,29 @@ impl Grid {
 }
 
 fn compared(cx: &Context, request: &LikenessRequest) -> Result<Resemblance, Error> {
+    request.drawing.validate()?;
+    let triangles = projected(cx, request)?;
+    let grid = grid(&request.drawing, &triangles)?;
+    let model = filled_triangles(&grid, &triangles);
+    let drawn = filled_polygons(&grid, &request.drawing.polygons);
+    Ok(resemblance(&grid, &model, &drawn))
+}
+
+fn projected(cx: &Context, request: &LikenessRequest) -> Result<Vec<[[f64; 2]; 3]>, Error> {
     let drawing = &request.drawing;
-    let mut triangles: Vec<[[f64; 2]; 3]> = Vec::new();
+    let mut triangles = Vec::new();
     for shape in &request.shapes {
+        cx.check_control()?;
         let mesh = mesh_of(cx, shape, drawing.unit).into_result()?;
         let flat = |index: usize| [mesh.points[index][drawing.axes[0]], mesh.points[index][drawing.axes[1]]];
         triangles.extend(mesh.triangles.iter().map(|corners| corners.map(flat)));
     }
-    let grid = grid(drawing, &triangles)?;
-    let model = filled_triangles(&grid, &triangles);
-    let drawn = filled_polygons(&grid, &drawing.polygons);
+    Ok(triangles)
+}
+
+fn resemblance(grid: &Grid, model: &[bool], drawn: &[bool]) -> Resemblance {
     let (mut both, mut either, mut model_cells, mut drawn_cells) = (0_usize, 0_usize, 0_usize, 0_usize);
-    for (m, d) in model.iter().zip(&drawn) {
+    for (m, d) in model.iter().zip(drawn) {
         both += usize::from(*m && *d);
         either += usize::from(*m || *d);
         model_cells += usize::from(*m);
@@ -146,12 +197,12 @@ fn compared(cx: &Context, request: &LikenessRequest) -> Result<Resemblance, Erro
     }
     let area = grid.cell * grid.cell;
     let iou = if either == 0 { 1.0 } else { both as f64 / either as f64 };
-    Ok(Resemblance {
+    Resemblance {
         iou,
         model_area: model_cells as f64 * area,
         drawing_area: drawn_cells as f64 * area,
-        worst: worst(&grid, &model, &drawn),
-    })
+        worst: worst(grid, model, drawn),
+    }
 }
 
 /// A grid of the drawing's pixels over both silhouettes, a pixel's width around them.
@@ -160,6 +211,9 @@ fn grid(drawing: &Drawing, triangles: &[[[f64; 2]; 3]]) -> Result<Grid, Error> {
     let (mut low, mut high) = ([f64::INFINITY; 2], [f64::NEG_INFINITY; 2]);
     for point in points {
         for k in 0..2 {
+            if !point[k].is_finite() {
+                return Err(Error::geometry("likeness projection contains nonfinite coordinates"));
+            }
             low[k] = low[k].min(point[k]);
             high[k] = high[k].max(point[k]);
         }
@@ -168,9 +222,33 @@ fn grid(drawing: &Drawing, triangles: &[[[f64; 2]; 3]]) -> Result<Grid, Error> {
         return Err(Error::geometry("neither the model nor the drawing has anything to compare"));
     }
     let span = [high[0] - low[0], high[1] - low[1]];
-    let cell = drawing.unit.max((span[0] * span[1] / MOST_CELLS).sqrt());
+    let mut cell = (span[0] / MOST_CELLS.sqrt()) * (span[1] / MOST_CELLS.sqrt());
+    // Keep the legacy cell for ordinary drawings. Count padded cells too, including
+    // extremely thin drawings where an area-only budget would allocate without bound.
+    cell = drawing.unit.max(cell.sqrt());
+    let dimensions = |cell: f64| [(span[0] / cell).ceil() + 2.0, (span[1] / cell).ceil() + 2.0];
+    let mut dims = dimensions(cell);
+    for _ in 0..64 {
+        if dims[0] * dims[1] <= MOST_CELLS {
+            break;
+        }
+        cell *= (dims[0] * dims[1] / MOST_CELLS).sqrt().max(1.01);
+        dims = dimensions(cell);
+    }
     let low = [low[0] - cell, low[1] - cell];
-    let size = [(span[0] / cell).ceil() as usize + 2, (span[1] / cell).ceil() as usize + 2];
+    if !cell.is_finite()
+        || cell <= 0.0
+        || !(cell * cell).is_finite()
+        || cell * cell == 0.0
+        || dims.iter().any(|d| !d.is_finite() || *d < 2.0)
+        || dims[0] * dims[1] > MOST_CELLS
+        || low.iter().any(|n| !n.is_finite() || *n + cell == *n)
+    {
+        return Err(Error::geometry(
+            "likeness grid cannot represent this coordinate range at a finite resolution",
+        ));
+    }
+    let size = [dims[0] as usize, dims[1] as usize];
     Ok(Grid { low, cell, size })
 }
 
@@ -225,7 +303,7 @@ fn filled_polygons(grid: &Grid, polygons: &[Vec<[f64; 2]>]) -> Vec<bool> {
             }
         }
         crossings.sort_by(f64::total_cmp);
-        for pair in crossings.chunks_exact(2) {
+        for pair in crossings.as_chunks::<2>().0 {
             let first = ((pair[0] - grid.low[0]) / grid.cell - 0.5).ceil().max(0.0) as usize;
             let last = ((pair[1] - grid.low[0]) / grid.cell - 0.5).floor();
             if last < 0.0 {

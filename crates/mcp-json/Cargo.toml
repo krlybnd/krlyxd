@@ -1,0 +1,13 @@
+[package]
+name = "krly-mcp-json"
+description = "Strict raw JSON parsing shared by MCP transport adapters"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+serde = "1.0"
+serde_json = { workspace = true, features = ["raw_value"] }
+
+[lints]
+workspace = true

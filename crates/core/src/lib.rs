@@ -2,6 +2,8 @@
 //!
 //! Nothing here knows about geometry beyond plain vectors: ids, the outcome of asking a
 //! plugin, the one error type, tolerances, how far a number can be trusted, and time.
+//! Independent leaves are compatibility re-exports of `krlyxd`; document and domain
+//! support remain here.
 
 pub mod accuracy;
 pub mod attempt;
@@ -22,3 +24,4 @@ pub use clock::{Clock, FakeClock, SystemClock};
 pub use error::{Error, ErrorKind};
 pub use exact::Exactness;
 pub use id::Id;
+pub use krlyxd::{CallControl, CallStop};

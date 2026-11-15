@@ -1,0 +1,18 @@
+[package]
+name = "krlyvis-drawing-cli"
+description = "Synchronous standalone drawing command line adapter"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krlyvis-drawing"
+path = "src/main.rs"
+
+[dependencies]
+krlyvis-api = { path = "../api" }
+krlyvis-engine = { path = "../engine" }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

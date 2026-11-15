@@ -1,0 +1,23 @@
+[package]
+name = "krly3d-view-mcp"
+description = "Read-only MCP stdio adapter for view rendering and bounded operations"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-view-mcp"
+path = "src/main.rs"
+
+[dependencies]
+krly-mcp-json = { path = "../../../../crates/mcp-json" }
+krly3d-view-api = { path = "../api" }
+krly3d-view-renderer = { path = "../renderer" }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { workspace = true, features = ["raw_value"] }
+
+[dev-dependencies]
+png = { workspace = true }
+
+[lints]
+workspace = true

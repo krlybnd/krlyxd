@@ -8,6 +8,7 @@
 //! models knows what to change without looking at a picture.
 
 pub mod contract;
+pub mod report;
 
 use crate::context::Context;
 use crate::plugin::Family;
@@ -23,10 +24,27 @@ pub struct Likeness;
 pub struct Drawing {
     /// The world axes (0 x, 1 y, 2 z) of the plane, in the order of the coordinates.
     pub axes: [usize; 2],
-    /// World length of one pixel of the drawing: the finest difference it can show.
+    /// World length of one pixel: the finest raster difference. Contour evidence
+    /// and any producer-declared vector uncertainty live in the additive report contract.
     pub unit: f64,
     /// Closed polygons in world coordinates along `axes`, the outer boundary first.
     pub polygons: Vec<Vec<[f64; 2]>>,
+}
+
+impl Drawing {
+    /// Validate typed requests as well as peer data before indexing or allocating.
+    pub fn validate(&self) -> Result<(), Error> {
+        if self.axes.iter().any(|axis| *axis > 2) || self.axes[0] == self.axes[1] {
+            return Err(Error::input("a drawing needs two distinct world axes"));
+        }
+        if !self.unit.is_finite() || self.unit <= 0.0 {
+            return Err(Error::input("a drawing needs a finite positive unit"));
+        }
+        if self.polygons.iter().any(|p| p.len() < 3 || p.iter().flatten().any(|n| !n.is_finite())) {
+            return Err(Error::input("a drawing needs polygons of at least three finite points"));
+        }
+        Ok(())
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -138,5 +156,7 @@ pub fn drawing_of(value: &Value) -> Result<Drawing, Error> {
             .collect::<Result<Vec<_>, _>>()?,
         _ => return Err(malformed("`polygons`")),
     };
-    Ok(Drawing { axes: [first, second], unit, polygons })
+    let drawing = Drawing { axes: [first, second], unit, polygons };
+    drawing.validate()?;
+    Ok(drawing)
 }

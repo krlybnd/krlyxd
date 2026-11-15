@@ -170,8 +170,8 @@ fn the_two_queries_are_methods_of_the_session() {
     let methods = session.methods();
 
     for (name, expected) in [
-        ("render", &["nodes", "view", "width", "height", "paint"][..]),
-        ("view", &["nodes", "view", "width", "height"][..]),
+        ("render", &["nodes", "view", "width", "height", "renderer", "paint"][..]),
+        ("view", &["nodes", "view", "width", "height", "renderer"][..]),
     ] {
         let method = methods.iter().find(|method| method.name == name).unwrap();
         let arguments: Vec<&str> = method.schema.params.iter().map(|param| param.name).collect();

@@ -1,0 +1,3 @@
+k3d 1
+layer geo
+part = box w=6 d=4 h=2

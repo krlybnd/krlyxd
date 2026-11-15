@@ -1,0 +1,17 @@
+[package]
+name = "krly3d-mesh-engine"
+description = "Mesh execution over pinned B-rep snapshots"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krlyxd = { path = "../../../../crates/krlyxd" }
+krly3d-mesh = { workspace = true }
+krly3d-brep-engine = { workspace = true }
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+krly3d-std = { workspace = true }
+
+[lints]
+workspace = true

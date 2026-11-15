@@ -1,0 +1,21 @@
+[package]
+name = "krly3d-field-cli"
+description = "Bounded recipe to native mesh command line adapter"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-field"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-field = { path = "../api" }
+krly3d-field-engine = { path = "../engine" }
+krlyxd.workspace = true
+serde = { version = "1.0", features = ["derive"] }
+serde_json.workspace = true
+signal-hook = { version = "0.3", default-features = false }
+
+[lints]
+workspace = true

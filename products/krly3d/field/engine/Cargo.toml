@@ -1,0 +1,17 @@
+[package]
+name = "krly3d-field-engine"
+description = "Native implicit field sampling and tetrahedral mesh extraction"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-field = { path = "../api" }
+krly3d-mesh.workspace = true
+krlyxd.workspace = true
+
+[dev-dependencies]
+serde_json.workspace = true
+
+[lints]
+workspace = true

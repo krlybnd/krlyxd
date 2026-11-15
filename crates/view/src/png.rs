@@ -16,6 +16,18 @@ const LARGEST: usize = 0x7fff_ffff;
 /// pixels from the left, each of `channels` bytes — 3 for red, green and blue, 4 for
 /// those and opacity.
 pub fn encode(width: usize, height: usize, channels: usize, pixels: &[u8]) -> Result<Vec<u8>, Error> {
+    encode_checked(width, height, channels, pixels, &|| Ok(()))
+}
+
+/// The query uses the same encoder with cooperative checks through copying and checksums.
+pub fn encode_checked(
+    width: usize,
+    height: usize,
+    channels: usize,
+    pixels: &[u8],
+    check: &impl Fn() -> Result<(), Error>,
+) -> Result<Vec<u8>, Error> {
+    check()?;
     let colour_type: u8 = match channels {
         3 => 2,
         4 => 6,
@@ -38,11 +50,15 @@ pub fn encode(width: usize, height: usize, channels: usize, pixels: &[u8]) -> Re
     };
     let mut lines = Vec::with_capacity(pixels.len() + height);
     for line in pixels.chunks(row) {
+        check()?;
         // Every line starts with the filter it went through: none.
         lines.push(0);
-        lines.extend_from_slice(line);
+        for part in line.chunks(LONGEST_BLOCK) {
+            check()?;
+            lines.extend_from_slice(part);
+        }
     }
-    let data = stored(&lines);
+    let data = stored(&lines, check)?;
     if data.len() > LARGEST {
         return Err(Error::input(format!(
             "an image of {width} by {height} pixels is too large for one chunk"
@@ -54,41 +70,55 @@ pub fn encode(width: usize, height: usize, channels: usize, pixels: &[u8]) -> Re
     // Eight bits a sample; the only compression and filter methods there are; not interlaced.
     header.extend([8, colour_type, 0, 0, 0]);
     let mut file = SIGNATURE.to_vec();
-    chunk(&mut file, b"IHDR", &header);
-    chunk(&mut file, b"IDAT", &data);
-    chunk(&mut file, b"IEND", &[]);
+    chunk(&mut file, b"IHDR", &header, check)?;
+    chunk(&mut file, b"IDAT", &data, check)?;
+    chunk(&mut file, b"IEND", &[], check)?;
+    check()?;
     Ok(file)
 }
 
 /// `data` as a zlib stream made of stored blocks.
-fn stored(data: &[u8]) -> Vec<u8> {
+fn stored(data: &[u8], check: &impl Fn() -> Result<(), Error>) -> Result<Vec<u8>, Error> {
+    check()?;
     // Deflate with a 32K window, no preset dictionary; the pair is a multiple of 31, as it must be.
     let mut stream = vec![0x78, 0x01];
     let mut blocks = data.chunks(LONGEST_BLOCK).peekable();
     while let Some(block) = blocks.next() {
+        check()?;
         let length = block.len() as u16;
         stream.push(u8::from(blocks.peek().is_none()));
         stream.extend(length.to_le_bytes());
         stream.extend((!length).to_le_bytes());
         stream.extend_from_slice(block);
     }
-    stream.extend(adler32(data).to_be_bytes());
-    stream
+    stream.extend(adler32(data, check)?.to_be_bytes());
+    Ok(stream)
 }
 
-fn chunk(file: &mut Vec<u8>, kind: &[u8; 4], data: &[u8]) {
+fn chunk(
+    file: &mut Vec<u8>,
+    kind: &[u8; 4],
+    data: &[u8],
+    check: &impl Fn() -> Result<(), Error>,
+) -> Result<(), Error> {
+    check()?;
     file.extend((data.len() as u32).to_be_bytes());
     file.extend_from_slice(kind);
-    file.extend_from_slice(data);
-    file.extend(crc32(&[kind, data]).to_be_bytes());
+    for part in data.chunks(LONGEST_BLOCK) {
+        check()?;
+        file.extend_from_slice(part);
+    }
+    file.extend(crc32(&[kind, data], check)?.to_be_bytes());
+    Ok(())
 }
 
-fn adler32(data: &[u8]) -> u32 {
+fn adler32(data: &[u8], check: &impl Fn() -> Result<(), Error>) -> Result<u32, Error> {
     const MODULUS: u32 = 65_521;
     // This many bytes can be added before the sums have to be reduced to stay within 32 bits.
     const RUN: usize = 5552;
     let (mut low, mut high) = (1_u32, 0_u32);
     for run in data.chunks(RUN) {
+        check()?;
         for byte in run {
             low += u32::from(*byte);
             high += low;
@@ -96,7 +126,7 @@ fn adler32(data: &[u8]) -> u32 {
         low %= MODULUS;
         high %= MODULUS;
     }
-    high << 16 | low
+    Ok(high << 16 | low)
 }
 
 const CRC_TABLE: [u32; 256] = crc_table();
@@ -117,12 +147,17 @@ const fn crc_table() -> [u32; 256] {
     table
 }
 
-fn crc32(parts: &[&[u8]]) -> u32 {
+fn crc32(parts: &[&[u8]], check: &impl Fn() -> Result<(), Error>) -> Result<u32, Error> {
     let mut crc = !0_u32;
-    for byte in parts.iter().copied().flatten() {
-        crc = CRC_TABLE[((crc ^ u32::from(*byte)) & 0xff) as usize] ^ (crc >> 8);
+    for part in parts {
+        for batch in part.chunks(LONGEST_BLOCK) {
+            check()?;
+            for byte in batch {
+                crc = CRC_TABLE[((crc ^ u32::from(*byte)) & 0xff) as usize] ^ (crc >> 8);
+            }
+        }
     }
-    !crc
+    Ok(!crc)
 }
 
 #[cfg(test)]
@@ -193,5 +228,37 @@ mod tests {
         let error = encode(usize::MAX, 2, 3, &[0; 6]).unwrap_err();
 
         assert_eq!(error.kind, ErrorKind::Input);
+    }
+
+    #[test]
+    fn checked_encoding_is_identical_and_stops_in_copying_and_checksums() {
+        use krly3d_core::{CallStop, Error};
+        use std::cell::Cell;
+
+        let pixels = vec![123_u8; 257 * 129 * 3];
+        let checks = Cell::new(0);
+        let file = super::encode_checked(257, 129, 3, &pixels, &|| {
+            checks.set(checks.get() + 1);
+            Ok(())
+        })
+        .unwrap();
+        assert_eq!(file, encode(257, 129, 3, &pixels).unwrap());
+        let total = checks.get();
+        // Entry, row copies, stored blocks, Adler checksum, IDAT copy/CRC and end.
+        for at in [1, 6, 260, 265, total - 5, total - 2, total] {
+            for stop in [CallStop::Cancelled, CallStop::DeadlineExceeded] {
+                checks.set(0);
+                let result = super::encode_checked(257, 129, 3, &pixels, &|| {
+                    checks.set(checks.get() + 1);
+                    if checks.get() == at {
+                        Err(Error::from(stop))
+                    } else {
+                        Ok(())
+                    }
+                });
+                assert_eq!(result, Err(Error::from(stop)), "checkpoint {at}");
+                assert_eq!(checks.get(), at);
+            }
+        }
     }
 }

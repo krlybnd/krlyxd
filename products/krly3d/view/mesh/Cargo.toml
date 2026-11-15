@@ -1,0 +1,20 @@
+[package]
+name = "krly3d-view-mesh"
+description = "Mesh preview rasterizer consuming the public mesh data contract"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly3d-core = { workspace = true }
+krly3d-kernel = { workspace = true }
+krly3d-view = { workspace = true }
+krly3d-mesh = { workspace = true }
+krly3d-mesh-engine = { workspace = true }
+nalgebra = { workspace = true }
+
+[dev-dependencies]
+krly3d-std = { workspace = true, features = ["testing"] }
+
+[lints]
+workspace = true

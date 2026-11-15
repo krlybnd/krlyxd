@@ -1,0 +1,17 @@
+[package]
+name = "krly3d-view-api"
+description = "Engine-independent typed view requests and image results"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krlyxd = { workspace = true }
+krly3d-brep = { workspace = true }
+
+serde = { version = "1.0", features = ["derive"] }
+serde_json = { workspace = true, features = ["raw_value"] }
+base64 = "0.22"
+
+[lints]
+workspace = true

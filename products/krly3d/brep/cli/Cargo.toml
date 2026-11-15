@@ -1,0 +1,18 @@
+[package]
+name = "krly3d-brep-cli"
+description = "Synchronous standalone planar B-rep command line adapter"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-brep"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-brep = { path = "../api" }
+krly3d-brep-engine = { path = "../engine" }
+serde_json = { workspace = true }
+
+[lints]
+workspace = true

@@ -1,12 +1,38 @@
 [workspace]
 resolver = "2"
 members = [
+    "crates/krlyxd",
+    "crates/mcp-json",
     "crates/core",
     "crates/kernel",
     "crates/std",
     "crates/cli",
     "crates/view",
     "crates/exchange",
+    "products/krly2d/api",
+    "products/krly3d/brep/api",
+    "products/krly3d/brep/engine",
+    "products/krly3d/brep/cli",
+    "products/krly3d/brep/mcp",
+    "products/krly3d/mesh/api",
+    "products/krly3d/mesh/engine",
+    "products/krly3d/mesh/cli",
+    "products/krly3d/mesh/mcp",
+    "products/krly3d/field/api",
+    "products/krly3d/field/engine",
+    "products/krly3d/field/cli",
+    "products/krly3d/exchange/mesh",
+    "products/krly3d/view/api",
+    "products/krly3d/view/cli",
+    "products/krly3d/view/mcp",
+    "products/krly3d/view/renderer",
+    "products/krly3d/view/mesh",
+    "products/krlyvis/api",
+    "products/krlyvis/engine",
+    "products/krlyvis/cli",
+    "products/krlyvis/mcp",
+    "products/krly3d/reconstruction/runtime",
+    "products/krly3d/reconstruction/host-cli",
     "package/krlyvis/crates/kernel",
     "package/krlyvis/crates/std",
     "package/krlyvis/crates/cli",
@@ -18,19 +44,33 @@ edition = "2021"
 publish = false
 
 [workspace.dependencies]
+krly2d-api = { path = "products/krly2d/api" }
+krlyxd = { path = "crates/krlyxd" }
 krly3d-core = { path = "crates/core" }
 krly3d-kernel = { path = "crates/kernel" }
 krly3d-std = { path = "crates/std" }
 krly3d-view = { path = "crates/view" }
+krly3d-view-api = { path = "products/krly3d/view/api" }
+krly3d-view-renderer = { path = "products/krly3d/view/renderer" }
+krly3d-view-mesh = { path = "products/krly3d/view/mesh" }
 krly3d-exchange = { path = "crates/exchange" }
 krly3d-cli = { path = "crates/cli" }
+krly3d-brep = { path = "products/krly3d/brep/api" }
+krly3d-brep-engine = { path = "products/krly3d/brep/engine" }
+krly3d-mesh = { path = "products/krly3d/mesh/api" }
+krly3d-mesh-engine = { path = "products/krly3d/mesh/engine" }
+krlyvis-api = { path = "products/krlyvis/api" }
+krlyvis-engine = { path = "products/krlyvis/engine" }
+krly3d-reconstruction = { path = "products/krly3d/reconstruction/runtime" }
 krlyvis-kernel = { path = "package/krlyvis/crates/kernel" }
 krlyvis-std = { path = "package/krlyvis/crates/std" }
 png = "0.17"
 rayon = "1.12"
-serde_json = "1.0"
+serde_json = { version = "1.0", features = ["float_roundtrip"] }
+serde = { version = "1", features = ["derive"] }
 zune-jpeg = "0.4"
 nalgebra = "0.35"
+libc = "0.2"
 
 [profile.release]
 codegen-units = 1

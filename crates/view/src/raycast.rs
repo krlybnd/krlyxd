@@ -6,10 +6,11 @@
 //! at a crease or lie at different depths, so that a shape reads at a glance; faces that
 //! run smoothly into each other, as the pieces of a bent bar do, show no line between them.
 
+use crate::ports::render::style::{self, BACKGROUND, OUTLINE};
 use crate::ports::render::{Image, Paint, Projection, Render, RenderRequest, Seen, CHANNELS};
 use krly3d_core::math::bounds::Bounds;
 use krly3d_core::math::Vec3;
-use krly3d_core::{Attempt, Id};
+use krly3d_core::{Attempt, Error, Id};
 use krly3d_kernel::ports::probe::{cast, Hit, Ray};
 use krly3d_kernel::topo::{body_bounds, Body};
 use krly3d_kernel::{Context, Plugin};
@@ -21,24 +22,8 @@ pub struct Raycast;
 /// The name the renderer is registered under.
 pub const NAME: &str = "raycast";
 
-const BACKGROUND: [u8; CHANNELS] = [255, 255, 255];
-/// The colour of a face that takes the light squarely.
-const MATERIAL: [f64; CHANNELS] = [168.0, 192.0, 224.0];
-/// The colour of the lines between faces and around what is drawn.
-const OUTLINE: [u8; CHANNELS] = [24, 32, 48];
-/// Neighbouring faces whose normals differ by less than this angle (as its cosine) run
-/// smoothly into each other and get no line between them.
-const CREASE: f64 = 0.94;
-/// Neighbouring pixels at depths further apart than this many pixel sizes show one
-/// thing in front of another, and get a line.
-const DEPTH_STEP: f64 = 3.0;
-
-/// The share of the light that reaches a face however it is turned.
-const AMBIENT: f64 = 0.35;
-/// Where the lamp stands as the viewer sees it: to the left, above, and on the viewer's
-/// side. It stands off the line of sight so that faces turned differently are shaded
-/// differently.
-const LAMP: [f64; 3] = [-0.35, 0.5, 1.0];
+/// Keep a wide row from becoming one uninterruptible probe request.
+const RAY_BATCH: usize = 64;
 
 impl Plugin<Render> for Raycast {
     fn id(&self) -> Id {
@@ -46,42 +31,73 @@ impl Plugin<Render> for Raycast {
     }
 
     fn call(&self, cx: &Context, request: &RenderRequest) -> Attempt<Image> {
-        let boxes = match boxes(cx, &request.bodies) {
-            Attempt::Done(boxes) => boxes,
-            Attempt::Declined(reason) => return Attempt::Declined(reason),
-            Attempt::Failed(error) => return Attempt::Failed(error),
-        };
-        let around = boxes.iter().fold(Bounds::empty(), |all, one| all.union(one));
-        let projection = match request.view.projection(cx.accuracy(), &around, request.size) {
-            Ok(projection) => projection,
-            Err(error) => return Attempt::Failed(error),
-        };
-        let to_lamp =
-            (projection.right * LAMP[0] + projection.up * LAMP[1] - projection.toward * LAMP[2]).normalize();
-        // The view is fitted to the boxes as they are; for telling what a line of sight can
-        // meet they are widened by the length tolerance, so that one which only brushes a
-        // box is still put to the body.
-        let boxes: Vec<Bounds> = boxes.iter().map(|bounds| bounds.grown(cx.accuracy().length())).collect();
-        let scene = Scene { cx, bodies: &request.bodies, boxes: &boxes, projection, to_lamp };
-        // A row is one batch of rays for each body; the rows are shared out among the threads.
-        let rows: Vec<Attempt<Vec<Option<Sight>>>> =
-            (0..projection.size.1).into_par_iter().map(|row| scene.row(row)).collect();
-        let mut sights = Vec::with_capacity(projection.size.0 * projection.size.1);
-        for row in rows {
-            match row {
-                Attempt::Done(of_row) => sights.extend(of_row),
-                Attempt::Declined(reason) => return Attempt::Declined(reason),
-                Attempt::Failed(error) => return Attempt::Failed(error),
-            }
-        }
-        Attempt::Done(painted(projection, &sights, &request.paint))
+        let result = drawn(cx, request);
+        // A stop wins over a concurrent decline, so the registry cannot fall back.
+        cx.publish_control(|| result).unwrap_or_else(Attempt::Failed)
     }
+}
+
+fn drawn(cx: &Context, request: &RenderRequest) -> Attempt<Image> {
+    if let Err(error) = cx.check_control() {
+        return Attempt::Failed(error);
+    }
+    let mut boxes = match boxes(cx, &request.bodies) {
+        Attempt::Done(boxes) => boxes,
+        Attempt::Declined(reason) => return Attempt::Declined(reason),
+        Attempt::Failed(error) => return Attempt::Failed(error),
+    };
+    let mut around = Bounds::empty();
+    for bounds in &mut boxes {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
+        around = around.union(bounds);
+        // Widen only the probe boxes; fitting uses their original extents.
+        *bounds = bounds.grown(cx.accuracy().length());
+    }
+    let projection = match request.view.projection(cx.accuracy(), &around, request.size) {
+        Ok(projection) => projection,
+        Err(error) => return Attempt::Failed(error),
+    };
+    let to_lamp = style::lamp(&projection);
+    // The view is fitted to the boxes as they are; for telling what a line of sight can
+    // meet they are widened by the length tolerance, so that one which only brushes a
+    // box is still put to the body.
+    let scene = Scene { cx, bodies: &request.bodies, boxes: &boxes, projection, to_lamp };
+    // Share rows among threads, stopping scheduling once a row cannot finish.
+    // Each active row also checks its control between bounded probe batches.
+    let rows: Result<Vec<_>, _> = (0..projection.size.1)
+        .into_par_iter()
+        .map(|row| match scene.row(row) {
+            Attempt::Done(row) => Ok(row),
+            Attempt::Declined(reason) => Err(Box::new(Attempt::Declined(reason))),
+            Attempt::Failed(error) => Err(Box::new(Attempt::Failed(error))),
+        })
+        .collect();
+    let rows = match rows {
+        Ok(rows) => rows,
+        Err(unanswered) => return *unanswered,
+    };
+    if let Err(error) = cx.check_control() {
+        return Attempt::Failed(error);
+    }
+    let mut sights = Vec::with_capacity(projection.size.0 * projection.size.1);
+    for row in rows {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
+        sights.extend(row);
+    }
+    painted(cx, projection, &sights, &request.paint).into()
 }
 
 /// The box around each body.
 fn boxes(cx: &Context, bodies: &[Arc<Body>]) -> Attempt<Vec<Bounds>> {
     let mut boxes = Vec::with_capacity(bodies.len());
     for (index, body) in bodies.iter().enumerate() {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
         match body_bounds(cx, body) {
             Attempt::Done(bounds) => boxes.push(bounds),
             Attempt::Declined(reason) => return Attempt::Declined(format!("body {}: {reason}", index + 1)),
@@ -117,34 +133,61 @@ struct Scene<'a> {
 impl Scene<'_> {
     /// What the pixels of one row show.
     fn row(&self, row: usize) -> Attempt<Vec<Option<Sight>>> {
-        let rays: Vec<Ray> =
-            (0..self.projection.size.0).map(|column| self.projection.ray(column, row)).collect();
-        let mut sights: Vec<Option<Sight>> = vec![None; rays.len()];
+        if let Err(error) = self.cx.check_control() {
+            return Attempt::Failed(error);
+        }
+        let mut sights: Vec<Option<Sight>> = vec![None; self.projection.size.0];
         for (index, (body, bounds)) in self.bodies.iter().zip(self.boxes).enumerate() {
-            // Only the lines of sight that pass through the box of the body are put to it.
-            let passes = |ray: &Ray| bounds.line(&ray.origin, &ray.direction).is_some();
-            let columns: Vec<usize> = (0..rays.len()).filter(|column| passes(&rays[*column])).collect();
-            if columns.is_empty() || bounds.is_empty() {
-                continue;
-            }
-            let per_ray = match cast(self.cx, body, columns.iter().map(|column| rays[*column]).collect()) {
-                Attempt::Done(per_ray) => per_ray,
-                Attempt::Declined(reason) => {
-                    return Attempt::Declined(format!("body {}, row {row} of the image: {reason}", index + 1))
+            for start in (0..sights.len()).step_by(RAY_BATCH) {
+                if let Err(error) = self.cx.check_control() {
+                    return Attempt::Failed(error);
                 }
-                Attempt::Failed(error) => return Attempt::Failed(error),
-            };
-            for (column, hits) in columns.into_iter().zip(per_ray) {
-                // A body does not reach beyond its box. The rule that spares the rays which
-                // miss the box is applied to every hit as well, so that what a pixel shows
-                // does not depend on whether its ray happened to be cast.
-                let within = |hit: &&Hit| hit.t > 0.0 && bounds.contains(&hit.point);
-                let Some(hit) = hits.iter().find(within) else { continue };
-                // Where bodies coincide the later one is seen, so "nearer" includes "as near".
-                let nearer =
-                    sights[column].is_none_or(|sight| hit.t <= sight.depth + self.cx.accuracy().length());
-                if nearer {
-                    sights[column] = Some(self.sight(index, hit));
+                // Only rays passing through the body's box are put to the probe.
+                let (columns, rays): (Vec<usize>, Vec<Ray>) = (start..(start + RAY_BATCH).min(sights.len()))
+                    .filter_map(|column| {
+                        let ray = self.projection.ray(column, row);
+                        (!bounds.is_empty() && bounds.line(&ray.origin, &ray.direction).is_some())
+                            .then_some((column, ray))
+                    })
+                    .unzip();
+                if columns.is_empty() {
+                    continue;
+                }
+                let per_ray = match cast(self.cx, body, rays) {
+                    Attempt::Done(per_ray) => per_ray,
+                    Attempt::Declined(reason) => {
+                        return Attempt::Declined(format!(
+                            "body {}, row {row} of the image: {reason}",
+                            index + 1
+                        ))
+                    }
+                    Attempt::Failed(error) => return Attempt::Failed(error),
+                };
+                if let Err(error) = self.cx.check_control() {
+                    return Attempt::Failed(error);
+                }
+                for (column, hits) in columns.into_iter().zip(per_ray) {
+                    // A body does not reach beyond its box. The rule that spares the rays which
+                    // miss the box is applied to every hit as well, so that what a pixel shows
+                    // does not depend on whether its ray happened to be cast.
+                    let within = |hit: &&Hit| hit.t > 0.0 && bounds.contains(&hit.point);
+                    let mut found = None;
+                    for batch in hits.chunks(RAY_BATCH) {
+                        if let Err(error) = self.cx.check_control() {
+                            return Attempt::Failed(error);
+                        }
+                        found = batch.iter().find(within);
+                        if found.is_some() {
+                            break;
+                        }
+                    }
+                    let Some(hit) = found else { continue };
+                    // Where bodies coincide the later one is seen, so "nearer" includes "as near".
+                    let nearer =
+                        sights[column].is_none_or(|sight| hit.t <= sight.depth + self.cx.accuracy().length());
+                    if nearer {
+                        sights[column] = Some(self.sight(index, hit));
+                    }
                 }
             }
         }
@@ -155,7 +198,7 @@ impl Scene<'_> {
         let normal = self.bodies[body].faces[hit.face].outward_normal(&hit.point);
         // A sheet has no inside: seen from behind it is lit as from the front.
         let facing = if normal.dot(&self.projection.toward) > 0.0 { -normal } else { normal };
-        let light = AMBIENT + (1.0 - AMBIENT) * facing.dot(&self.to_lamp).max(0.0);
+        let light = style::light(&facing, &self.to_lamp);
         // Along a spreading line of sight a pixel grows with the distance from the eye.
         let reach = match self.projection.pinhole {
             Some(pinhole) => (hit.point - pinhole.eye).norm() * self.projection.pixel,
@@ -165,26 +208,31 @@ impl Scene<'_> {
     }
 }
 
-fn painted(projection: Projection, sights: &[Option<Sight>], paint: &[Paint]) -> Image {
+fn painted(
+    cx: &Context,
+    projection: Projection,
+    sights: &[Option<Sight>],
+    paint: &[Paint],
+) -> Result<Image, Error> {
     let (width, height) = projection.size;
-    let seen: Vec<Option<Seen>> = sights.iter().map(|sight| sight.map(|sight| sight.seen)).collect();
+    cx.check_control()?;
+    let mut seen = Vec::with_capacity(sights.len());
     let mut pixels = Vec::with_capacity(sights.len() * CHANNELS);
     for row in 0..height {
         for column in 0..width {
+            if column % RAY_BATCH == 0 {
+                cx.check_control()?;
+            }
+            seen.push(sights[row * width + column].map(|sight| sight.seen));
             pixels.extend(match sights[row * width + column] {
                 None => BACKGROUND,
                 Some(_) if at_a_border(sights, (width, height), column, row, projection) => OUTLINE,
-                Some(sight) => {
-                    let colour = paint
-                        .get(sight.seen.body)
-                        .and_then(|paint| paint.of(sight.seen.face))
-                        .map_or(MATERIAL, |colour| colour.map(f64::from));
-                    colour.map(|channel| (channel * sight.light).round() as u8)
-                }
+                Some(sight) => style::colour(paint, sight.seen, sight.light),
             });
         }
     }
-    Image { projection, pixels, seen }
+    let image = Image { projection, pixels, seen };
+    cx.publish_control(|| image)
 }
 
 /// Whether a pixel beside this one, or above or below it, shows something else: nothing,
@@ -204,7 +252,7 @@ fn at_a_border(
         Some(there) if there.seen == here.seen => false,
         Some(there) => {
             let step = (there.depth - here.depth).abs() * along;
-            there.facing.dot(&here.facing) < CREASE || step > DEPTH_STEP * here.size.max(there.size)
+            style::boundary(there.facing.dot(&here.facing), step, here.size.max(there.size))
         }
     };
     (column > 0 && differs(column - 1, row))

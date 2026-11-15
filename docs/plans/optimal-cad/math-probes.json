@@ -1,0 +1,88 @@
+{
+  "recorded_at_utc": "2026-11-15T14:39:10.985910+00:00",
+  "build_command": "cargo build --manifest-path /home/krlybnd/xrepos/publication-as-code/Cargo.toml --package krlysci-cli --locked --offline --target-dir /home/krlybnd/krlybnd/krlyxd/.tmp/cad-feasibility/krlysci-target",
+  "run_command_template": ".tmp/cad-feasibility/krlysci-target/debug/krlysci run <file.typ>",
+  "source_hashes": {
+    "/home/krlybnd/xrepos/publication-as-code/Cargo.toml": "cd2122ee5d621e90fb4abcf933847a5d8cd14686e805f2c6a7c3ac360a4d8a0f",
+    "/home/krlybnd/xrepos/publication-as-code/Cargo.lock": "488d3c44adc08e5ada12d2685fc332cd7529413908068aeab819dfaf7f344262",
+    "/home/krlybnd/xrepos/publication-as-code/crates/krlysci/src/lib.rs": "e0ce0d4ef2e364545be8b5c7ec8e62c154366116113fefc3e71717534cbaa716",
+    "/home/krlybnd/xrepos/publication-as-code/crates/krlysci/src/eval.rs": "f6ab3064eceae0888e0fc57ecabc1e142eba430dc538ebe3be99e838d5aa2e84",
+    "/home/krlybnd/xrepos/publication-as-code/crates/krlysci/src/elaborate.rs": "38f1bedcfce8f2915fe9c105a5d3f2d1411d932106208765430792ceb843701b",
+    "/home/krlybnd/xrepos/publication-as-code/crates/krlysci-cli/src/main.rs": "81909b0fe760eb9b15954ae7e9468f9dd1f56a75a3431f380a93c8cc4b2d9166",
+    "/home/krlybnd/xrepos/publication-as-code/blocks/kor/math.typ": "8293a7b622443e5cad3f794ffec950a9143831623e5d6c8042b8c747b35f61b5",
+    "/home/krlybnd/xrepos/publication-as-code/blocks/kor/tests/e.typ": "ed43944f007d389685a4c67271cd6d036a27d8a4aa37bc5bc96ca3d65a2711c7"
+  },
+  "probes": [
+    {
+      "name": "negative",
+      "source": "#let A = structure(\"A\", family: algebraic, compose: (Field, TotalOrder, MetricSpace))\n#eq(\"negative\", of: at(A, \"candidate\"), `r = -1`)\n",
+      "exit_code": 0,
+      "checks": {
+        "negative": {
+          "holds": true,
+          "residual": -1.0
+        }
+      },
+      "values": {},
+      "stderr": "",
+      "interpretation": "scalar residual is accepted by the generic check; not valid evidence of equality to zero"
+    },
+    {
+      "name": "suffix",
+      "source": "#let A = structure(\"A\", family: algebraic, compose: (Field, TotalOrder, MetricSpace))\n#eq(\"suffix\", of: at(A, \"candidate\"), `r = 0 )`)\n",
+      "exit_code": 0,
+      "checks": {
+        "suffix": {
+          "holds": true,
+          "residual": 0.0
+        }
+      },
+      "values": {},
+      "stderr": "",
+      "interpretation": "malformed trailing token is accepted"
+    },
+    {
+      "name": "division",
+      "source": "#let A = structure(\"A\", family: algebraic, compose: (Field, TotalOrder, MetricSpace))\n#eq(\"division\", of: at(A, \"candidate\"), `r = 1 / 2`)\n",
+      "exit_code": 1,
+      "checks": null,
+      "values": null,
+      "stderr": "cannot read /",
+      "interpretation": "this syntax is rejected"
+    },
+    {
+      "name": "explicit_multiply",
+      "source": "#let A = structure(\"A\", family: algebraic, compose: (Field, TotalOrder, MetricSpace))\n#eq(\"explicit_multiply\", of: at(A, \"candidate\"), `r = 1 * 2`)\n",
+      "exit_code": 1,
+      "checks": null,
+      "values": null,
+      "stderr": "cannot read *",
+      "interpretation": "this syntax is rejected"
+    },
+    {
+      "name": "costs",
+      "source": "#let A = structure(\"A\", family: algebraic, compose: (Field, TotalOrder, MetricSpace))\n#eq(\"costs\", of: at(A, \"candidate\"), `J = (4 + 0.5 3 + 2 0.25, 8 + 0.5 7 + 2 0.75)`)\n",
+      "exit_code": 0,
+      "checks": {},
+      "values": {
+        "costs": [
+          [
+            6.0,
+            13.0
+          ]
+        ]
+      },
+      "stderr": "",
+      "interpretation": "values contain the calculated candidate costs, not a CAD validity proof"
+    },
+    {
+      "name": "existing_circle_identity",
+      "source_path": "/home/krlybnd/xrepos/publication-as-code/blocks/kor/math.typ",
+      "exit_code": 0,
+      "sample_points": 64,
+      "max_absolute_residual": 2.220446049250313e-16,
+      "interpretation": "sampled numerical identity, not symbolic proof"
+    }
+  ],
+  "limitations": "Reference repository was read and compiled, not edited. This is a feasibility probe, not the full test suite. Scalar outputs/checks are not CAD certification."
+}

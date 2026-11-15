@@ -1,4 +1,7 @@
 //! Building and reading orthonormal frames.
+//!
+//! Domain geometry support: deliberately retains krly3d error/accuracy semantics.
+//! This is not part of the neutral krlyxd API (see ADR 0008).
 
 use super::{Iso3, Point3, Sim3, Vec3};
 use crate::error::Error;

@@ -1,10 +1,13 @@
 # krlyvis – technical specification
 
-krlyvis reads one picture and turns it into numbers an agent can model with: straight
-edges, vanishing points, the camera, and true lengths in a chosen plane. It uses no
-learned model; every step is a published closed form or a deterministic search. It is
-cast in the mould of the krly3d kernel (`SPEC.md` at the repository root) and shares its
-vocabulary crate, `krly3d-core`.
+krlyvis is a separate vision product. It reads pictures and keeps versioned picture,
+outline and placed-view nodes that an agent can query or use to derive cross-sections. Its
+`analyse` query finds straight edges, vanishing points, a camera and lengths in a chosen
+plane. The standard pipeline uses no learned model; its steps are deterministic searches
+and geometric calculations. krlyvis shares foundational types, the plugin mould, document
+and claim grammar from `krly3d-core`, while keeping its vision ports, data and `Context` in
+`package/krlyvis`. The product boundary and eventual target API packaging are described in
+[`docs/PRODUCT-ARCHITECTURE-HANDOFF.md`](../../docs/PRODUCT-ARCHITECTURE-HANDOFF.md).
 
 ## 1. What one picture can give, and what it cannot
 
@@ -24,6 +27,12 @@ plane asked for whether or not it lies there: choosing the plane is the reader's
 
 ## 2. Architecture
 
+This section describes the current implementation unless marked as target architecture.
+The current krlyvis CLI reuses the krly3d transport library; the accepted product direction
+calls for krlyvis to have its own versioned public API and CLI/MCP adapters, which is future
+packaging work. `VisionSession` is stateful even though each `analyse` call runs its pipeline
+on one image.
+
 ### 2.1 Layers and patterns
 
 ```
@@ -38,14 +47,15 @@ plane asked for whether or not it lies there: choosing the plane is the reader's
 └─────────────────────────────────────┬──────────────────────────────────────┘
                                       │ standard() -> VisionBuilder
 ┌─────────────────────────────────────▼──────────────────────────────────────┐
-│ std       every shipped capability; one file = one plugin       [Strategy] │
-│   read/pnm · detect/lsd · vanish/vote · camera/{given,centred,orthocentre} │
-│   measure/plane · depth/ground · stage/{detect,…,depth}    [Chain of Resp.]│
+│ std       shipped capabilities; one file = one plugin          [Strategy] │
+│   read/{pnm,png,jpeg} · make/{picture,outline,frame} · detect/lsd          │
+│   vanish/vote · camera · measure · depth · outline · stage   [Chain]      │
 └─────────────────────────────────────┬──────────────────────────────────────┘
                                       │ implements ports
 ┌─────────────────────────────────────▼──────────────────────────────────────┐
 │ kernel    contracts and orchestration, zero implementations                │
 │   Vision          read(format) · analyse(image, ask)   [Facade]            │
+│   VisionSession   versioned vis document + build cache + model             │
 │   VisionBuilder   one Registry per family              [Builder]           │
 │   Context         clock, registries, stage order       [Dependency Inj.]   │
 │   plugin          Plugin<F> · Registry<F>              [Registry]          │
@@ -60,6 +70,15 @@ plane asked for whether or not it lies there: choosing the plane is the reader's
 ```
 
 ### 2.2 How an analysis runs
+
+This pipeline is the `analyse` query; it does not itself add a document node. The session's
+separate stateful path is `picture` → `outline` → `frame`. Each successful tool call adds a
+versioned statement to the `vis` layer; `open` and `save` read/write that document. Rebuilding
+with the same tool, parameters and input keys reuses the successful cached datum, so a stored
+picture is decoded once per session. `polygons` returns an outline in pixels or world
+coordinates, and `sections` samples two placed views at requested stations and returns
+extents plus a rounded-rectangle `profile` path suggestion. These are vision measurements,
+not an automatic mesh or B-rep reconstruction.
 
 ```
 analyse(image, ask)
@@ -104,18 +123,22 @@ one question; `kernel` knows only ports, `std` implements them, `cli` sees only 
 | Plugin: one struct, `impl Plugin<F>`, its tests | `std/src/<family>/<plugin>.rs` |
 | Registration: `pub fn register(b: &mut VisionBuilder)` | `std/src/<family>/mod.rs` |
 
-`Plugin`, `Registry`, `Registries`, `Attempt` behave exactly as in krly3d.
+`plugin.rs` re-exports `Plugin`, `Registry` and the other mould types from
+`krly3d_core`; the vision families bind them to krlyvis's own `Context`. `Attempt` and the
+shared request/value types also come from `krly3d_core`.
 
 ### 3.2 Families
 
 | Family | Key | Request → Response | Plugins | Contract |
 |---|---|---|---|---|
-| `read` | format | bytes → `Gray` | `pnm` (P2 P3 P5 P6, 8/16 bit) | decodes to the expected image; half a file is a format error |
+| `read` | format | bytes → `Gray` | `pnm` (P2 P3 P5 P6, 8/16 bit), `png`, `jpeg` | decodes to the expected image; malformed data is a format error |
+| `make` | tool | parameters + prior `Datum`s → `Datum` | `picture`, `outline`, `frame` | makes a picture, extracted outline, or placed outline |
 | `detect` | detector | `Gray` → segments | `lsd` | each edge of a drawn quadrilateral found within 0.5 px covering 80%; ≤ 1 segment in noise |
 | `vanish` | method | segments → vanishing points | `vote` | three known points (one at infinity) found exactly, with exactly their segments, despite clutter |
 | `camera` | method | vanishing points → `Camera` | `given`, `centred` (chain `camera`); `orthocentre` | a known camera's focal length, centre and axes come back to 1e-9 |
 | `measure` | method | camera + plane + segments → lengths | `plane` | segments of a known wall measure to 1e-9 |
 | `depth` | method | camera + segments (+ eye height or a known standing height) → standing segments | `ground` | posts of known height drawn by a known camera come back to 1e-9; a slanting segment is not a post; eye height and a known post give the same unit |
+| `outline` | method | image + region/seed/threshold → polygons | `trace`, `mask` | extracts the selected foreground subject |
 | `stage` | name | `Scene` → `Scene` | `detect`, `vanish`, `camera`, `measure`, `depth` | image and question are left unchanged |
 
 ### 3.3 Mathematics
@@ -143,17 +166,23 @@ krlyvis call analyse path=bridge.pgm plane=xz known=s12=4.5
 krly3d --peer vis=krlyvis   krly3d starts krlyvis and answers its methods as `vis.…`
 ```
 
-Methods: `methods`, and `analyse` (query) with `path` (required), `focal` (0 = unknown),
+Methods include session operations `methods`, `open` and `save`; queries `analyse`,
+`polygons` and `sections`; and the stateful tools `picture`, `outline` and `frame`.
+`analyse` takes exactly one of `path` or a stored picture `node`, plus `focal` (0 = unknown),
 `camera` (`camera` or `orthocentre`), `plane` (`xz`, `yz`, `xy`, empty = none), `known`
 (`s12=4.5`; in the plane, or as a standing height), `eye` (the camera's height, 0 =
 unknown) and `show`. The reply's text is the report below; its data holds the same
-facts with every segment, for a client that computes with them.
+facts with every segment, for a client that computes with them. The `picture` tool supports
+`.png`, `.jpg`, `.jpeg`, `.pgm`, `.ppm` and `.pnm`; it reads a file of at most 256 MiB.
 
 A peer (`krly3d_cli::peer`) is a child process spoken to in the plain dialect, one line
 out and one back; its method list is read once when it starts. `Joined` serves a session
 and its peers as one endpoint, so over MCP the agent sees krly3d's tools and `vis.analyse`
 side by side and can measure a photograph while it models. A call to a peer blocks the
-session until the answer comes, as every JSON-RPC call on one connection does.
+session until the answer comes, as every JSON-RPC call on one connection does. The link is
+not a callback channel: a request made by the peer while krly3d awaits its reply is refused
+with a busy error, and a notification is ignored. Peer calls inside `batch`, asynchronous
+forwarding and cancellation propagation are not implemented.
 
 ### 3.5 The report
 
@@ -177,17 +206,17 @@ is minus the camera's height.
 package/krlyvis/
 ├── SPEC.md
 └── crates/
-    ├── kernel/src/             # krlyvis-kernel: contracts and orchestration
-    │   ├── plugin.rs  context.rs  builder.rs  vision.rs
+    ├── kernel/src/             # krlyvis-kernel: vision contracts and orchestration
+    │   ├── plugin.rs (re-export)  context.rs  builder.rs  vision.rs  model.rs
+    │   ├── datum.rs  frame.rs  report.rs  scene.rs
     │   ├── image.rs            # Gray, Pixel (pixel centres at i + 0.5, y down)
-    │   ├── scene.rs            # Scene, Ask, Axis, Known
-    │   ├── report.rs
     │   └── ports/
-    │       ├── sample.rs       # drawn polygons, noise, a known camera (for contracts)
-    │       └── <family>/{mod.rs, contract.rs}   read detect vanish camera measure depth stage
+    │       └── <family>/       # read detect vanish camera measure depth outline make stage
     ├── std/src/                # krlyvis-std: one file per plugin
     │   ├── lib.rs              # standard() -> VisionBuilder
-    │   ├── read/pnm.rs
+    │   ├── read/{pnm,png,jpeg}.rs
+    │   ├── make/{picture,outline,frame}.rs
+    │   ├── outline/{trace,mask,simplify}.rs
     │   ├── detect/lsd/{mod, field, region, rect, nfa, sampling}.rs
     │   ├── vanish/vote.rs
     │   ├── camera/{given, centred, orthocentre}.rs
@@ -203,7 +232,7 @@ package/krlyvis/
 
 ## 5. Verified and not verified
 
-Verified (2026-11-14): every plugin passes its contract; the drawn building gives
+Historical verification snapshot (2026-11-14): every plugin passed its contract; the drawn building gave
 f = 692.5 px for a true 700 (1.1%), the third vanishing point 0.5° off square, and every
 segment of the front wall measures within 1.5% of what the drawing camera gives for the
 same pixels. A 1600 × 900 picture is analysed in about 65 ms (release build; the debug build takes
@@ -224,7 +253,6 @@ nothing.
 
 ## 6. Next, on the same mould
 
-- `read`: PNG and JPEG need a decoder crate (to be agreed); until then convert with Pillow.
 - `ellipse` family: circles seen as ellipses (arches, columns), their plane and radius.
 - `repeat` stage: spacing of repeated elements (windows, pillars) along an axis.
 - `region` stage: which segments lie on which face, so that a plane measures only its own
@@ -233,3 +261,26 @@ nothing.
 - `undistort` stage: one-parameter radial distortion from the straightness of long edges.
 - An overlay image of the segments in the reply, which MCP passes to the agent as an image.
 - Calls to a peer inside a krly3d `batch` (today a batch reaches only the local session).
+
+
+### Placed outline evidence
+
+Placed polygon values additionally carry `evidence` with `kind: "raster"`, source
+`krlyvis.placed-pixel-outline/1`, unknown measurement uncertainty, the frame pixel unit
+and extraction threshold. Fractional simplified coordinates do not establish subpixel
+measurement accuracy. The CLI `polygons` response also includes the resolved `node@version`
+so consumers can pin the evidence. See [likeness station contract](../../docs/LIKENESS-STATIONS.md).
+
+
+### Hole-preserving contour option
+
+`outline method=trace-holes` selects the same connected component as `trace` but retains
+its interior voids. It returns one outer loop first and oppositely wound hole loops.
+Exact pixel-edge corners are kept (collinear points removed); zero displacement satisfies
+the requested nonnegative simplification tolerance. Ambiguous corner contacts fail with
+a geometry diagnostic. The original default `trace` continues filling holes.
+
+Outline `area` measurements subtract interior loop areas; placed values now expose
+`material_area` in world units squared. This is contour geometry, not a measured uncertainty
+bound. The reconstruction pilot assumes those visible voids are through-holes of a uniform
+extrusion; hidden/blind cavities and other disconnected components are unresolved.

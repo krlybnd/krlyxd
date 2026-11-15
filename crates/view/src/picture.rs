@@ -3,7 +3,7 @@
 //! The file is named after what the query makes, because a module `render` inside the
 //! folder `render` would only repeat the name of its parent.
 
-use super::{base64, paint_param, png, shot_params, Shot};
+use super::{base64, image_params, paint_param, png, Shot};
 use crate::ports::render::CHANNELS;
 use krly3d_core::{Attempt, Error, Id};
 use krly3d_kernel::ports::query::{Answer, Query, QueryRequest};
@@ -21,28 +21,34 @@ impl Plugin<Query> for Picture {
         Some(Schema {
             about: "a picture of the model as a PNG image: every face shaded by how it is turned, in its paint if given, dark lines where faces meet",
             inputs: (0, 0),
-            params: [shot_params(), vec![paint_param()]].concat(),
+            params: [image_params(), vec![paint_param()]].concat(),
         })
     }
 
     fn call(&self, cx: &Context, request: &QueryRequest) -> Attempt<Answer> {
-        match Shot::take(cx, request) {
-            Attempt::Done(shot) => pictured(&shot).into(),
+        let result = match Shot::take(cx, request) {
+            Attempt::Done(shot) => pictured(cx, &shot).into(),
             Attempt::Declined(reason) => Attempt::Declined(reason),
             Attempt::Failed(error) => Attempt::Failed(error),
-        }
+        };
+        cx.publish_control(|| result).unwrap_or_else(Attempt::Failed)
     }
 }
 
-fn pictured(shot: &Shot) -> Result<Answer, Error> {
-    let file = png::encode(shot.image.width(), shot.image.height(), CHANNELS, &shot.image.pixels)?;
+fn pictured(cx: &Context, shot: &Shot) -> Result<Answer, Error> {
+    cx.check_control()?;
+    let file =
+        png::encode_checked(shot.image.width(), shot.image.height(), CHANNELS, &shot.image.pixels, &|| {
+            cx.check_control()
+        })?;
     let mut data = shot.data();
-    data.insert("png".to_string(), Value::from(base64::encode(&file)));
-    Ok(Answer {
-        text: format!("{}\n", shot.headline("render", shot.tally().len())),
+    data.insert("png".to_string(), Value::from(base64::encode_checked(&file, &|| cx.check_control())?));
+    let answer = Answer {
+        text: format!("{}\n", shot.headline("render", shot.tally(cx)?.len())),
         data: Value::Map(data),
         exact: shot.exactness(),
-    })
+    };
+    cx.publish_control(|| answer)
 }
 
 #[cfg(test)]

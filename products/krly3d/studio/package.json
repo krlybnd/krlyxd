@@ -1,0 +1,38 @@
+{
+  "name": "@krly3d/studio",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config web/vite.config.ts",
+    "build": "npm run check:dom && tsc --noEmit -p web/tsconfig.json && vite build --config web/vite.config.ts",
+    "service": "deno task service",
+    "check:service": "deno check service/main.ts",
+    "test:service": "deno test --allow-read --allow-write --allow-run --allow-env --allow-sys=homedir --allow-net service/",
+    "proto": "buf generate",
+    "test:e2e": "playwright test",
+    "check:dom": "node ssot/check-dom-contract.mjs"
+  },
+  "dependencies": {
+    "@bufbuild/protobuf": "2.17.0",
+    "@connectrpc/connect": "2.3.0",
+    "@connectrpc/connect-node": "2.3.0",
+    "@connectrpc/connect-web": "2.3.0",
+    "@langchain/langgraph": "1.7.4",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "three": "0.187.0",
+    "lucide-react": "1.73.0"
+  },
+  "devDependencies": {
+    "@bufbuild/protoc-gen-es": "2.17.0",
+    "@playwright/test": "1.65.1",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.187.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.8"
+  }
+}

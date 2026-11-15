@@ -1,0 +1,21 @@
+[package]
+name = "krly3d-mesh-cli"
+description = "Canonical v2 mesh operations over a single-shot command line"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-mesh"
+path = "src/main.rs"
+
+[dependencies]
+krlyxd = { path = "../../../../crates/krlyxd" }
+krly3d-mesh = { path = "../api" }
+krly3d-mesh-engine = { path = "../engine" }
+serde_json = "1.0"
+signal-hook = { version = "0.3", default-features = false }
+libc = "0.2"
+
+[lints]
+workspace = true

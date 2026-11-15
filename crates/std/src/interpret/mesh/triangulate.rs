@@ -8,71 +8,106 @@
 //! flipped or halved, so that the neighbouring faces keep sharing their points.
 
 use super::layout::Layout;
+use super::{Abort, Work};
 use krly3d_core::math::{Point3, Uv};
 use krly3d_kernel::ports::surface::Surface;
 use std::collections::{BTreeMap, BTreeSet};
 
 /// Rounds of refinement at most, and triangles at most: past them the face is too fine
 /// for the tolerance asked and is refused rather than allowed to eat the memory.
-const ROUNDS: usize = 40;
-const MOST: usize = 400_000;
-/// Rounds of flips at most; each round flips many sides at once.
-const FLIP_ROUNDS: usize = 200;
+#[derive(Clone, Copy)]
+pub(super) struct Quality {
+    pub refinement_rounds: usize,
+    pub triangles: usize,
+    pub flip_rounds: usize,
+}
+
+impl Default for Quality {
+    fn default() -> Self {
+        Self { refinement_rounds: 40, triangles: 400_000, flip_rounds: 200 }
+    }
+}
 
 fn cross(o: [f64; 2], a: [f64; 2], b: [f64; 2]) -> f64 {
     (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
 }
 
-fn signed_area(flat: &[[f64; 2]], polygon: &[usize]) -> f64 {
-    (0..polygon.len())
-        .map(|i| {
-            let (a, b) = (flat[polygon[i]], flat[polygon[(i + 1) % polygon.len()]]);
-            a[0] * b[1] - b[0] * a[1]
-        })
-        .sum::<f64>()
-        * 0.5
+fn signed_area(work: &mut Work<'_>, flat: &[[f64; 2]], polygon: &[usize]) -> Result<f64, Abort> {
+    let mut sum = -0.0;
+    for i in 0..polygon.len() {
+        work.step()?;
+        let (a, b) = (flat[polygon[i]], flat[polygon[(i + 1) % polygon.len()]]);
+        sum += a[0] * b[1] - b[0] * a[1];
+    }
+    Ok(sum * 0.5)
 }
 
 /// Triangles of the layout's points, all counter-clockwise in the plane, refined to the
 /// tolerance; the layout gains the points the refinement adds.
 pub(super) fn triangles(
+    work: &mut Work<'_>,
     layout: &mut Layout,
     surface: &dyn Surface,
     points: &mut Vec<Point3>,
     tolerance: f64,
-) -> Result<Vec<[usize; 3]>, String> {
+) -> Result<Vec<[usize; 3]>, Abort> {
+    work.check()?;
     let mut outer = layout.outer.clone();
-    if signed_area(&layout.flat, &outer) < 0.0 {
+    if signed_area(work, &layout.flat, &outer)? < 0.0 {
         outer.reverse();
     }
     let mut holes = layout.holes.clone();
     for hole in &mut holes {
-        if signed_area(&layout.flat, hole) > 0.0 {
+        work.step()?;
+        if signed_area(work, &layout.flat, hole)? > 0.0 {
             hole.reverse();
         }
     }
-    let polygon = bridged(&layout.flat, outer, holes);
-    let mut found = clipped(&layout.flat, polygon);
-    flip(layout, &mut found);
-    refine(layout, surface, points, tolerance, &mut found)?;
+    let polygon = bridged(work, &layout.flat, outer, holes)?;
+    let mut found = clipped(work, &layout.flat, polygon)?;
+    flip(work, layout, &mut found)?;
+    refine(work, layout, surface, points, tolerance, &mut found)?;
     Ok(found)
 }
 
 /// Holes joined to the outline, rightmost first: from the rightmost point of a hole to a
 /// point of the outline it can see.
-fn bridged(flat: &[[f64; 2]], mut outer: Vec<usize>, mut holes: Vec<Vec<usize>>) -> Vec<usize> {
-    holes.sort_by(|a, b| {
-        let right = |hole: &Vec<usize>| hole.iter().map(|i| flat[*i][0]).fold(f64::NEG_INFINITY, f64::max);
-        right(b).total_cmp(&right(a))
-    });
-    for hole in holes {
-        let Some(m) = (0..hole.len()).max_by(|a, b| flat[hole[*a]][0].total_cmp(&flat[hole[*b]][0])) else {
-            continue;
-        };
+fn bridged(
+    work: &mut Work<'_>,
+    flat: &[[f64; 2]],
+    mut outer: Vec<usize>,
+    holes: Vec<Vec<usize>>,
+) -> Result<Vec<usize>, Abort> {
+    // The old stable sort repeatedly scanned entire holes in its comparator. Order
+    // by the same total-order float key and original index, checking every point.
+    let mut ordered = BTreeMap::new();
+    for (index, hole) in holes.into_iter().enumerate() {
+        work.step()?;
+        let mut right = f64::NEG_INFINITY;
+        for i in &hole {
+            work.step()?;
+            right = right.max(flat[*i][0]);
+        }
+        let bits = right.to_bits();
+        let key = if bits >> 63 == 1 { !bits } else { bits | (1 << 63) };
+        ordered.insert((std::cmp::Reverse(key), index), hole);
+    }
+    for (_, hole) in ordered {
+        work.step()?;
+        let mut rightmost: Option<usize> = None;
+        for i in 0..hole.len() {
+            work.step()?;
+            rightmost = Some(match rightmost {
+                Some(m) if flat[hole[i]][0].total_cmp(&flat[hole[m]][0]).is_lt() => m,
+                _ => i,
+            });
+        }
+        let Some(m) = rightmost else { continue };
         let point = flat[hole[m]];
         // The nearest side of the outline that a ray to the right meets, and its end to the right.
         let mut best: Option<(f64, usize)> = None;
         for i in 0..outer.len() {
+            work.step()?;
             let (a, b) = (flat[outer[i]], flat[outer[(i + 1) % outer.len()]]);
             if (a[1] - point[1]) * (b[1] - point[1]) > 0.0 || a[1] == b[1] {
                 continue;
@@ -90,6 +125,7 @@ fn bridged(flat: &[[f64; 2]], mut outer: Vec<usize>, mut holes: Vec<Vec<usize>>)
             let (hit, end) = ([x, point[1]], flat[outer[target]]);
             let mut angle = f64::INFINITY;
             for (index, candidate) in outer.iter().enumerate() {
+                work.step()?;
                 let at = flat[*candidate];
                 let inside = cross(point, hit, at) >= 0.0
                     && cross(hit, end, at) >= 0.0
@@ -104,68 +140,100 @@ fn bridged(flat: &[[f64; 2]], mut outer: Vec<usize>, mut holes: Vec<Vec<usize>>)
             }
         }
         let mut joined = Vec::with_capacity(outer.len() + hole.len() + 2);
-        joined.extend_from_slice(&outer[..=target]);
-        joined.extend(hole[m..].iter().chain(hole[..=m].iter()).copied());
+        for id in outer[..=target].iter().chain(hole[m..].iter()).chain(hole[..=m].iter()) {
+            work.step()?;
+            joined.push(*id);
+        }
         joined.push(outer[target]);
-        joined.extend_from_slice(&outer[target + 1..]);
+        for id in &outer[target + 1..] {
+            work.step()?;
+            joined.push(*id);
+        }
         outer = joined;
     }
-    outer
+    Ok(outer)
 }
 
 /// Cuts ears off a counter-clockwise polygon until three points are left.
-fn clipped(flat: &[[f64; 2]], mut polygon: Vec<usize>) -> Vec<[usize; 3]> {
+fn clipped(
+    work: &mut Work<'_>,
+    flat: &[[f64; 2]],
+    mut polygon: Vec<usize>,
+) -> Result<Vec<[usize; 3]>, Abort> {
     let mut found = Vec::with_capacity(polygon.len());
     while polygon.len() > 3 {
+        work.step()?;
         let count = polygon.len();
-        let ear = (0..count).find(|i| {
-            let (a, b, c) = (polygon[(i + count - 1) % count], polygon[*i], polygon[(i + 1) % count]);
+        let mut ear = None;
+        for i in 0..count {
+            work.step()?;
+            let (a, b, c) = (polygon[(i + count - 1) % count], polygon[i], polygon[(i + 1) % count]);
             if cross(flat[a], flat[b], flat[c]) <= 0.0 {
-                return false;
+                continue;
             }
-            !polygon.iter().any(|other| {
+            let mut blocked = false;
+            for other in &polygon {
+                work.step()?;
                 let at = flat[*other];
                 let shared = [a, b, c].iter().any(|corner| flat[*corner] == at);
-                !shared
+                if !shared
                     && cross(flat[a], flat[b], at) >= 0.0
                     && cross(flat[b], flat[c], at) >= 0.0
                     && cross(flat[c], flat[a], at) >= 0.0
-            })
-        });
+                {
+                    blocked = true;
+                    break;
+                }
+            }
+            if !blocked {
+                ear = Some(i);
+                break;
+            }
+        }
         // Rounding can leave no clean ear; the most convex corner is cut then.
-        let i = ear.unwrap_or_else(|| {
-            (0..count)
-                .max_by(|x, y| {
-                    let turn = |i: usize| {
-                        cross(
-                            flat[polygon[(i + count - 1) % count]],
-                            flat[polygon[i]],
-                            flat[polygon[(i + 1) % count]],
-                        )
-                    };
-                    turn(*x).total_cmp(&turn(*y))
-                })
-                .unwrap_or(0)
-        });
+        let i = match ear {
+            Some(i) => i,
+            None => {
+                let turn = |i: usize| {
+                    cross(
+                        flat[polygon[(i + count - 1) % count]],
+                        flat[polygon[i]],
+                        flat[polygon[(i + 1) % count]],
+                    )
+                };
+                let mut best = 0;
+                for i in 0..count {
+                    work.step()?;
+                    if !turn(i).total_cmp(&turn(best)).is_lt() {
+                        best = i;
+                    }
+                }
+                best
+            }
+        };
         found.push([polygon[(i + count - 1) % count], polygon[i], polygon[(i + 1) % count]]);
         polygon.remove(i);
     }
     if polygon.len() == 3 {
         found.push([polygon[0], polygon[1], polygon[2]]);
     }
-    found
+    Ok(found)
 }
 
 /// For every free side, the two triangles beside it with the corner of each opposite it.
 /// With `cuttable`, only the sides between two different points in space: a side between
 /// two layouts of one point (along a pole, across a seam) has no middle to cut at.
+type Sides = BTreeMap<(usize, usize), Vec<(usize, usize)>>;
+
 fn sides(
+    work: &mut Work<'_>,
     triangles: &[[usize; 3]],
     layout: &Layout,
     cuttable: bool,
-) -> BTreeMap<(usize, usize), Vec<(usize, usize)>> {
-    let mut map: BTreeMap<(usize, usize), Vec<(usize, usize)>> = BTreeMap::new();
+) -> Result<Sides, Abort> {
+    let mut map = Sides::new();
     for (index, triangle) in triangles.iter().enumerate() {
+        work.step()?;
         for k in 0..3 {
             let (a, b) = (triangle[k], triangle[(k + 1) % 3]);
             let key = (a.min(b), a.max(b));
@@ -174,17 +242,19 @@ fn sides(
             }
         }
     }
-    map
+    Ok(map)
 }
 
 /// Lawson flips: a side whose opposite corners see it under more than a straight angle
 /// is replaced by the other diagonal of its quadrilateral, while that is convex. Each round
 /// flips every such side whose two triangles no other flip of the round has touched.
-fn flip(layout: &Layout, triangles: &mut [[usize; 3]]) {
+fn flip(work: &mut Work<'_>, layout: &Layout, triangles: &mut [[usize; 3]]) -> Result<(), Abort> {
     let flat = &layout.flat;
-    for _ in 0..FLIP_ROUNDS {
+    for _ in 0..work.quality.flip_rounds {
+        work.check()?;
         let mut touched = BTreeSet::new();
-        for ((a, b), beside) in sides(triangles, layout, false) {
+        for ((a, b), beside) in sides(work, triangles, layout, false)? {
+            work.step()?;
             let [(first, c), (second, d)] = beside[..] else { continue };
             if touched.contains(&first)
                 || touched.contains(&second)
@@ -217,35 +287,47 @@ fn flip(layout: &Layout, triangles: &mut [[usize; 3]]) {
             }
         }
         if touched.is_empty() {
-            return;
+            return Ok(());
         }
     }
+    Ok(())
 }
 
 /// Halves the longest free side of every triangle the surface leaves by more than the
 /// tolerance, in rounds, flipping after each.
 fn refine(
+    work: &mut Work<'_>,
     layout: &mut Layout,
     surface: &dyn Surface,
     points: &mut Vec<Point3>,
     tolerance: f64,
     triangles: &mut Vec<[usize; 3]>,
-) -> Result<(), String> {
+) -> Result<(), Abort> {
     let mut cut_at: BTreeMap<(usize, usize), Vec<usize>> = BTreeMap::new();
     let same = 1e-3 * tolerance;
-    for _ in 0..ROUNDS {
-        let rough: Vec<usize> =
-            (0..triangles.len()).filter(|t| off(layout, surface, points, triangles[*t], tolerance)).collect();
+    for _ in 0..work.quality.refinement_rounds {
+        work.check()?;
+        let mut rough = Vec::new();
+        for (t, triangle) in triangles.iter().enumerate() {
+            work.step()?;
+            if off(layout, surface, points, *triangle, tolerance) {
+                rough.push(t);
+            }
+        }
         if rough.is_empty() {
             return Ok(());
         }
-        if triangles.len() > MOST {
-            return Err(format!("the face needs more than {MOST} triangles for a tolerance of {tolerance}"));
+        if triangles.len() > work.quality.triangles {
+            let most = work.quality.triangles;
+            return Err(Abort::Budget(format!(
+                "the face needs more than {most} triangles for a tolerance of {tolerance}"
+            )));
         }
-        let beside = sides(triangles, layout, true);
+        let beside = sides(work, triangles, layout, true)?;
         let mut touched = BTreeSet::new();
         let mut halved = 0;
         for triangle in rough {
+            work.step()?;
             if touched.contains(&triangle) {
                 continue;
             }
@@ -260,7 +342,15 @@ fn refine(
             };
             let key = (x.min(y), x.max(y));
             let around = &beside[&key];
-            if around.iter().any(|(t, _)| touched.contains(t)) {
+            let mut already_touched = false;
+            for (t, _) in around {
+                work.step()?;
+                if touched.contains(t) {
+                    already_touched = true;
+                    break;
+                }
+            }
+            if already_touched {
                 continue;
             }
             let middle = Uv::from(0.5 * (layout.uv[x].coords + layout.uv[y].coords));
@@ -269,8 +359,16 @@ fn refine(
             // Copies across a seam meet at the same point in space; two sides from one pole
             // to one point do not, and get a point each.
             let made = cut_at.entry(pair).or_default();
-            let new_id = match made.iter().find(|id| (points[**id] - at).norm() <= same) {
-                Some(id) => *id,
+            let mut known = None;
+            for id in made.iter() {
+                work.step()?;
+                if (points[*id] - at).norm() <= same {
+                    known = Some(*id);
+                    break;
+                }
+            }
+            let new_id = match known {
+                Some(id) => id,
                 None => {
                     points.push(at);
                     made.push(points.len() - 1);
@@ -282,6 +380,7 @@ fn refine(
             layout.ids.push(new_id);
             let m = layout.ids.len() - 1;
             for (t, _) in around {
+                work.step()?;
                 let corners = triangles[*t];
                 touched.insert(*t);
                 // The triangle becomes two, each keeping its turning sense.
@@ -295,7 +394,7 @@ fn refine(
         if halved == 0 {
             return Ok(());
         }
-        flip(layout, triangles);
+        flip(work, layout, triangles)?;
     }
     Ok(())
 }

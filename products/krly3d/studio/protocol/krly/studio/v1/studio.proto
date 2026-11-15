@@ -1,0 +1,160 @@
+syntax = "proto3";
+package krly.studio.v1;
+
+// Browser gRPC-Web/Connect and the Deno service share generated Protobuf types.
+// Status events are observable operations and concise summaries, never private reasoning.
+service StudioService {
+  rpc Health(HealthRequest) returns (HealthResponse);
+  rpc Upload(UploadRequest) returns (UploadResponse);
+  rpc Run(RunRequest) returns (stream RunResponse);
+  rpc Transcribe(TranscribeRequest) returns (TranscribeResponse);
+  rpc Download(DownloadRequest) returns (DownloadResponse);
+  rpc Cad(CadRequest) returns (CadResponse);
+}
+message HealthRequest {}
+message HealthResponse {
+  bool chat = 1;
+  bool vision = 2;
+  bool speech = 3;
+  bool embedding = 4;
+  string model = 5;
+  bool native = 6;
+  string message = 7;
+  bool native_character = 8; // field + print binaries and fixed recipe available
+}
+message UploadRequest { string name = 1; string mime = 2; bytes data = 3; }
+message UploadResponse { string id = 1; string name = 2; string mime = 3; }
+message RunRequest {
+  string session_id = 1;
+  string text = 2;
+  repeated string attachment_ids = 3;
+  string mode = 4; // chat | build | demo | complex | character (fixed volumetric recipe)
+  double height = 5;
+  double pixel_unit = 6;
+  double tolerance = 7;
+  repeated double seed = 8;
+  string question_id = 9;
+  repeated string answer_ids = 10;
+}
+message Mesh {
+  repeated double positions = 1;
+  repeated uint32 indices = 2;
+  double volume = 3;
+  double area = 4;
+  uint32 open_edges = 5;
+  string source = 6;
+  string units = 7; // mm for the character trial; empty means model units
+}
+message Artifact { string id = 1; string name = 2; string mime = 3; uint32 size = 4; }
+message Choice { string id = 1; string label = 2; string description = 3; }
+message Question {
+  string id = 1;
+  string title = 2;
+  string reason = 3;
+  repeated Choice options = 4;
+}
+message Source { string title = 1; string url = 2; }
+message UsageCall {
+  string id = 1;
+  string stage = 2;
+  string model = 3;
+  uint32 input_tokens = 4;
+  uint32 output_tokens = 5;
+  uint32 cached_tokens = 6;
+  uint32 total_tokens = 7;
+  double cost_usd = 8;
+  string cost_kind = 9; // reported | estimated | unknown
+  bool tokens_known = 10;
+  uint32 search_calls = 11;
+}
+message Usage { repeated UsageCall calls = 1; }
+message SketchLoop { repeated double points_xy = 1; bool hole = 2; }
+// Analytic recipe curves; tessellation is only a browser display operation.
+message CadCurve {
+  string kind = 1; // line | arc
+  repeated double to = 2; // absolute XY endpoint
+  repeated double center = 3; // arc only, absolute XY
+  bool clockwise = 4; // viewed from +Z
+}
+message CadSketch {
+  string plane = 1; // XY
+  double offset = 2; // world Z, mm
+  repeated double start = 3;
+  repeated CadCurve curves = 4; // implicit straight closure if needed
+}
+message CadParameter {
+  string name = 1;
+  repeated double values = 2;
+  string unit = 3;
+  string text = 4; // bounded nonnumeric mode, e.g. through_all
+}
+message CadFeature {
+  string id = 1;
+  string title = 2;
+  string kind = 3;
+  repeated string inputs = 4;
+  repeated CadParameter parameters = 5;
+  CadSketch sketch = 6;
+  repeated string selections = 7; // native edge selectors for fillet
+}
+message Construction {
+  uint32 version = 1;
+  string coordinate_system = 2; // right_handed_z_up
+  string units = 3;
+  repeated double source_center = 4;
+  repeated double source_bounds = 5; // min_x,min_y,max_x,max_y in source coordinates
+  string sketch_plane = 6; // XY
+  double sketch_offset = 7;
+  repeated SketchLoop sketch_loops = 8; // first outer loop, remaining holes
+  repeated double extrusion_direction = 9; // unit vector in world coordinates
+  double extrusion_distance = 10;
+  // v2: cumulative completed CAD prefix, <=16 features / <=8 solid stages.
+  // v1 image-contour fields above remain unchanged; v2 does not use them.
+  repeated CadFeature features = 11;
+  string active_feature_id = 12; // ID of this event's actual native solid mesh
+}
+message RunResponse {
+  string run_id = 1;
+  uint32 seq = 2;
+  string kind = 3;
+  string phase = 4;
+  string text = 5;
+  Mesh mesh = 6;
+  Artifact artifact = 7;
+  double elapsed_ms = 8;
+  Question question = 9;
+  Usage usage = 10;
+  repeated Source sources = 11;
+  Construction construction = 12; // native B-rep feature/frame data
+}
+message TranscribeRequest { bytes data = 1; string mime = 2; }
+message TranscribeResponse { string text = 1; }
+message DownloadRequest { string id = 1; }
+message DownloadResponse { bytes data = 1; string name = 2; string mime = 3; }
+// A separate typed CAD document lane; it does not reinterpret chat history.
+message CadRequest {
+  string session_id = 1;
+  string action = 2; // start | review | show | undo | redo
+  string source = 3; // bounded .typ source for start/review
+  string model_id = 4; // required on review/undo/redo
+  uint32 base_revision = 5;
+}
+message CadChange { string kind = 1; string id = 2; }
+message CadPlanStep { string id = 1; string operation = 2; repeated string inputs = 3; }
+message CadCheck { string id = 1; string status = 2; string observed = 3; }
+message CadResponse {
+  string model_id = 1;
+  uint32 revision = 2;
+  uint32 active_entry = 3;
+  uint32 accepted_entries = 4;
+  string status = 5;
+  bool reviewed = 6;
+  bool geometry_verified = 7;
+  string plan_id = 8;
+  string target_id = 9;
+  repeated CadChange changes = 10;
+  repeated CadPlanStep plan = 11;
+  repeated CadCheck checks = 12;
+  Mesh mesh = 13;
+  string preview_issue = 14;
+}

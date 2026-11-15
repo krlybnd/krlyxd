@@ -1,0 +1,29 @@
+k3d 1
+layer geo
+part = box d=54 h=6 w=84
+front-left-hole = cylinder at=-30,-17,-1 h=13 r=3
+part = subtract part front-left-hole
+front-right-hole = cylinder at=30,-17,-1 h=13 r=3
+part = subtract part front-right-hole
+rear-left-hole = cylinder at=-30,12,-1 h=13 r=3
+part = subtract part rear-left-hole
+rear-right-hole = cylinder at=30,12,-1 h=13 r=3
+part = subtract part rear-right-hole
+front-left-boss = cylinder at=-14,-10,6 h=5 r=5
+part = union part front-left-boss
+front-right-boss = cylinder at=14,-10,6 h=5 r=5
+part = union part front-right-boss
+rear-left-boss = cylinder at=-14,9,6 h=5 r=5
+part = union part rear-left-boss
+rear-right-boss = cylinder at=14,9,6 h=5 r=5
+part = union part rear-right-boss
+back = box at=0,23,5 d=8 h=31 w=80
+part = union part back
+left-rib = box at=-37,8,5 d=26 h=19 w=4
+part = union part left-rib
+right-rib = box at=37,8,5 d=26 h=19 w=4
+part = union part right-rib
+left-window = cylinder at=-20,18,22 r=7 to=-20,28,22
+part = subtract part left-window
+right-window = cylinder at=20,18,22 r=7 to=20,28,22
+part = subtract part right-window

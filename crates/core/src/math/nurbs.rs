@@ -1,4 +1,7 @@
 //! Non-uniform rational B-splines: the curves and surfaces that pass through sections
+//!
+//! Domain geometry support: deliberately retains krly3d error/accuracy semantics.
+//! This is not part of the neutral krlyxd API (see ADR 0008).
 //! where no closed form does.
 //!
 //! The algorithms are those of Piegl and Tiller, "The NURBS Book" (second edition):
@@ -253,9 +256,9 @@ impl Surface {
         for k in 0..=order.min(p) {
             for l in 0..=(order - k).min(q) {
                 let mut sum = Vector4::zeros();
-                for i in 0..=p {
-                    for j in 0..=q {
-                        sum += self.points[su - p + i][sv - q + j] * (nu[k][i] * nv[l][j]);
+                for (i, &u_basis) in nu[k].iter().enumerate().take(p + 1) {
+                    for (j, &v_basis) in nv[l].iter().enumerate().take(q + 1) {
+                        sum += self.points[su - p + i][sv - q + j] * (u_basis * v_basis);
                     }
                 }
                 homogeneous[k][l] = sum;

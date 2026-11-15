@@ -1,9 +1,9 @@
 //! The `view` query: a look at the model in words, for a reader without eyes — every
 //! face seen, by name, with its share of the image.
 
-use super::{shot_params, Shot};
+use super::{image_params, Shot};
 use krly3d_core::text::num;
-use krly3d_core::{Attempt, Id};
+use krly3d_core::{Attempt, Error, Id};
 use krly3d_kernel::ports::query::{Answer, Query, QueryRequest};
 use krly3d_kernel::schema::{Schema, Value};
 use krly3d_kernel::{Context, Plugin};
@@ -19,22 +19,28 @@ impl Plugin<Query> for Visible {
         Some(Schema {
             about: "what a picture of the model shows, in words: every face seen as node#face with its share of the image in percent, the largest first, and the share left empty",
             inputs: (0, 0),
-            params: shot_params(),
+            params: image_params(),
         })
     }
 
     fn call(&self, cx: &Context, request: &QueryRequest) -> Attempt<Answer> {
-        Shot::take(cx, request).map(|shot| described(&shot))
+        let result = match Shot::take(cx, request) {
+            Attempt::Done(shot) => described(cx, &shot).into(),
+            Attempt::Declined(reason) => Attempt::Declined(reason),
+            Attempt::Failed(error) => Attempt::Failed(error),
+        };
+        cx.publish_control(|| result).unwrap_or_else(Attempt::Failed)
     }
 }
 
-fn described(shot: &Shot) -> Answer {
-    let tally = shot.tally();
+fn described(cx: &Context, shot: &Shot) -> Result<Answer, Error> {
+    let tally = shot.tally(cx)?;
     let all = shot.image.seen.len();
     let share = |pixels: usize| 100.0 * pixels as f64 / all as f64;
     let mut text = format!("{}\n", shot.headline("view", tally.len()));
     let mut faces = Vec::with_capacity(tally.len());
     for (seen, pixels) in &tally {
+        cx.check_control()?;
         let (node, face) = (&shot.nodes[seen.body], &shot.bodies[seen.body].faces[seen.face].name);
         let name = format!("{node}#{face}");
         text.push_str(&format!("{name} ?{}%\n", percent(share(*pixels), *pixels)));
@@ -54,7 +60,8 @@ fn described(shot: &Shot) -> Answer {
         "background".to_string(),
         Value::map([("pixels", Value::from(empty)), ("share", Value::from(share(empty)))]),
     );
-    Answer { text, data: Value::Map(data), exact: shot.exactness() }
+    let answer = Answer { text, data: Value::Map(data), exact: shot.exactness() };
+    cx.publish_control(|| answer)
 }
 
 /// A share with one decimal. A face that is seen at all never reads as a share of zero.

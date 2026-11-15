@@ -144,12 +144,18 @@ impl VisionSession {
         if datum.shape().is_none() {
             return Err(Error::input(format!("`{node}` is a {}, which has no outline", datum.kind())));
         }
-        Ok(Reply {
-            ok: true,
-            text: format!("{node}: {}\n", summary(&datum)),
-            data: datum.value(),
-            exact: PIXEL,
-        })
+        let mut data = datum.value();
+        // Pin the peer reference alongside the complete coordinate snapshot, so a
+        // station report can cite it after this session's latest node changes.
+        let mut reference = NodeRef::parse(node)?;
+        if reference.version.is_none() {
+            reference.version =
+                self.model.nodes().find(|(name, _)| *name == reference.name).map(|(_, count)| count as u32);
+        }
+        if let Value::Map(fields) = &mut data {
+            fields.insert("node".into(), reference.to_string().into());
+        }
+        Ok(Reply { ok: true, text: format!("{node}: {}\n", summary(&datum)), data, exact: PIXEL })
     }
 
     /// Cross-sections across `axis` at the stations `at`, read from two placed outlines

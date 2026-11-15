@@ -1,6 +1,28 @@
 # krly3d – handoff notes
 
-State of the work. Read this first, then SPEC.md for the design.
+State of the work in the current tree. Read this first, then SPEC.md for the kernel design and
+the product architecture handoff for the accepted package boundaries. Historical verification
+figures below are snapshots from earlier checkpoints, not a report of today's baseline.
+
+## Current local execution direction
+
+The accepted local path now composes typed domain engines in one process with immutable
+shared artifacts and revision-checked publication. See [ADR 0011](docs/decisions/0011-shared-runtime.md)
+and [migration plan / usage](docs/SHARED-RUNTIME.md). The first host covers drawing evidence,
+retained planar B-rep and mesh, with optional native coarse preview, render and station
+likeness; `krly3d-reconstruct --stream` flushes seven ordered product events. Height edits reuse evidence,
+tolerance edits also reuse B-rep, and stale/foreign results cannot become current.
+Controlled edits/proposals now share the same cancellation/deadline boundary as
+initial drawing jobs. The CLI has separate options, shared output metadata and stream
+orchestration; output failure stops recovery writes and retracts the success manifest
+best effort. Full CLI lifecycle and sheet migration remain pending.
+CLI/MCP remain independently usable external adapters. CTM remains assembly/constraints.
+
+The Python process/sheet flow remains active until sheets and full CLI lifecycle
+(timeout/cancellation/backpressure) migrate; it is not obsolete. No files moved to `.tmp/` in this slice.
+Vision and planar wire adapters delegate to the same typed native implementations.
+Current integration evidence and uncommitted/unpushed status are in
+[DEVELOPMENT-STATUS](docs/DEVELOPMENT-STATUS.md); earlier test counts below are historical.
 
 ## Where things stand
 
@@ -13,10 +35,10 @@ OpenGeometry 3.0.0 has been removed from the working tree; nothing of it was cop
 | 1 Removal, workspace, `core`, plugin registry | done |
 | 2 Equations: `curve`, `surface`, `sweep`, `meet` | done |
 | 3 Process: `topo`, `model`, `stage`, `tool`, `content`, `measure`, `read`/`write` | done |
-| 4 Perception and the agent's loop | in part: session API, probe, trim, judge with expectations; queries, CLI and rendering are in unmerged agent copies (see below) |
+| 4 Perception and the agent's loop | implemented in the current tree: session API, probe, trim, judge/expectations, queries, CLI and rendering |
 | 5 General boolean | done for crossings with closed-form sections; tangent contact, tori being split and non-closed-form sections are declined |
 | 6 Chamfer, fillet, mirror | done (see the scope below); the column model was dropped by the owner |
-| 7 AI layer | `expect` judged; notes, watchers, proposals, sweep, history, contour not started |
+| 7 AI layer | `expect` claims are judged, including placement, face-name and likeness claims; notes, watchers, proposals, sweep, history and contour remain unimplemented |
 
 Solids can be modelled from text (`models/*.k3d`) and through the session API: profiles, extrusions,
 revolutions, the five primitives, transforms, patterns, mirror, union/subtract/intersect, chamfer and
@@ -39,7 +61,7 @@ The picture showed it a round later. The cause is closed in three places:
   given. Regression tests: `tests/kernel.rs` (the wrong strut is refused, the drawn one is kept) and
   `models/tesseract.k3d`.
 
-### Phase 0 of the foundation plan (2026-11-14)
+### Foundation work in the current tree
 
 The plan of SPEC.md chapter 8 (one foundation, many interpretations) was approved. Phase 0 is done:
 
@@ -51,13 +73,12 @@ The plan of SPEC.md chapter 8 (one foundation, many interpretations) was approve
   helpers under the `testing` feature for plugin crates.
 * Merged from the stopped agents: the queries agent's `index`, `keys`, names/anchors, the box-tree
   probe and the queries (`Context::derived` caches per body), and the export agent's STEP writer, now
-  `crates/exchange` (`krly3d-exchange`, query `step`). The export agent's mesh port was unfinished (it
-  names a missing contract and has no rules); it waits for phase 1, where `interpret::mesh` comes.
+  `crates/exchange` (`krly3d-exchange`, query `step`). Phase 1 has since added the `interpret::mesh`
+  port and B-rep tessellator described below; STL/OBJ/glTF exchange remains target work.
 * SPEC.md chapter 8 and `docs/architecture.drawio` (new page "One foundation, many interpretations").
-* Not done: switching krlyvis to the core mould. Its agent was editing it at the time; the switch is to
-  replace `package/krlyvis/crates/kernel/src/plugin.rs` with `pub use krly3d_core::plugin::*;`, add
-  `type Context = crate::context::Context;` to its families, and let `one_copy.rs` scan `package/` too.
-* Verified: 674 tests green (`cargo test --workspace`), clippy clean.
+* krlyvis now re-exports the shared plugin mould from `krly3d_core` (`package/krlyvis/crates/kernel/src/plugin.rs`).
+  Its families use their own `Context`, as required by the shared `Family` contract.
+* Historical snapshot: 674 tests passed at an earlier phase-0 checkpoint. This is not a current test count.
 
 ### Phase 1 of the foundation plan (2026-11-14)
 
@@ -76,8 +97,9 @@ The plan of SPEC.md chapter 8 (one foundation, many interpretations) was approve
 * Not done: performance (a 0.005 mesh of a sphere takes about a minute in a debug build, 3 s in
   release); slivers next to poles are allowed, not improved; mesh data is not exported yet (STL/glTF
   are phase 5 in `exchange`).
-* Verified: 681 tests green (`cargo test --workspace`), clippy clean; live through the CLI, the
-  tesseract strut meshes closed (0.05: 1084 triangles, volume 40.29 against the exact 41.79).
+* Historical snapshot: 681 tests passed at an earlier phase-1 checkpoint; this is not a current test count.
+  The implementation was exercised through the CLI, and the tesseract strut meshes closed
+  (0.05: 1084 triangles, volume 40.29 against the exact 41.79).
 
 ### Toolset for free-form models (2026-11-14)
 
@@ -117,29 +139,59 @@ The plan of SPEC.md chapter 8 (one foundation, many interpretations) was approve
   point's radius, all exact. The renderer draws lines only at creases (over ~20°) and depth steps.
 * Not built: corner blends where three edges meet.
 
-### Unmerged work of the background agents
-
-Three agents stopped on the usage limit. Their copies are in the session scratchpad
-(`wt-queries`, `wt-cli`, `wt-export`). They were taken before the boolean, the section rules, the judge
-stage, the predicates and the placement work, so a merge copies their own files and reconciles:
-`ToolRequest.sources`, the trim rules, and in `crates/cli/src/json.rs` the list of required parameters,
-which must read `param.required` instead of `param.default.is_none()`.
-
 ### Chamfer and fillet scope
 
 Built in place, without the boolean: convex straight edges between flat faces whose ends each meet one
 more flat face along straight edges; a fillet also needs that end face square to the edge (its end is
 then a circular arc). Concave edges, and fillets ending on a curved or slanted face, are declined.
 
-### krlyvis: the image reader (added 2026-11-14)
+### Claims, document cache, peer transport, and profile syntax
 
-`package/krlyvis/` holds a second kernel on the same mould, for reading one photograph: LSD segments,
-vanishing points by vote, the camera (focal length, axes) and lengths in a chosen plane. Its crates
-(`krlyvis-kernel`, `krlyvis-std`, `krlyvis-cli`, binary `krlyvis`) are workspace members and share
-`krly3d-core`. `package/krlyvis/SPEC.md` has the design, what is verified and what is not. The
-`Plugin`/`Registry` mould is a copy of `kernel/src/plugin.rs` because the kernel's `Context` carries
-geometry pipelines; hoisting the mould into `core` would remove the copy (not done, it edits the kernel).
-Only Netpbm files are read; JPEG/PNG need a decoder crate, which waits for the owner's approval.
+* The shared `krly3d_core::document` mould is used by both products. krly3d stores geometry
+  statements in `geo`; krlyvis stores `picture`, `outline` and `frame` statements in `vis`.
+  Nodes have versions, can be opened/saved as text, and successful builds are reused by a
+  content-derived key. krlyvis's session also exposes `polygons` and `sections` queries.
+* krly3d claims include numeric and face-name expectations, `contains=x,y,z`, `meets=node`,
+  and `iou:peer:drawing>=value`. `contains` counts the boundary as inside; `meets` is proved
+  by a common point found among the searched vertices, edges and faces, so failure to find one
+  is reported as unknown rather than proof of disjointness. `iou:` asks the peer for placed
+  polygons and compares sampled silhouettes through the raster likeness plugin.
+* The document cache memoizes successful node builds; a node build failure is retried. Separately,
+  B-rep mesh successes are cached by body `Arc`, context and tolerance. A deterministic
+  triangulation-budget decline is now memoized in that same bounded scope and exposed through
+  `BrepMesh::decline_stats`; untyped declines, layout declines and transient failures are retried.
+  This is not a content-hash or formally versioned cache. The user-facing mesh behavior is
+  recorded in [interpret](crates/kernel/src/ports/interpret/mod.rs) and
+  [BrepMesh](crates/std/src/interpret/mesh/mod.rs).
+* `profile` accepts `R cx,cy w,h r` for a rounded rectangle, in addition to path, circle and
+  ellipse forms. The radius must be positive and less than half the shorter side.
+* NURBS projection tries several nearby grid seeds and uses Gauss–Newton with step
+  halving to reduce distance. The thin, steeply swept band regression checks that surface
+  points project back onto themselves; projection remains numeric, not an exact solver
+  ([implementation and regression](crates/std/src/surface/nurbs.rs)).
+* `--listen <socket>` serves one Unix-socket client at a time while keeping the session and
+  peers alive across clients; `krly3d send <socket>` forwards stdin and copies the replies.
+  Full socket hangup now cancels local read-only queries through a per-connection
+  `CallControl`; normal write half-close still permits replies. The watcher is joined
+  when the connection ends. A fresh connection gets a fresh control. Render/probe,
+  image encoding and mesh work cooperate with cancellation. Mutating tools already
+  running are not preempted; external plugin side effects are not rolled back.
+  Peer calls are synchronous and one-at-a-time. Requests a peer sends while krly3d is waiting
+  are refused as busy (notifications are ignored); callbacks, peer calls inside `batch`,
+  asynchronous forwarding and cancellation propagation are not implemented.
+
+### krlyvis: stateful vision product
+
+`package/krlyvis/` is a separate current product made of workspace crates (`krlyvis-kernel`,
+`krlyvis-std`, `krlyvis-cli`, binary `krlyvis`). It uses the shared `krly3d_core` plugin mould,
+document, cache and claim grammar; its vision ports, data types and `Context` remain its own.
+The `VisionSession` is stateful: `picture`, `outline` and `frame` calls add versioned nodes to
+the `vis` document layer; `open`/`save` replay that document, `polygons` returns an outline,
+and `sections` derives rounded-rectangle profile suggestions from two placed views. `analyse`
+can read a path directly or use a stored picture node. PNM, PNG and JPEG readers are present.
+The outline workflow is deterministic and does not use a learned model. It is not a complete
+photo-to-CAD reconstruction system; real-photo depth, lens distortion and perspective-free
+camera ambiguity remain limitations described in `package/krlyvis/SPEC.md`.
 
 krlyvis has krly3d's command line: the transports in `crates/cli` now serve any
 `endpoint::Endpoint` (the krly3d `Session` is one, krlyvis's `VisionSession` another).
@@ -148,6 +200,72 @@ krlyvis has krly3d's command line: the transports in `crates/cli` now serve any
 the MCP dialect alike. The kernel's `methods` reply became the public `api::describe`.
 A peer's schema texts are leaked once at start (`peer::lasting`), because `Schema` holds
 `&'static str`; bounded by the size of its method list.
+
+### Raw seed and typed mesh pilot
+
+`crates/krlyxd` now owns the independent IDs, clocks, exactness, math aliases and quadrature;
+core preserves compatible re-exports. Error-coupled math, Accuracy and document/plugin/schema
+support remain in core. [ADR 0008](docs/decisions/0008-raw-foundation-contract.md)
+settles them as domain geometry support rather than pending raw exports. Shared coordinate,
+confidence, unknown/measured uncertainty and producer metadata now live in raw; mesh/view
+consume the validators without wire changes. One central Cargo/descriptor metadata gate
+and the existing production dependency gate enforce the foundation contract (#20 closed).
+See [raw kernel reference](docs/RAW-KERNEL.md).
+
+`products/krly3d/mesh/api` and `engine` provide a typed synchronous mesh contract and snapshot
+bridge. The legacy query and new bridge share one calculation path; the tessellator remains
+in its temporary geometry location. The descriptor advertises no events/cancel and rejects
+timeouts. See [mesh API](docs/MESH-API.md) for this unchanged v1 contract.
+
+Local Rust callers can use `execute_controlled` with an injected deadline or cancellation
+flag. Per-call contexts share services/caches; the tessellator and statistics stop
+cooperatively, and cache/result publication is serialized against cancellation. The
+[v2 operation runner](docs/MESH-OPERATIONS.md) now adds bounded Started/terminal events
+and detached background work. Separate [mesh CLI/MCP adapters](docs/MESH-ADAPTERS.md)
+now expose v2 through canonical CLI events and nonblocking MCP operation tools. Both load
+native models through the same engine helper. The subsequent legacy socket fix carries
+control to local read-only queries without changing their JSON-RPC/MCP reply shapes.
+`Session::call_with_control` also accepts a Rust-side deadline; no new legacy wire timeout
+field or progress stream is introduced. Peer forwarding cancellation remains #16;
+other domain contracts and events remain #26.
+
+### Current verification status
+
+Final integrated verification on rustc 1.99.0 (b940084d7 2026-09-28) passed: `cargo test --workspace`
+reported 1011 tests plus one compile-fail doctest (1012 total), 0 failed or ignored; `cargo clippy --workspace --all-targets -- -D warnings`
+passed unsuppressed; and `cargo fmt --all -- --check` passed. The earlier 721-test run and clippy
+failure were pre-fix baseline results; the first integrated wave passed 728 tests, the second 765,
+the third 783, the fourth 821, and the fifth 856. The latest standalone
+workspace run also completed its doctest phase successfully. All eight
+recorded legacy CLI JSON-RPC responses match the new build. The official Python MCP SDK
+smoke passes four CLI/MCP geometry-parity cases plus schema/error/deadline/cancellation
+checks against the new standalone adapters. Wave six passed 883 tests; wave seven adds
+32 tests for the [opt-in mesh preview](docs/MESH-PREVIEW.md), including source-face
+metadata, rasterization, interruption and legacy CLI/MCP image parity. Full tests,
+strict Clippy, fmt and fresh-binary compatibility passed after this integration.
+The new backend lives under `products/krly3d/view/mesh`; the active legacy facade and
+exact picking remain. #2 is closed; its remaining operation/event migration is in #26.
+#1 is closed under revised acceptance: the user retired named F-35/737/moai benchmarks and closed #18 as not planned. Standalone view contract migration remains #26; alternative validation will be selected later.
+
+The eighth wave extracts native loading and pinned source ownership into
+[the B-rep API/engine](docs/BREP-SNAPSHOTS.md), consumed by mesh through an explicit
+legacy geometry bridge. Ten runtime tests and one privacy doctest were added;
+full workspace gates and fresh-binary CLI/MCP compatibility passed again. This
+is an in-process ownership boundary; standalone B-rep/view contracts remain #26.
+
+Wave nine adds the [typed view API/renderer](docs/VIEW-API.md) under
+`products/krly3d/view/{api,renderer}`. Thirteen tests cover validation, legacy
+PNG/face parity, pinned ownership, controlled execution and timing. Full workspace
+gates and fresh-binary legacy/MCP compatibility passed again. A real model also
+rendered successfully through the public API example. The single-node local Rust
+contract is available; broader scene operations and a wire operation lifecycle remain #26.
+
+Wave ten adds [synchronous view wire 1.0 and standalone CLI/MCP](docs/VIEW-ADAPTERS.md)
+under `products/krly3d/view/{api,cli,mcp}`. A strict shared codec validates inputs,
+encodes PNG/provenance/quality and supplies the descriptor-derived tool schema.
+Six official SDK CLI/MCP camera/backend cases verify identical PNGs and metadata
+except process-local identity/timings. No wire cancellation, timeout or event stream
+is advertised: the synchronous MCP loop waits for rendering and writes.
 
 ## Build and test
 
@@ -158,14 +276,14 @@ cargo clippy --workspace --all-targets
 cargo fmt --all -- --check
 ```
 
-This machine has no system C toolchain. Linking goes through `.cargo/cc-shim.sh` (the linker that
-ships with Rust plus the start files of libc6-dev), wired up in `.cargo/config.toml`; both are
-git-ignored. After `sudo apt install build-essential` the `.cargo/` folder can be deleted.
+The current environment has `/usr/bin/cc` (Ubuntu GCC 15.2.0) and no repository-local
+`.cargo/` directory. Earlier environments used a local linker shim; it is not required
+by the verified build above.
 
-## Verified
+## Historical verification snapshots
 
-* Now: `cargo test --workspace` passes 262 tests, clippy with the strict lint set and the format
-  check are clean (2026-11-14).
+* An earlier snapshot recorded 262 passing tests, clean strict clippy and formatting (2026-11-14).
+  These are not today's results; see “Current verification status” above.
 * Phases 1–3 at their end: `cargo test --workspace` passed 168 tests (46 in `core`, 23 in `kernel`, 86 unit and
   13 integration tests in `std`); clippy and the format check are clean.
   * registry: chain order, stopping at a failure, deterministic listing, lookup by family type,
@@ -213,7 +331,10 @@ that was not present). They were removed with the old code.
 * `porting/`       – the modules written for krly3d before the rebuild (kernel, boolean, section, naming,
   perception, protocol, the column example). They do not compile; each is deleted once its
   replacement passes the same assertions.
-* branch `legacy-opengeometry` – the complete tree before the rebuild
+* `legacy-opengeometry` is mentioned in older notes as the pre-rebuild branch, but no local or
+  remote-tracking ref with that name exists in this checkout. Keep the remaining `porting/`
+  sources until their replacements and assertions are verified; do not rely on that branch as a
+  recovery path.
 
 ## Conventions
 
@@ -236,13 +357,13 @@ that was not present). They were removed with the old code.
 * A seventeenth family, `content` (area and volume share of a face per kind of surface), carries
   what the plan put inside the `volume` measure.
 * Stages: there is no `resolve` (every body is in world coordinates), `name` runs before `check`
-  (a duplicate name is invalid), and `judge` waits for phase 4 with expectations.
+  (a duplicate name is invalid), and the edit pipeline judges expectations before commit.
 * Not built yet from the phase 3 list: `polyhedron` and the `bbox` measure. `mirror` is built: every
   curve and surface states its reflection (`mirrored`, checked by the family contracts), and a kind
   that does not is declined. A copy of a node is a `transform` under a new name, so
   there is no separate `instance` tool.
 * `Kernel::apply` returns a typed `Delta` with a `text()`; the `Reply { data, text, exact }` wrapper
-  comes with the protocol in phase 4. `expect` lines are stored and written back but not judged yet.
+  is used by the session protocol. `expect` claims are judged; a failed expectation prevents commit.
 * The code format is set in `rustfmt.toml` (width 110).
 
 ## Decisions waiting for the owner
@@ -250,8 +371,8 @@ that was not present). They were removed with the old code.
 * Licence of the new crates. The manifests state none, and LICENSE.md and NOTICE.md are unchanged;
   they still describe the removed code.
 * Whether to commit each finished phase on `rebuild/core`. Only the snapshot is committed so far.
-* krlyvis: a JPEG/PNG decoder dependency (e.g. the `image` crate), and whether to hoist the plugin
-  mould into `core` so that krly3d and krlyvis share one copy.
+* The accepted product architecture and current workspace layout are documented separately in
+  `docs/PRODUCT-ARCHITECTURE-HANDOFF.md`; the raw seed and synchronous mesh pilot are migrated; other target packages remain pending.
 
 ## Pitfalls already paid for (still true for the new code)
 
@@ -267,3 +388,75 @@ that was not present). They were removed with the old code.
   de-duplicated by parameter, not dropped.
 * Full circles have coincident end points, so the direction of traversal cannot be inferred from them.
 * A bounding-volume tree gains nothing if the bounds of the body are recomputed for every ray.
+
+
+Wave eleven completes #20 raw foundation, #3 content-aware bounded decline memoization
+and #7 rotated station matches. See [cache contract](docs/MESH-DECLINE-CACHE.md) and
+[station reports](docs/LIKENESS-STATIONS.md). Real krlyvis peer replay passes 13 calls;
+raster-derived contours retain a pixel uncertainty floor. Full workspace has 77 passing
+suites; strict Clippy/format and existing SDK/legacy compatibility pass. There are 17 open
+and 9 closed issues. #26 retains standalone likeness and controlled view lifecycle migration.
+Workers stopped at quota; the integrator completed verification. All changes remain local,
+uncommitted and unpushed. Active providers and the root `.tmp/` archive remain in place.
+
+
+Wave twelve adds the [standalone view operation lifecycle](docs/VIEW-OPERATIONS.md)
+under the existing `products/krly3d/view/{api,renderer,cli,mcp}` boundary (ADR 0009).
+Protocol/API 2.0 retains Started plus exactly one terminal event with a v1 completed
+render payload. Detached snapshots preserve source identity after owner drop. Bounded
+admission, byte retention, deadlines, cancellation and explicit release are implemented;
+worker capacity survives cancellation until actual exit. CLI `--operations` streams
+canonical events; MCP adds start/next/cancel/release while preserving `view_render`.
+EOF and I/O failures drop/cancel the runner. Backpressure can still block transport
+writes, and legacy synchronous calls do not process cancellation notifications.
+No progress or partial image capability is claimed. Broader domain and scene migration
+stays in #26. Active legacy providers and `.tmp/` contents remain in place.
+
+Wave twelve verification: 1012 tests across 79 suites, zero failed/ignored; strict
+workspace Clippy, fmt and diff checks pass. Official SDK verifies six v1 and two v2
+CLI/MCP image parity cases, schema/error handling, deadlines/cancel/release and EOF.
+#26 updated; 17 issues open, nine closed. Changes remain local, uncommitted and unpushed.
+
+
+Wave thirteen prioritizes a usable drawing-to-proposal flow over further infrastructure.
+The [planar drawing pilot](products/krly3d/reconstruction/cli/README.md) orchestrates real
+krlyvis evidence, a bounding-prism mesh before editable work, contour extrusion, PNG and
+station validation. It requires user scale/height and reports hidden-feature assumptions.
+The tracer fills holes; outer-extent matches do not validate interiors. Legacy peer
+bridges remain, so #24's full MCP/refinement scope is open. Four real process tests pass;
+small debug demo: coarse mesh 76.3 ms, editable model 82.8 ms, total 588.1 ms. Rust code
+was unchanged; 1012 is the previous Rust baseline, not a new run. No commit/push.
+
+
+Wave fourteen adds opt-in krlyvis `trace-holes`, retaining pixel voids while preserving
+default `trace` compatibility. The pilot now extrudes all boundary loops, reloads the
+editable model and checks net material area × height against closed mesh volume.
+Corner-touch ambiguity fails explicitly; holes are assumed through-holes, not inferred
+hidden cavities. Tests: 80 targeted krlyvis Rust tests, four process tests including an
+independent exact-ray view through the hole, 13-call legacy peer replay; targeted Clippy,
+fmt and diff checks pass. The full workspace was not rerun. #24 remains open; no commit/push.
+
+
+## Wave 15: multiple selected parts from one drawing
+
+The [sheet runner](products/krly3d/reconstruction/cli/SHEET.md) accepts 1–16 explicitly named/seeded components with individual extrusion heights and one shared pixel scale. Each yields a separately editable proposal, early mesh, PNG, hole-preserving profile and material-volume/closure check, in common drawing coordinates. The atomically updated manifest records per-part status and provenance. A shared deadline and process cancellation preserve completed parts; duplicate component selections fail. This does not infer assembly constraints or automatically recognize parts. The existing single flow also accepts an explicit seed. The implementation stays in the reconstruction orchestration layer, reusing active domain providers.
+
+Verification: 14 real process tests pass together (4 single-flow + 10 sheet, 58.036 s), including holes/position/height, invalid inputs, overwrite rejection, duplicate selections, partial preservation, shared deadline and SIGINT/SIGTERM descendant cleanup. Python compilation/editor diagnostics and diff-check pass. No Rust change or new full-workspace run this wave.
+
+
+## Wave 16: planar B-rep contract used through MCP
+
+The [planar construction contract](docs/BREP-PLANAR.md) adds strict stateless construction
+from bounded outer/hole polygon loops and height to the B-rep API/engine, with separate
+CLI/MCP adapters. Existing geometry providers remain the only implementations. The drawing
+and sheet consumers now use the actual `brep_planar` tool for editable proposals and preserve
+the canonical request/result plus source evidence digest. Mesh/view reload the returned native
+document; legacy likeness loads the same document. Coarse construction, krlyvis and likeness
+still use the legacy facade. This synchronous operation does not supply a background lifecycle
+or remote cancellation; product deadline/process cleanup remains explicit. See ADR 0010 and
+the development log for final integration evidence. No source provider is retired.
+
+Wave-16 verification: 1055 workspace tests across 87 suites, strict all-target Clippy/fmt;
+14 real drawing/sheet tests and three official SDK CLI/MCP parity cases with independent
+volume/closure reload pass. #24/#26 updated; broader scope stays open (17 open / 9 closed).
+Implementation is local, uncommitted and unpushed.

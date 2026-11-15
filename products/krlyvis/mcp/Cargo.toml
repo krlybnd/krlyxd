@@ -1,0 +1,19 @@
+[package]
+name = "krlyvis-drawing-mcp"
+description = "Synchronous drawing MCP stdio adapter"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krlyvis-drawing-mcp"
+path = "src/main.rs"
+
+[dependencies]
+krly-mcp-json = { path = "../../../crates/mcp-json" }
+krlyvis-api = { path = "../api" }
+krlyvis-engine = { path = "../engine" }
+serde_json = { workspace = true, features = ["raw_value"] }
+
+[lints]
+workspace = true

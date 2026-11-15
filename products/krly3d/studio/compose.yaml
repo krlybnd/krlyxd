@@ -1,0 +1,19 @@
+name: krly3d-studio
+services:
+  litellm:
+    image: ghcr.io/berriai/litellm@sha256:19a879f9c4ed466f2438aa08b22e2b472053ab57c6325db73c71d0624d2d4953
+    env_file: .proxy.env
+    environment:
+      LITELLM_TELEMETRY: "False"
+    ports:
+      - "127.0.0.1:4010:4000"
+    volumes:
+      - ./config/litellm-openai.yaml:/app/studio-config.yaml:ro
+    command: ["--config", "/app/studio-config.yaml", "--port", "4000", "--host", "0.0.0.0"]
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:4000/health/liveliness', timeout=3)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 30s

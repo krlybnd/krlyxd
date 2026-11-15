@@ -114,6 +114,7 @@ pub(crate) mod testing {
     pub(crate) fn session() -> Session {
         let mut builder = krly3d_std::standard();
         krly3d_view::register(&mut builder);
+        builder.plugin::<krly3d_view::ports::render::Render>(krly3d_view_mesh::Raster);
         krly3d_exchange::register(&mut builder);
         builder.accuracy(Accuracy::for_scale(100.0).unwrap());
         builder.session()
@@ -154,6 +155,34 @@ mod tests {
 
         assert_eq!(output.iter().filter(|byte| **byte == b'\n').count(), 1);
         assert_eq!(output.last(), Some(&b'\n'));
+    }
+
+    #[test]
+    fn cancellation_keeps_each_legacy_dialects_public_error_envelope() {
+        use crate::endpoint::Controlled;
+        use krly3d_core::CallControl;
+        use std::sync::Arc;
+
+        let mut local = session();
+        let control = Arc::new(CallControl::new());
+        control.cancel();
+        let mut endpoint = Controlled { endpoint: &mut local, control };
+        let plain = exchange(
+            named("plain").unwrap().as_mut(),
+            &mut endpoint,
+            r#"{"jsonrpc":"2.0","id":1,"method":"render","params":{}}"#,
+        );
+        assert_eq!(plain[0]["error"]["code"], -32000);
+        assert_eq!(plain[0]["error"]["data"]["ok"], false);
+        assert_eq!(plain[0]["error"]["data"]["data"]["error"], "cancelled");
+
+        let mcp = exchange(
+            named("mcp").unwrap().as_mut(),
+            &mut endpoint,
+            r#"{"jsonrpc":"2.0","id":1,"method":"tools/call","params":{"name":"mesh","arguments":{}}}"#,
+        );
+        assert_eq!(mcp[0]["result"]["isError"], true);
+        assert_eq!(mcp[0]["result"]["content"][0]["text"], "cancelled: cancelled");
     }
 
     #[test]

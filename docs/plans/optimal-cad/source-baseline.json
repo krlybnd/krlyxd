@@ -1,0 +1,4028 @@
+{
+  "date": "2026-11-15",
+  "head": "1aac484a594f1e1f7176fd0309d9d5e04f88ae0b",
+  "method": "git cached + untracked nonignored; unique paths; rs/ts/tsx/py/css/proto/typ; excludes .tmp,.ctx,node_modules,target,dist,__pycache__; physical lines include comments/blanks; inline Rust tests remain source; generated gen/ separated; not SLOC",
+  "summary": {
+    "source": {
+      "files": 466,
+      "physical_lines": 71024,
+      "nonblank_lines": 64796
+    },
+    "test": {
+      "files": 105,
+      "physical_lines": 28814,
+      "nonblank_lines": 26981
+    },
+    "generated": {
+      "files": 1,
+      "physical_lines": 926,
+      "nonblank_lines": 790
+    }
+  },
+  "files": [
+    {
+      "path": "crates/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 249,
+      "nonblank_lines": 218,
+      "sha256": "b2d1c15cb63ba225251c2e07d946449939c7abb750471fb9a758a5d8578bfd4e"
+    },
+    {
+      "path": "crates/cli/src/dialect/mcp.rs",
+      "category": "source",
+      "physical_lines": 359,
+      "nonblank_lines": 305,
+      "sha256": "bd8714f96c5790d42b1d49b7d5124fa537f34b9478ad26c93f529504ceb5f1ec"
+    },
+    {
+      "path": "crates/cli/src/dialect/mod.rs",
+      "category": "source",
+      "physical_lines": 236,
+      "nonblank_lines": 201,
+      "sha256": "23ce5fc75b9e31725e33ecfe461067f232ea55146778d7ef4bdf6a248e88dc4f"
+    },
+    {
+      "path": "crates/cli/src/dialect/plain.rs",
+      "category": "source",
+      "physical_lines": 201,
+      "nonblank_lines": 164,
+      "sha256": "a587a8f35a39ea4979bf2faa3f7ab1b6fc88c741df63c7ee446b3d4d57975a24"
+    },
+    {
+      "path": "crates/cli/src/endpoint.rs",
+      "category": "source",
+      "physical_lines": 81,
+      "nonblank_lines": 64,
+      "sha256": "2eca15e969b2001480a39312953757e9fa1f80f416675c5e5b9eb922521d545f"
+    },
+    {
+      "path": "crates/cli/src/json.rs",
+      "category": "source",
+      "physical_lines": 317,
+      "nonblank_lines": 279,
+      "sha256": "c3fd36c5738b2fdb7c36082b0353862ae50b86c2376a784facac6bf20c949f5e"
+    },
+    {
+      "path": "crates/cli/src/lib.rs",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 24,
+      "sha256": "2218706dec31a47384d90daa576f26e7890ca45ce9e914efc680e254c8196bff"
+    },
+    {
+      "path": "crates/cli/src/listen.rs",
+      "category": "source",
+      "physical_lines": 320,
+      "nonblank_lines": 281,
+      "sha256": "2f4e0c25d1f9f144878471e7440e0d250a484fb436c3c1c0771c7fd93b22c2a2"
+    },
+    {
+      "path": "crates/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 135,
+      "nonblank_lines": 126,
+      "sha256": "7bf7e9f379e296b7aa191e1580538958a5055208d9f94b0601274604966caed2"
+    },
+    {
+      "path": "crates/cli/src/peer.rs",
+      "category": "source",
+      "physical_lines": 1382,
+      "nonblank_lines": 1243,
+      "sha256": "42f3cc502a0b9f778a05fa47f522ffe4b839b254ed332867a77551a142e150c4"
+    },
+    {
+      "path": "crates/cli/src/rpc.rs",
+      "category": "source",
+      "physical_lines": 274,
+      "nonblank_lines": 231,
+      "sha256": "f9649c11921051712a705769faed05d973a5d65901b119257a716a52a55bc536"
+    },
+    {
+      "path": "crates/cli/src/shell.rs",
+      "category": "source",
+      "physical_lines": 166,
+      "nonblank_lines": 139,
+      "sha256": "a48936ac69abde4777583053ff752400d66eda12f384aed20c385c93fb4a51b9"
+    },
+    {
+      "path": "crates/cli/tests/disconnect.rs",
+      "category": "test",
+      "physical_lines": 371,
+      "nonblank_lines": 332,
+      "sha256": "78136543f9fa9a43e014e032dcb56f5f5e068b5603a2b3ca2948ba9907130696"
+    },
+    {
+      "path": "crates/cli/tests/mesh_preview.rs",
+      "category": "test",
+      "physical_lines": 92,
+      "nonblank_lines": 86,
+      "sha256": "ede331a21e8fb4deee66379f178b55402c1c25e524c11ebdca3a92ec3b58e01c"
+    },
+    {
+      "path": "crates/cli/tests/program.rs",
+      "category": "test",
+      "physical_lines": 179,
+      "nonblank_lines": 153,
+      "sha256": "b428608b4fea0a6f66e1944e59f6d38aaef56d4d58fdb85afdacb83792c63fa0"
+    },
+    {
+      "path": "crates/core/src/accuracy.rs",
+      "category": "source",
+      "physical_lines": 168,
+      "nonblank_lines": 135,
+      "sha256": "e16f8e2450810c780495d7da5c7c762407bb102717ac4b01404788292ce078d4"
+    },
+    {
+      "path": "crates/core/src/attempt.rs",
+      "category": "source",
+      "physical_lines": 81,
+      "nonblank_lines": 67,
+      "sha256": "e2054b5c14a5786b930fbf18a59415624ae7b4ee524e952b465787cbf73f1150"
+    },
+    {
+      "path": "crates/core/src/claim.rs",
+      "category": "source",
+      "physical_lines": 122,
+      "nonblank_lines": 108,
+      "sha256": "5260be24d7983c08fb5fa2e5ee2b97df39e414fed0b85001891186ee1f478dfb"
+    },
+    {
+      "path": "crates/core/src/clock.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "2cdf6ea212657b6761acb58cc1a3eadd4eb718cb10444bb5d0ed88ed77f3a301"
+    },
+    {
+      "path": "crates/core/src/document/cache.rs",
+      "category": "source",
+      "physical_lines": 104,
+      "nonblank_lines": 88,
+      "sha256": "978051521b914ab7f593ad5fe4c2792a9eab16880364f4e2e2d5f618d195459a"
+    },
+    {
+      "path": "crates/core/src/document/layers.rs",
+      "category": "source",
+      "physical_lines": 42,
+      "nonblank_lines": 37,
+      "sha256": "c558774811f18891ea158cb3f366d0d9b0fff5f11867cf64bf6e4c8f0011193e"
+    },
+    {
+      "path": "crates/core/src/document/mod.rs",
+      "category": "source",
+      "physical_lines": 18,
+      "nonblank_lines": 16,
+      "sha256": "45c7565f25c22f5204861dc8db25d51956de8f1ea23ce9f4b9422fd19c991cb3"
+    },
+    {
+      "path": "crates/core/src/document/op.rs",
+      "category": "source",
+      "physical_lines": 113,
+      "nonblank_lines": 101,
+      "sha256": "acfb064988d7800f7d7c674a6fcee059e9ae42ec4f1054666d812bcafd4c6def"
+    },
+    {
+      "path": "crates/core/src/document/text.rs",
+      "category": "source",
+      "physical_lines": 224,
+      "nonblank_lines": 206,
+      "sha256": "405d285490aa9d87c784dbd3e667cd582af23fc1086c7b91fe784868eeeae4c1"
+    },
+    {
+      "path": "crates/core/src/document/versions.rs",
+      "category": "source",
+      "physical_lines": 159,
+      "nonblank_lines": 137,
+      "sha256": "2aedf54fac8973314e8cecc659e901ddfda317641ef999d0cc4fd29765375038"
+    },
+    {
+      "path": "crates/core/src/error.rs",
+      "category": "source",
+      "physical_lines": 120,
+      "nonblank_lines": 102,
+      "sha256": "492f682fdd7b12268972acfe3bebbf8f36e3756b05df2d2603743978084741de"
+    },
+    {
+      "path": "crates/core/src/exact.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "c0c23fa91e1cd5d0b024a728bf68acd47f4c7fdadeb5767bc0a7d06e6c6c6321"
+    },
+    {
+      "path": "crates/core/src/id.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "a64b60fba3e4565b7306d313a6d96296c5f2d1f76560b8502793e78cbdc021e4"
+    },
+    {
+      "path": "crates/core/src/lib.rs",
+      "category": "source",
+      "physical_lines": 27,
+      "nonblank_lines": 25,
+      "sha256": "5be88cdc109d9485de4116b8b87ccc953ec211716a3ba57b8de41b0d20f0bbc5"
+    },
+    {
+      "path": "crates/core/src/math/bounds.rs",
+      "category": "source",
+      "physical_lines": 105,
+      "nonblank_lines": 86,
+      "sha256": "9c64aba2bbf4de6e8e3f086bd7103f321da65582937eaa9cbc9c87d165b36362"
+    },
+    {
+      "path": "crates/core/src/math/elliptic.rs",
+      "category": "source",
+      "physical_lines": 99,
+      "nonblank_lines": 93,
+      "sha256": "be5b51d4e17929b37499202041afeaca78b265007bbbae38d23ec3fe84e1b91d"
+    },
+    {
+      "path": "crates/core/src/math/frame.rs",
+      "category": "source",
+      "physical_lines": 180,
+      "nonblank_lines": 152,
+      "sha256": "e5baf4f20a5d03160fbaef07c759b45f203ef47c8ddb1d46c5316c5e3cd633d8"
+    },
+    {
+      "path": "crates/core/src/math/mirror.rs",
+      "category": "source",
+      "physical_lines": 86,
+      "nonblank_lines": 71,
+      "sha256": "4b968ccf433c9421933232a9c052a6b487fe5366dbe5e7dafc2b938db54f7f7a"
+    },
+    {
+      "path": "crates/core/src/math/mod.rs",
+      "category": "source",
+      "physical_lines": 13,
+      "nonblank_lines": 10,
+      "sha256": "3d9297cd488817f0dc1e934ab7a61576d66cd249a627740434f2fc4161a5f6b6"
+    },
+    {
+      "path": "crates/core/src/math/nurbs.rs",
+      "category": "source",
+      "physical_lines": 565,
+      "nonblank_lines": 527,
+      "sha256": "e92133da3152cd2fa34b691bf2700f51083b07c945b06a1e64e11daba5db5c97"
+    },
+    {
+      "path": "crates/core/src/math/quadrature.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "f8990868fa0cb092181b49c78da53ecd168a73d1a4012ceaa721a59635fecc27"
+    },
+    {
+      "path": "crates/core/src/math/quadric.rs",
+      "category": "source",
+      "physical_lines": 136,
+      "nonblank_lines": 110,
+      "sha256": "7de5ad277227bc4ac0ec27736a6ce0fe94f5f8d0681fb34ae10f6a0fcbac2c7a"
+    },
+    {
+      "path": "crates/core/src/math/roots.rs",
+      "category": "source",
+      "physical_lines": 474,
+      "nonblank_lines": 412,
+      "sha256": "5b1150f07df2f9a4869ae35b22c2a0111814a9b81987f4b2fa91dcb07ce84e11"
+    },
+    {
+      "path": "crates/core/src/plugin.rs",
+      "category": "source",
+      "physical_lines": 236,
+      "nonblank_lines": 188,
+      "sha256": "5693f008fdbe1ab97654b4f13bcd5edae1f18dd34aa27c1407e6f5a21389bc66"
+    },
+    {
+      "path": "crates/core/src/schema.rs",
+      "category": "source",
+      "physical_lines": 405,
+      "nonblank_lines": 349,
+      "sha256": "710348e2d8c9560db582761be513b5fb384a2021abc62733f199ec2a82b19afe"
+    },
+    {
+      "path": "crates/core/src/text.rs",
+      "category": "source",
+      "physical_lines": 58,
+      "nonblank_lines": 50,
+      "sha256": "358e2dfde54582bc4107203c925bb6db9bc56f2633f7c2c5b523b2b4dfed5fbc"
+    },
+    {
+      "path": "crates/core/tests/one_copy.rs",
+      "category": "test",
+      "physical_lines": 452,
+      "nonblank_lines": 427,
+      "sha256": "811499f6996bde372857691dc98c84bda8f420a2da7c64c7f688a8825533a71b"
+    },
+    {
+      "path": "crates/core/tests/package_metadata.rs",
+      "category": "test",
+      "physical_lines": 61,
+      "nonblank_lines": 59,
+      "sha256": "040b01477e2a95b44694b3f4d2460113822d0dd1c086de649c2203430723d3a8"
+    },
+    {
+      "path": "crates/exchange/src/lib.rs",
+      "category": "source",
+      "physical_lines": 14,
+      "nonblank_lines": 11,
+      "sha256": "b43ac4e9b58ebfc7ebc7e56a3bec6d0866082be967725be9fbfe6bf4ec0b459b"
+    },
+    {
+      "path": "crates/exchange/src/part21.rs",
+      "category": "source",
+      "physical_lines": 231,
+      "nonblank_lines": 199,
+      "sha256": "99bc74a5004cccb995a448b2e1a9075e8bbfb38f54616e03aec28207df56a3cd"
+    },
+    {
+      "path": "crates/exchange/src/step.rs",
+      "category": "source",
+      "physical_lines": 588,
+      "nonblank_lines": 538,
+      "sha256": "1987990bff9047b4a9bc3330f2a30a2edb551e3c04d75e7c2ae0742d251e92cf"
+    },
+    {
+      "path": "crates/exchange/tests/step.rs",
+      "category": "test",
+      "physical_lines": 1335,
+      "nonblank_lines": 1190,
+      "sha256": "d887a4d62252a66488a2a846d65c8ca2dfc90ed5776229156b294fc1abc86d60"
+    },
+    {
+      "path": "crates/kernel/src/api.rs",
+      "category": "source",
+      "physical_lines": 483,
+      "nonblank_lines": 456,
+      "sha256": "80c0ddadd94052579ae75fbfa5211493e8e4be7b42ac4ae1fd843c93edc20d13"
+    },
+    {
+      "path": "crates/kernel/src/api/control_tests.rs",
+      "category": "test",
+      "physical_lines": 145,
+      "nonblank_lines": 121,
+      "sha256": "34b558c0d3b4f9eaa40aae80d4b04724d9ab5a88de80bf0303d6a9d45bddd8ff"
+    },
+    {
+      "path": "crates/kernel/src/builder.rs",
+      "category": "source",
+      "physical_lines": 78,
+      "nonblank_lines": 66,
+      "sha256": "f9215ec223405aa80fc818c265a9f15d420d7b1f26787e5ad342d2c26a091402"
+    },
+    {
+      "path": "crates/kernel/src/context.rs",
+      "category": "source",
+      "physical_lines": 378,
+      "nonblank_lines": 330,
+      "sha256": "edce292f239dc58224b25bda3f9e5c2340853270576e971bff350c238f62293f"
+    },
+    {
+      "path": "crates/kernel/src/kernel.rs",
+      "category": "source",
+      "physical_lines": 118,
+      "nonblank_lines": 100,
+      "sha256": "6e4c2f9ce0f401164f6008c6a5355d9af1d16f3035c52a460547e735702e7b90"
+    },
+    {
+      "path": "crates/kernel/src/lib.rs",
+      "category": "source",
+      "physical_lines": 23,
+      "nonblank_lines": 21,
+      "sha256": "fec409097d19d8479dadc1da901997a4cb03bd788733e85136cd061b4a87004e"
+    },
+    {
+      "path": "crates/kernel/src/mesh/mod.rs",
+      "category": "source",
+      "physical_lines": 259,
+      "nonblank_lines": 227,
+      "sha256": "c5cd43c9c18c035d022b27b5d3bd4c41dfcac0245e80f48f54992148270bc1df"
+    },
+    {
+      "path": "crates/kernel/src/model/build.rs",
+      "category": "source",
+      "physical_lines": 92,
+      "nonblank_lines": 80,
+      "sha256": "8d151fdd297aebf6f00d28f501bf9c2ed0265417d08bc799654da7b390617176"
+    },
+    {
+      "path": "crates/kernel/src/model/delta.rs",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 75,
+      "sha256": "2372f517e3e780d483591469b2dc7725d4ce13d5c6fa8eda096bcc06901311ce"
+    },
+    {
+      "path": "crates/kernel/src/model/mod.rs",
+      "category": "source",
+      "physical_lines": 15,
+      "nonblank_lines": 12,
+      "sha256": "173c08d66d591dbb14ecb7c4652fffb91b4fdfd7975dbcd9f486be09829f6d4f"
+    },
+    {
+      "path": "crates/kernel/src/plugin.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "6fa2fe39af70ba7cf3e5c5491ae35c292960518d5ea2d503a2f35b10fb4da781"
+    },
+    {
+      "path": "crates/kernel/src/ports/content/contract.rs",
+      "category": "source",
+      "physical_lines": 27,
+      "nonblank_lines": 25,
+      "sha256": "7d18bb189c9bf7e4a4951e5fdd20df637695343e92c7141dbae11570bcdb6cb6"
+    },
+    {
+      "path": "crates/kernel/src/ports/content/mod.rs",
+      "category": "source",
+      "physical_lines": 54,
+      "nonblank_lines": 46,
+      "sha256": "30390e549ddab6e7532e352a24af1bc35ae90fc9f4b2d64ef73ef7344614df28"
+    },
+    {
+      "path": "crates/kernel/src/ports/curve/contract.rs",
+      "category": "source",
+      "physical_lines": 101,
+      "nonblank_lines": 96,
+      "sha256": "329bc82e7435aa982a9c80a364161fb942c5c1bec704345bf0e97495f0b5c118"
+    },
+    {
+      "path": "crates/kernel/src/ports/curve/mod.rs",
+      "category": "source",
+      "physical_lines": 58,
+      "nonblank_lines": 44,
+      "sha256": "335ddb853f7a51d1b71a568301d32116fb175a62e1e36a2d6ffbfe4897c2e3ed"
+    },
+    {
+      "path": "crates/kernel/src/ports/index/contract.rs",
+      "category": "source",
+      "physical_lines": 100,
+      "nonblank_lines": 95,
+      "sha256": "e0b66b99e16645e6f5c6519d716ecd329f34acb26a12430bcadda6ae8f52774d"
+    },
+    {
+      "path": "crates/kernel/src/ports/index/mod.rs",
+      "category": "source",
+      "physical_lines": 166,
+      "nonblank_lines": 138,
+      "sha256": "f18aaeba0d01d13b98995e410638d9024f77796ad2520df811e06aaeb4da9b3d"
+    },
+    {
+      "path": "crates/kernel/src/ports/interpret/contract.rs",
+      "category": "source",
+      "physical_lines": 31,
+      "nonblank_lines": 29,
+      "sha256": "6e6e541a2f4f92a67f61d8b2c84d5abb87063ebf42d525b6f7bcab5ae0d3bc49"
+    },
+    {
+      "path": "crates/kernel/src/ports/interpret/decline.rs",
+      "category": "source",
+      "physical_lines": 210,
+      "nonblank_lines": 192,
+      "sha256": "1810e4f90dd18401218dfec3ec6c4de53a07bb58155e745d72709256e2e13f7b"
+    },
+    {
+      "path": "crates/kernel/src/ports/interpret/mod.rs",
+      "category": "source",
+      "physical_lines": 286,
+      "nonblank_lines": 258,
+      "sha256": "cd0bc1cb2298d5e828d7a80f7ff5930620607f8834860c2f175e99ec05b5eb5f"
+    },
+    {
+      "path": "crates/kernel/src/ports/keys/contract.rs",
+      "category": "source",
+      "physical_lines": 44,
+      "nonblank_lines": 42,
+      "sha256": "49cc5ae61895ba4e8fc6855145d84428b80af47ca2a98ba285285ceb5b1e3836"
+    },
+    {
+      "path": "crates/kernel/src/ports/keys/mod.rs",
+      "category": "source",
+      "physical_lines": 73,
+      "nonblank_lines": 65,
+      "sha256": "3d996be98d888949d7e419429943c9cd008ec6a042ae18733813f5bd50e601c9"
+    },
+    {
+      "path": "crates/kernel/src/ports/likeness/contract.rs",
+      "category": "source",
+      "physical_lines": 38,
+      "nonblank_lines": 36,
+      "sha256": "c7ac958b106b075ed67116e1beedcf08dcba60ecfe584d0c3f8ba85067496fe3"
+    },
+    {
+      "path": "crates/kernel/src/ports/likeness/mod.rs",
+      "category": "source",
+      "physical_lines": 162,
+      "nonblank_lines": 148,
+      "sha256": "03246f7b5f952c4a870c65f1920aa6aaead50f5f60daecf86d5538dad8af6a2e"
+    },
+    {
+      "path": "crates/kernel/src/ports/likeness/report.rs",
+      "category": "source",
+      "physical_lines": 219,
+      "nonblank_lines": 202,
+      "sha256": "f3983705dd053c754119167a2b0d8ea7180b0d8aa3bc21b791c82fe63f8e2879"
+    },
+    {
+      "path": "crates/kernel/src/ports/measure/contract.rs",
+      "category": "source",
+      "physical_lines": 29,
+      "nonblank_lines": 27,
+      "sha256": "a59855eaa8db49c5724277eea6b5e88056b62db3ec2d894a2c27e4ed64bc6024"
+    },
+    {
+      "path": "crates/kernel/src/ports/measure/mod.rs",
+      "category": "source",
+      "physical_lines": 35,
+      "nonblank_lines": 28,
+      "sha256": "a5fea9749e89769b246049dfcf29d9d610a43a7030574a1f89d5907a98a5da29"
+    },
+    {
+      "path": "crates/kernel/src/ports/meet/contract.rs",
+      "category": "source",
+      "physical_lines": 44,
+      "nonblank_lines": 42,
+      "sha256": "5d03ffafdc838974c03f698191ad37018e001ff02d79fb14aa47cec16a00254c"
+    },
+    {
+      "path": "crates/kernel/src/ports/meet/mod.rs",
+      "category": "source",
+      "physical_lines": 42,
+      "nonblank_lines": 35,
+      "sha256": "2fa2668878f315b3bbe657b2214f69db7be27241d2f4423becc4efadbbba5629"
+    },
+    {
+      "path": "crates/kernel/src/ports/mod.rs",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 24,
+      "sha256": "d4b902574afd0fc541e5ac59f4465dc183a71fce56c46faeeb5b34dd15982791"
+    },
+    {
+      "path": "crates/kernel/src/ports/pair.rs",
+      "category": "source",
+      "physical_lines": 139,
+      "nonblank_lines": 119,
+      "sha256": "876cced72db3dcef0b38ba6a1086e3e39a7384faaf8d530cdc7c10bdb6283d41"
+    },
+    {
+      "path": "crates/kernel/src/ports/peer/mod.rs",
+      "category": "source",
+      "physical_lines": 99,
+      "nonblank_lines": 83,
+      "sha256": "08009ab3dd381bd5fb4786de10c28857d6abd87126258e7b349389b4d1041fe8"
+    },
+    {
+      "path": "crates/kernel/src/ports/probe/contract.rs",
+      "category": "source",
+      "physical_lines": 31,
+      "nonblank_lines": 29,
+      "sha256": "fee3027cb95b8547b9814ff393f83027c0b666a52b55044bd22c473a25841d65"
+    },
+    {
+      "path": "crates/kernel/src/ports/probe/mod.rs",
+      "category": "source",
+      "physical_lines": 109,
+      "nonblank_lines": 97,
+      "sha256": "ecfa108464c82c4d9aa7113b303894c8b49ccdf234ee78a40199b4912df31516"
+    },
+    {
+      "path": "crates/kernel/src/ports/query/contract.rs",
+      "category": "source",
+      "physical_lines": 32,
+      "nonblank_lines": 30,
+      "sha256": "cd09fbd4ac98884f40acfe1f0183029a791e9baa70e2cb24fd3dde25b5206f8e"
+    },
+    {
+      "path": "crates/kernel/src/ports/query/mod.rs",
+      "category": "source",
+      "physical_lines": 76,
+      "nonblank_lines": 68,
+      "sha256": "474823661ee1b94e7c02af157bbbdfa86cbe45d333644ed67848fe41fbd3a2bc"
+    },
+    {
+      "path": "crates/kernel/src/ports/read/mod.rs",
+      "category": "source",
+      "physical_lines": 19,
+      "nonblank_lines": 15,
+      "sha256": "10868a0f57374c455facb23924f72f68a2b54f80a026c22aa468880e7151ff51"
+    },
+    {
+      "path": "crates/kernel/src/ports/sample.rs",
+      "category": "source",
+      "physical_lines": 24,
+      "nonblank_lines": 20,
+      "sha256": "7b85fe863098094d9b5eac8fd3173162e2a218990d00225ac0b9a1b031097151"
+    },
+    {
+      "path": "crates/kernel/src/ports/section/contract.rs",
+      "category": "source",
+      "physical_lines": 28,
+      "nonblank_lines": 26,
+      "sha256": "663792295fafff9044ad7e89b350db2a96a8e265bddfa330fa7836728ceba4b5"
+    },
+    {
+      "path": "crates/kernel/src/ports/section/mod.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 49,
+      "sha256": "414e70590f4a933a4569f4050d0d3f8d18850ea5bc28c0eb0a75996f0b06c22f"
+    },
+    {
+      "path": "crates/kernel/src/ports/shape/contract.rs",
+      "category": "source",
+      "physical_lines": 36,
+      "nonblank_lines": 34,
+      "sha256": "8b550e23b9dbf189c9ecbcdfd00fd47582c651b6d88e4c88767dfaa2327cb976"
+    },
+    {
+      "path": "crates/kernel/src/ports/shape/mod.rs",
+      "category": "source",
+      "physical_lines": 129,
+      "nonblank_lines": 112,
+      "sha256": "a9b9e3c787857ac41946fdf851529fd2b59894d41fe9cd3381192ea785c72d1c"
+    },
+    {
+      "path": "crates/kernel/src/ports/stage/contract.rs",
+      "category": "source",
+      "physical_lines": 27,
+      "nonblank_lines": 25,
+      "sha256": "751c8bd0b5dc2c429dac6f6f59417d5817670efd43908d16a9b0f35250815040"
+    },
+    {
+      "path": "crates/kernel/src/ports/stage/mod.rs",
+      "category": "source",
+      "physical_lines": 65,
+      "nonblank_lines": 57,
+      "sha256": "af29f9bcca3d6332a05ce8ca177ef562ccbc5d2d99b3f8863630b7292c455608"
+    },
+    {
+      "path": "crates/kernel/src/ports/surface/contract.rs",
+      "category": "source",
+      "physical_lines": 155,
+      "nonblank_lines": 149,
+      "sha256": "ccc812c0bf75ce7874bd0d3be3cdd3308baf80c39ca60cb3ee21b1911241c3b7"
+    },
+    {
+      "path": "crates/kernel/src/ports/surface/mod.rs",
+      "category": "source",
+      "physical_lines": 106,
+      "nonblank_lines": 85,
+      "sha256": "49684935cbb0134c1f24bd800e0b3cfc42ba4ec19fa6ad87fb13cf990e287230"
+    },
+    {
+      "path": "crates/kernel/src/ports/sweep/contract.rs",
+      "category": "source",
+      "physical_lines": 26,
+      "nonblank_lines": 24,
+      "sha256": "26bd02ef6f222527b572769ad5b595f4a1e738075f51a7fb7a00a03c58194a37"
+    },
+    {
+      "path": "crates/kernel/src/ports/sweep/mod.rs",
+      "category": "source",
+      "physical_lines": 123,
+      "nonblank_lines": 103,
+      "sha256": "6fd1120665fbdc8c14714d3ed2a37e770feaff45b16e63dafcb766ca6f935484"
+    },
+    {
+      "path": "crates/kernel/src/ports/tool/contract.rs",
+      "category": "source",
+      "physical_lines": 17,
+      "nonblank_lines": 15,
+      "sha256": "a0025e78fcaf646477b6d6161abe7996ce32ce743994f43d36f9cd58ccb9bd26"
+    },
+    {
+      "path": "crates/kernel/src/ports/tool/mod.rs",
+      "category": "source",
+      "physical_lines": 57,
+      "nonblank_lines": 50,
+      "sha256": "dddc6b530094590e25b6cb3fb559a1f25efe0f5ce60703014b10ddf289d9b215"
+    },
+    {
+      "path": "crates/kernel/src/ports/trim/contract.rs",
+      "category": "source",
+      "physical_lines": 36,
+      "nonblank_lines": 34,
+      "sha256": "75ab4dda1124da3a48443da783633d3178a0ae0fba3817aab3d9e41baa8608c6"
+    },
+    {
+      "path": "crates/kernel/src/ports/trim/mod.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 48,
+      "sha256": "fd1729d55722eaf88bd67eeee502c5bd6de8e1dd45d2393a80247197620e027c"
+    },
+    {
+      "path": "crates/kernel/src/ports/write/contract.rs",
+      "category": "source",
+      "physical_lines": 20,
+      "nonblank_lines": 18,
+      "sha256": "ea3042895247db2acaded3f0996f69b0d8f6263e8c3edac32a52b5eaf5115dd7"
+    },
+    {
+      "path": "crates/kernel/src/ports/write/mod.rs",
+      "category": "source",
+      "physical_lines": 21,
+      "nonblank_lines": 16,
+      "sha256": "09e17a828858a324227dcb0fdc14a6101dbc784fa3759bce4f2a875303ad49c6"
+    },
+    {
+      "path": "crates/kernel/src/predicate.rs",
+      "category": "source",
+      "physical_lines": 371,
+      "nonblank_lines": 348,
+      "sha256": "500617724286f4b6a24ab8bca35a0e6711dddd6b0c7fd3e3c55e8257ec175257"
+    },
+    {
+      "path": "crates/kernel/src/schema.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "0d7e6ccdf446c464f31b0f0c438e435a972e7ea1d1fe2c0074a9e65299f2e226"
+    },
+    {
+      "path": "crates/kernel/src/topo/anchor.rs",
+      "category": "source",
+      "physical_lines": 85,
+      "nonblank_lines": 80,
+      "sha256": "018e3034b27a75214bca1207214dbad496135590d98e7df8dafce8184807552a"
+    },
+    {
+      "path": "crates/kernel/src/topo/body.rs",
+      "category": "source",
+      "physical_lines": 238,
+      "nonblank_lines": 219,
+      "sha256": "283aa84a512df1c85a769f3ea32444a2efe6c8fc6a70c44c56b993f777a48ae7"
+    },
+    {
+      "path": "crates/kernel/src/topo/bounds.rs",
+      "category": "source",
+      "physical_lines": 64,
+      "nonblank_lines": 61,
+      "sha256": "d3796713f26fcc1a503b498c900f0bb51164e9fe64165da0aae544e825d3a404"
+    },
+    {
+      "path": "crates/kernel/src/topo/builder.rs",
+      "category": "source",
+      "physical_lines": 165,
+      "nonblank_lines": 150,
+      "sha256": "b2be5eb230209a81d074fce13f831e767c7fa6337e017402a77a94ba92ba2b86"
+    },
+    {
+      "path": "crates/kernel/src/topo/check.rs",
+      "category": "source",
+      "physical_lines": 169,
+      "nonblank_lines": 160,
+      "sha256": "f65000097e8aa17f00d51837913aff3131a56cd7ba2d5af9b98708578f0fe1cb"
+    },
+    {
+      "path": "crates/kernel/src/topo/mod.rs",
+      "category": "source",
+      "physical_lines": 23,
+      "nonblank_lines": 21,
+      "sha256": "0bd17733f862819fed1cf787e5870a0317af645dd07e384d4502084d6f9c4c0c"
+    },
+    {
+      "path": "crates/kernel/src/topo/names.rs",
+      "category": "source",
+      "physical_lines": 73,
+      "nonblank_lines": 67,
+      "sha256": "2348968d1bfc35149b5d8fafeeca0580e21ac55c54d282cd659a3a6fce4c2ce4"
+    },
+    {
+      "path": "crates/krlyxd/src/clock.rs",
+      "category": "source",
+      "physical_lines": 63,
+      "nonblank_lines": 51,
+      "sha256": "ee6a4fd68c533b149a75641f30e467e3ecfc8e1d4614d9f483f84872e7527707"
+    },
+    {
+      "path": "crates/krlyxd/src/control.rs",
+      "category": "source",
+      "physical_lines": 143,
+      "nonblank_lines": 128,
+      "sha256": "5fe4c2c7e5f3b8e4ae65cb2505bdc967c2faaf9c5d55f91564f249c20da0d61a"
+    },
+    {
+      "path": "crates/krlyxd/src/exact.rs",
+      "category": "source",
+      "physical_lines": 71,
+      "nonblank_lines": 61,
+      "sha256": "b3ce941a09ff3d309144f5c74df70b555a433533e82d5410e68bda4c9c0d3c7e"
+    },
+    {
+      "path": "crates/krlyxd/src/id.rs",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 63,
+      "sha256": "8ab1d8d2fd23c7febaaedff3d22e9ad4ff5e478cf568b04d89dbd3b830d3bc8a"
+    },
+    {
+      "path": "crates/krlyxd/src/lib.rs",
+      "category": "source",
+      "physical_lines": 68,
+      "nonblank_lines": 58,
+      "sha256": "34725fe02b01b0e1c36d3d445b36a96dd7283b5e3f858809df05ba84af7e75db"
+    },
+    {
+      "path": "crates/krlyxd/src/math/mod.rs",
+      "category": "source",
+      "physical_lines": 14,
+      "nonblank_lines": 12,
+      "sha256": "e0466459d479efe0b82d120259671a0d76081cf0c974e99a8e4b9ce69718d192"
+    },
+    {
+      "path": "crates/krlyxd/src/math/quadrature.rs",
+      "category": "source",
+      "physical_lines": 46,
+      "nonblank_lines": 39,
+      "sha256": "3c616270ae0827491d86ef3a5e12dd2d1fcc265c7fea928f39d96cafed9f8b71"
+    },
+    {
+      "path": "crates/krlyxd/src/metadata.rs",
+      "category": "source",
+      "physical_lines": 75,
+      "nonblank_lines": 71,
+      "sha256": "c205bb5820f7ff8e4612828a0782916fbef5630e1ffbd0988024f631adb0f714"
+    },
+    {
+      "path": "crates/krlyxd/src/quality.rs",
+      "category": "source",
+      "physical_lines": 43,
+      "nonblank_lines": 41,
+      "sha256": "4cbbb1dc48aa3b6d7ddac16b9f072c10cf90cf51cec47c7ad0ca6d726d2d822d"
+    },
+    {
+      "path": "crates/krlyxd/tests/metadata_quality.rs",
+      "category": "test",
+      "physical_lines": 56,
+      "nonblank_lines": 53,
+      "sha256": "c8d5ff4ffad9c47fdf194b5c08e344d9880d811b87a2807db020f60ab55c2bb3"
+    },
+    {
+      "path": "crates/krlyxd/tests/public_api.rs",
+      "category": "test",
+      "physical_lines": 128,
+      "nonblank_lines": 110,
+      "sha256": "993609579134d197fba42c929b0d848815270c2b9a3fb78d489ed3a2b946e48b"
+    },
+    {
+      "path": "crates/std/src/content/cone.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 47,
+      "sha256": "beadf9936e4d3d7f41cb351e7f20d25914fb69b9439db823be67060176adb131"
+    },
+    {
+      "path": "crates/std/src/content/cylinder.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 47,
+      "sha256": "40c14538b098fa31a4500ab76843951d8285b2717bed2e2f7a64274d9ac00eb0"
+    },
+    {
+      "path": "crates/std/src/content/ellipsoid.rs",
+      "category": "source",
+      "physical_lines": 47,
+      "nonblank_lines": 42,
+      "sha256": "05d79dbbfa8bf17a5d0faf79eda46ca8ea204da68d2f5729422d98535175ced5"
+    },
+    {
+      "path": "crates/std/src/content/mod.rs",
+      "category": "source",
+      "physical_lines": 47,
+      "nonblank_lines": 42,
+      "sha256": "1cb47763912162833d5065207c79e3503079b23fcfda13d84a836a4a77049d02"
+    },
+    {
+      "path": "crates/std/src/content/nurbs.rs",
+      "category": "source",
+      "physical_lines": 69,
+      "nonblank_lines": 64,
+      "sha256": "d3aac72eae88739f04321e7c47c1a51103de5cfec1e2fdce3abc39fd4340a887"
+    },
+    {
+      "path": "crates/std/src/content/plane.rs",
+      "category": "source",
+      "physical_lines": 32,
+      "nonblank_lines": 28,
+      "sha256": "8960974a2950b00ede7b071e219ba366222fe098b33eec5108ac75bc610adc4c"
+    },
+    {
+      "path": "crates/std/src/content/sphere.rs",
+      "category": "source",
+      "physical_lines": 64,
+      "nonblank_lines": 59,
+      "sha256": "7fdffd17cd92faedba3cec95f228f7842772ce6f01a1734e3891ab2ce3601dd1"
+    },
+    {
+      "path": "crates/std/src/content/torus.rs",
+      "category": "source",
+      "physical_lines": 144,
+      "nonblank_lines": 137,
+      "sha256": "30fd5604aee3075821fa614bf4af3ea0d1cbd4552f08107fd8dc022aa1735061"
+    },
+    {
+      "path": "crates/std/src/curve/circle.rs",
+      "category": "source",
+      "physical_lines": 147,
+      "nonblank_lines": 120,
+      "sha256": "399f35a6ecafad52918d964ba939661e64bfd86e1151e979c6b1a6ddd4ef60be"
+    },
+    {
+      "path": "crates/std/src/curve/ellipse.rs",
+      "category": "source",
+      "physical_lines": 184,
+      "nonblank_lines": 158,
+      "sha256": "fee59e8ce569bf3bace3aa62c00878ceb9fcf928174b816fc09235abb8465e02"
+    },
+    {
+      "path": "crates/std/src/curve/line.rs",
+      "category": "source",
+      "physical_lines": 119,
+      "nonblank_lines": 94,
+      "sha256": "8d804cb5f5e9125f13c93fa2999e5ad067d6ed19ce6606c8dfffe3d484cbb76c"
+    },
+    {
+      "path": "crates/std/src/curve/mod.rs",
+      "category": "source",
+      "physical_lines": 11,
+      "nonblank_lines": 9,
+      "sha256": "b49ecda4e5bd266f49c79eaa9931b191795ea2d80d1fdb96989425d60eac6ab0"
+    },
+    {
+      "path": "crates/std/src/curve/nurbs.rs",
+      "category": "source",
+      "physical_lines": 286,
+      "nonblank_lines": 259,
+      "sha256": "2e571eb6dcee87887964b1d3913a5acc2cc38269de67f5d04927e97c41075f07"
+    },
+    {
+      "path": "crates/std/src/index/keys.rs",
+      "category": "source",
+      "physical_lines": 297,
+      "nonblank_lines": 250,
+      "sha256": "1357f49d3ec7d995d52b3e4c9215ccdcd1f09179f70189644ba26e463334be6f"
+    },
+    {
+      "path": "crates/std/src/index/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "a1f595b5dcb88da4df01da64c025a741dfbe5f272b16c8645b40e7308feba4d5"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/cache_tests.rs",
+      "category": "test",
+      "physical_lines": 469,
+      "nonblank_lines": 449,
+      "sha256": "f146ba893dd686fe5cfd3a92665f118f9cfbd840ffdef50d6eafa1f2a4c2d0e8"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/control_tests.rs",
+      "category": "test",
+      "physical_lines": 211,
+      "nonblank_lines": 200,
+      "sha256": "a8ffe9ee7a0a00d6e6c5b2c517f6bfcc496e2191c57d6b5383dad055ab5d6482"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/edges.rs",
+      "category": "source",
+      "physical_lines": 77,
+      "nonblank_lines": 73,
+      "sha256": "78eb150901a0be552828fac5fd5141ad79d398d53075541fb425cc4413b6b62a"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/identity.rs",
+      "category": "source",
+      "physical_lines": 214,
+      "nonblank_lines": 198,
+      "sha256": "ff36df20c7150f6d4b399891b339d875dfa40762b51b4f3fc33c5d6c7fece74b"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/layout.rs",
+      "category": "source",
+      "physical_lines": 542,
+      "nonblank_lines": 527,
+      "sha256": "ae282839c3657fc469c53db9e1453e4e594fa7f2bf518e0e0d172fd1471a58da"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/memo.rs",
+      "category": "source",
+      "physical_lines": 83,
+      "nonblank_lines": 75,
+      "sha256": "40e7d94330577a6628c19b43db0acd25bc76764938179c494fb7cb598252ceeb"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/mod.rs",
+      "category": "source",
+      "physical_lines": 538,
+      "nonblank_lines": 492,
+      "sha256": "e3914a65dfae96c4714aafe542a7e91816a129209e4cc8ae7d9b8fa374f9e088"
+    },
+    {
+      "path": "crates/std/src/interpret/mesh/triangulate.rs",
+      "category": "source",
+      "physical_lines": 428,
+      "nonblank_lines": 415,
+      "sha256": "3027eea74b18a8f6c5dd2605393f0c78140b18be0bbf87f64c555252f4200981"
+    },
+    {
+      "path": "crates/std/src/interpret/mod.rs",
+      "category": "source",
+      "physical_lines": 30,
+      "nonblank_lines": 24,
+      "sha256": "6e0f76f5baabbc84497654015574040bc55cce0435d231efd3e1a0f1cbc09a8f"
+    },
+    {
+      "path": "crates/std/src/keys/axis.rs",
+      "category": "source",
+      "physical_lines": 91,
+      "nonblank_lines": 79,
+      "sha256": "27092be4213036e60fc0887de1735cb20f59227f773bc455e3495ffdf21f2e27"
+    },
+    {
+      "path": "crates/std/src/keys/cell.rs",
+      "category": "source",
+      "physical_lines": 79,
+      "nonblank_lines": 66,
+      "sha256": "7c1aedbcb11c3f2bb2f6b560f32a5800fde8550a7d22aef637b1e08c2da35d63"
+    },
+    {
+      "path": "crates/std/src/keys/coaxial.rs",
+      "category": "source",
+      "physical_lines": 95,
+      "nonblank_lines": 79,
+      "sha256": "f58c5e0f149fd96f7d4ab4ea425b15ef6f6b2e43632201089ea9f4600bbb293c"
+    },
+    {
+      "path": "crates/std/src/keys/kind.rs",
+      "category": "source",
+      "physical_lines": 43,
+      "nonblank_lines": 36,
+      "sha256": "5baae0f91afc9cba4cd64bdb3a6da8adca8d2d5ba9f55f1e80e253f86db9d6d6"
+    },
+    {
+      "path": "crates/std/src/keys/made.rs",
+      "category": "source",
+      "physical_lines": 60,
+      "nonblank_lines": 51,
+      "sha256": "7562eb3045ed95287179235acf9c254b9864da9e9d51f073febdcb700219db0d"
+    },
+    {
+      "path": "crates/std/src/keys/mod.rs",
+      "category": "source",
+      "physical_lines": 76,
+      "nonblank_lines": 67,
+      "sha256": "62370d4012e4f4a6b3ee1f3ebdfe14933642ac36a4f7e13d5727df34a3f11d93"
+    },
+    {
+      "path": "crates/std/src/keys/name.rs",
+      "category": "source",
+      "physical_lines": 48,
+      "nonblank_lines": 39,
+      "sha256": "6e2f1a0d511fe6224b51fe8f5ab6c5f8ac14c623c16b79335dc8700162c2a0d1"
+    },
+    {
+      "path": "crates/std/src/keys/normal.rs",
+      "category": "source",
+      "physical_lines": 64,
+      "nonblank_lines": 53,
+      "sha256": "0ac8809465aea9b5531b90233d3b50f1ca6b3d8ffa55939f339f1d95fca2c5d7"
+    },
+    {
+      "path": "crates/std/src/keys/radius.rs",
+      "category": "source",
+      "physical_lines": 59,
+      "nonblank_lines": 50,
+      "sha256": "d016fe468c914c68d290599041652eda37f39cf7c7920229afc380fea685c3d6"
+    },
+    {
+      "path": "crates/std/src/lib.rs",
+      "category": "source",
+      "physical_lines": 49,
+      "nonblank_lines": 45,
+      "sha256": "62bf116fb9ab50f3d5789dac980756ccc1a00eaa71f3e7da209d29a6a93aa10e"
+    },
+    {
+      "path": "crates/std/src/measure/area.rs",
+      "category": "source",
+      "physical_lines": 18,
+      "nonblank_lines": 14,
+      "sha256": "93fddab600545eb7954e116578d9402e47a1f88c9d750798480d874a6c9cfeeb"
+    },
+    {
+      "path": "crates/std/src/measure/count.rs",
+      "category": "source",
+      "physical_lines": 32,
+      "nonblank_lines": 27,
+      "sha256": "ef3c1cd16919557614d7da98349d2cb3c6ebcddc01cf7d06b45974a97bcf862e"
+    },
+    {
+      "path": "crates/std/src/measure/mod.rs",
+      "category": "source",
+      "physical_lines": 36,
+      "nonblank_lines": 32,
+      "sha256": "98bc28385c8caa1366a59bcabd1256e2169eb7e67252a7d873c6cc55393dbe68"
+    },
+    {
+      "path": "crates/std/src/measure/volume.rs",
+      "category": "source",
+      "physical_lines": 21,
+      "nonblank_lines": 17,
+      "sha256": "4adaccadd557e5e474381b103a4d7815a799e7b1c14366274d8f2f138b48c299"
+    },
+    {
+      "path": "crates/std/src/meet/circle_plane.rs",
+      "category": "source",
+      "physical_lines": 104,
+      "nonblank_lines": 88,
+      "sha256": "59dd9daa0f080ccbc316313b69506acd7f1f6cf49a25776e99016991fdda9302"
+    },
+    {
+      "path": "crates/std/src/meet/circle_quadric.rs",
+      "category": "source",
+      "physical_lines": 109,
+      "nonblank_lines": 89,
+      "sha256": "42c542da3716b2438a263c6889028115df4bc79a11fed491e5452824c171aa33"
+    },
+    {
+      "path": "crates/std/src/meet/line_surface.rs",
+      "category": "source",
+      "physical_lines": 91,
+      "nonblank_lines": 74,
+      "sha256": "11d6ee173df1968dbb2fdbf78e81cc323d42f010fe6728b3bccc2a6ed1882ae2"
+    },
+    {
+      "path": "crates/std/src/meet/mod.rs",
+      "category": "source",
+      "physical_lines": 55,
+      "nonblank_lines": 48,
+      "sha256": "4feb01b3bfe3c71b411c7832cb3a03da5ffb07b7aec8ea68151fe76c7478b2cc"
+    },
+    {
+      "path": "crates/std/src/probe/box_tree.rs",
+      "category": "source",
+      "physical_lines": 412,
+      "nonblank_lines": 374,
+      "sha256": "310d717ff374c9bd606a06e2abaaa53c42b0200c1a7df0e1348ff5d2a041b874"
+    },
+    {
+      "path": "crates/std/src/probe/exhaustive.rs",
+      "category": "source",
+      "physical_lines": 37,
+      "nonblank_lines": 33,
+      "sha256": "5f612d7a268a833b8e1a466c284ec92c26d9781debd83eae860cdee35313b6e5"
+    },
+    {
+      "path": "crates/std/src/probe/mod.rs",
+      "category": "source",
+      "physical_lines": 246,
+      "nonblank_lines": 218,
+      "sha256": "0aaca2e6edadaf3fccdac471701586c702058adc088fba5bd0296e659f3a8ad1"
+    },
+    {
+      "path": "crates/std/src/query/bounds.rs",
+      "category": "source",
+      "physical_lines": 73,
+      "nonblank_lines": 61,
+      "sha256": "f3606981fa5f59a0d274c60720ed207d2569c2efca4ac3787f234b1151d2458c"
+    },
+    {
+      "path": "crates/std/src/query/brief.rs",
+      "category": "source",
+      "physical_lines": 199,
+      "nonblank_lines": 170,
+      "sha256": "c578490f0fac6af8a1f0de9aefb987a7e07b9bd14849482da4876d1f05df6627"
+    },
+    {
+      "path": "crates/std/src/query/edges.rs",
+      "category": "source",
+      "physical_lines": 169,
+      "nonblank_lines": 141,
+      "sha256": "b4ae0eeb778cc1ddc6ad43cb829b7f837b624cd9da82f51db47fed3d344d12f2"
+    },
+    {
+      "path": "crates/std/src/query/faces.rs",
+      "category": "source",
+      "physical_lines": 165,
+      "nonblank_lines": 141,
+      "sha256": "b590cee6c153bfda8537222e0c6dd0b496b12dad4ba15b7a32e90f6c5eb85ddf"
+    },
+    {
+      "path": "crates/std/src/query/find.rs",
+      "category": "source",
+      "physical_lines": 139,
+      "nonblank_lines": 116,
+      "sha256": "72a9e3012cf366f24ba6e36f1cab19c91b89a34f2b218859a9c1cebdc07b626a"
+    },
+    {
+      "path": "crates/std/src/query/here.rs",
+      "category": "source",
+      "physical_lines": 341,
+      "nonblank_lines": 294,
+      "sha256": "16a7e7711ca84006a5e0aa596f3094c4ac5f95d6115c5f28cfdcaab231e59646"
+    },
+    {
+      "path": "crates/std/src/query/keys.rs",
+      "category": "source",
+      "physical_lines": 99,
+      "nonblank_lines": 83,
+      "sha256": "c70eab1a72cbf977d71fc0f92a41e8b229059bbeacf68602285e06aa03260dce"
+    },
+    {
+      "path": "crates/std/src/query/measure.rs",
+      "category": "source",
+      "physical_lines": 89,
+      "nonblank_lines": 75,
+      "sha256": "ae5e4a80e28cfd27395d7068f0b3e5506ac2114bc2d9d645ecdbdeb89eb0b02a"
+    },
+    {
+      "path": "crates/std/src/query/mesh.rs",
+      "category": "source",
+      "physical_lines": 282,
+      "nonblank_lines": 259,
+      "sha256": "44f920f2023753648f18e48a3cd43e5e8887adf511ced22830ecd2c6a6f3d8ed"
+    },
+    {
+      "path": "crates/std/src/query/mod.rs",
+      "category": "source",
+      "physical_lines": 160,
+      "nonblank_lines": 138,
+      "sha256": "0397a1233f71de2eb7e2e1c028e3dbb596509db42ddecffe278339a148843f01"
+    },
+    {
+      "path": "crates/std/src/query/ray.rs",
+      "category": "source",
+      "physical_lines": 188,
+      "nonblank_lines": 157,
+      "sha256": "6aaec52f7b537683098c72111162bc174d28c5dd782dc69dc569e76b444b1cf3"
+    },
+    {
+      "path": "crates/std/src/read/k3d.rs",
+      "category": "source",
+      "physical_lines": 19,
+      "nonblank_lines": 15,
+      "sha256": "dfe28ccba6e35ae9e1ccd2dbe3bbaa304590a1f59a6c1958964222be74503175"
+    },
+    {
+      "path": "crates/std/src/read/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "25e11fdccfd9c53cddb735fb8cc8ffde091af04a815c57786e4c2d2d379a17e0"
+    },
+    {
+      "path": "crates/std/src/section/cylinder_cylinder.rs",
+      "category": "source",
+      "physical_lines": 100,
+      "nonblank_lines": 88,
+      "sha256": "08fda8dc165671b43ac9e10da30193c157dbf487ce29253f1f733cb79b2722e9"
+    },
+    {
+      "path": "crates/std/src/section/mod.rs",
+      "category": "source",
+      "physical_lines": 118,
+      "nonblank_lines": 105,
+      "sha256": "23f3c6eabf5450e99e2098f5cc954cc6ef678fc551152d47f432990112393143"
+    },
+    {
+      "path": "crates/std/src/section/plane_cylinder.rs",
+      "category": "source",
+      "physical_lines": 86,
+      "nonblank_lines": 74,
+      "sha256": "5e212b7680b57bce74122bdd2f6f006308a29b83212f7a815851b61d1d4f1808"
+    },
+    {
+      "path": "crates/std/src/section/plane_plane.rs",
+      "category": "source",
+      "physical_lines": 68,
+      "nonblank_lines": 58,
+      "sha256": "9bba9c96fe4f8b87c2f5da5392dc33e44eb916d5dc59eac2191a775abebef984"
+    },
+    {
+      "path": "crates/std/src/section/plane_sphere.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 60,
+      "sha256": "6c8b8e40182e7d77c865a893f72bf8a6c2bc2f40bdcde5cb41c0f1d531fd6f2c"
+    },
+    {
+      "path": "crates/std/src/section/sphere_cylinder.rs",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 67,
+      "sha256": "0d83ec4b4676d3a7296c254a82ce58b92b3c5bfe6f4535e9645b7311d1adbfa9"
+    },
+    {
+      "path": "crates/std/src/section/sphere_sphere.rs",
+      "category": "source",
+      "physical_lines": 66,
+      "nonblank_lines": 57,
+      "sha256": "96db12cfe7aa7ee2fba10e611dec7d6af349950e4a6aa8873c7cfb366ff517df"
+    },
+    {
+      "path": "crates/std/src/stage/build.rs",
+      "category": "source",
+      "physical_lines": 22,
+      "nonblank_lines": 18,
+      "sha256": "1c932c50714a8839301f73dd277ae79eacfbac84548a6d061c25e2fca46f0a4a"
+    },
+    {
+      "path": "crates/std/src/stage/check.rs",
+      "category": "source",
+      "physical_lines": 26,
+      "nonblank_lines": 22,
+      "sha256": "9d07d623f2b24700d0a94da7c9a5d0a977668dd4d1f3cd56d7852b6c6c284452"
+    },
+    {
+      "path": "crates/std/src/stage/commit.rs",
+      "category": "source",
+      "physical_lines": 22,
+      "nonblank_lines": 18,
+      "sha256": "7bfb7b3dc5ac1166ece577128f06141a13070d1c2cd37662be7b3f66c17b41b5"
+    },
+    {
+      "path": "crates/std/src/stage/delta.rs",
+      "category": "source",
+      "physical_lines": 70,
+      "nonblank_lines": 65,
+      "sha256": "3051ae3c77e10ec7d4ed9b4e3bdc6734d0b51d37a56f567322b335fb5e04fc18"
+    },
+    {
+      "path": "crates/std/src/stage/judge.rs",
+      "category": "source",
+      "physical_lines": 66,
+      "nonblank_lines": 61,
+      "sha256": "72f06a733b32dae2a7ecb4a09311b517479b2da82f42adb1a9bdcad3ef602565"
+    },
+    {
+      "path": "crates/std/src/stage/mod.rs",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 22,
+      "sha256": "fcd5696bdb9a50f3bb4d57df445d820c56dd3d3991dcecbbbedb32372c17c326"
+    },
+    {
+      "path": "crates/std/src/stage/name.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 48,
+      "sha256": "159f43c35f8798db8125acb74c06fd7a45272c73851eb2cbe42084191abb13ac"
+    },
+    {
+      "path": "crates/std/src/stage/run.rs",
+      "category": "source",
+      "physical_lines": 20,
+      "nonblank_lines": 16,
+      "sha256": "83325cc358e9949ba86b2f3a96a294c0f3b51dc07b038898ddf8a8a6d182c421"
+    },
+    {
+      "path": "crates/std/src/surface/cone.rs",
+      "category": "source",
+      "physical_lines": 179,
+      "nonblank_lines": 149,
+      "sha256": "3fdc8661dfcec143c77a068b3a4ade218c77a06ecb5dbcedcef4a8a4b9a3d2bd"
+    },
+    {
+      "path": "crates/std/src/surface/cylinder.rs",
+      "category": "source",
+      "physical_lines": 143,
+      "nonblank_lines": 116,
+      "sha256": "c095eab50ff5a86648f69093a4cb7369ef19cdaf15b81ad7b5c25c19d61bc53a"
+    },
+    {
+      "path": "crates/std/src/surface/ellipsoid.rs",
+      "category": "source",
+      "physical_lines": 328,
+      "nonblank_lines": 298,
+      "sha256": "0b8e16fb8b85ba3485e25f61c2a151718f1da2b73192d0fa6bdff352e8038e8e"
+    },
+    {
+      "path": "crates/std/src/surface/mod.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 44,
+      "sha256": "e503f7569a7e5859bde728992dc680422770c80997cee892253d621ed2cfa79e"
+    },
+    {
+      "path": "crates/std/src/surface/nurbs.rs",
+      "category": "source",
+      "physical_lines": 572,
+      "nonblank_lines": 530,
+      "sha256": "d94aa709d41a378c8b55590b5dbe63532e1cbc1c361adac202522ed22655a0c2"
+    },
+    {
+      "path": "crates/std/src/surface/plane.rs",
+      "category": "source",
+      "physical_lines": 140,
+      "nonblank_lines": 111,
+      "sha256": "58790b0482a60007c241e2f2a4eede957a7298bfdee0a492a6ea614fd4e70c5f"
+    },
+    {
+      "path": "crates/std/src/surface/sphere.rs",
+      "category": "source",
+      "physical_lines": 165,
+      "nonblank_lines": 134,
+      "sha256": "df746acbe8b9493e43d0bb6ea62104deb8765829ceb2412118fd2d9298c4a9c0"
+    },
+    {
+      "path": "crates/std/src/surface/torus.rs",
+      "category": "source",
+      "physical_lines": 229,
+      "nonblank_lines": 196,
+      "sha256": "7801a55ab36bcfdab2d6e898cf9dadef7498c93430aa857c59258be5ca31ff32"
+    },
+    {
+      "path": "crates/std/src/sweep/circle_shift.rs",
+      "category": "source",
+      "physical_lines": 62,
+      "nonblank_lines": 52,
+      "sha256": "77b554453183fe4bc07ccf2b475e85f804d7797459587102e152099e7e0f44c6"
+    },
+    {
+      "path": "crates/std/src/sweep/circle_turn.rs",
+      "category": "source",
+      "physical_lines": 102,
+      "nonblank_lines": 88,
+      "sha256": "cf7c8ae00cf173c600aa1b90e06c7690d0856aef605a8d6ea6cacd65b8c01369"
+    },
+    {
+      "path": "crates/std/src/sweep/line_shift.rs",
+      "category": "source",
+      "physical_lines": 63,
+      "nonblank_lines": 52,
+      "sha256": "03a722b10af3836969bcea72433538cf421a613525c0be9035b5da780c16dfb1"
+    },
+    {
+      "path": "crates/std/src/sweep/line_turn.rs",
+      "category": "source",
+      "physical_lines": 117,
+      "nonblank_lines": 99,
+      "sha256": "e6da679948c13391277001ed2af389eb1a39f80e193db303dc057248963547a7"
+    },
+    {
+      "path": "crates/std/src/sweep/mod.rs",
+      "category": "source",
+      "physical_lines": 49,
+      "nonblank_lines": 43,
+      "sha256": "961ce65be42cd67b4f5ca48eef20b7471c8381818ff0ea34d90db6899700abbc"
+    },
+    {
+      "path": "crates/std/src/tool/blend.rs",
+      "category": "source",
+      "physical_lines": 795,
+      "nonblank_lines": 725,
+      "sha256": "02e96999aa1729d62704dcbfcfd68c2b6dbdd182ada8c5c5526f10977f74a8e0"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/classify.rs",
+      "category": "source",
+      "physical_lines": 77,
+      "nonblank_lines": 73,
+      "sha256": "0d22fc37a35f014f321dbb205e8df3b3c0c5e3c433b465e0fca8b78656431984"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/cut.rs",
+      "category": "source",
+      "physical_lines": 255,
+      "nonblank_lines": 246,
+      "sha256": "9c0d40ebbd252e70ce084dbb4356aa5f9898c236a5eac907b590b3033ab78253"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/mod.rs",
+      "category": "source",
+      "physical_lines": 342,
+      "nonblank_lines": 286,
+      "sha256": "e98c2230a1ab26ea6c0528dffb1a57af1f9425564848fc6c96ea6fc7fc9dac95"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/sew.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 53,
+      "sha256": "380e1ffa2556d361a7f8e41237298c92a9bed3e174f95e0b3af69dcda6014fa0"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/split.rs",
+      "category": "source",
+      "physical_lines": 168,
+      "nonblank_lines": 161,
+      "sha256": "1ed966e892d4ca24c41f71b67125f77374c5af37b9bc2db7485ffaa9b1b9f337"
+    },
+    {
+      "path": "crates/std/src/tool/boolean/work.rs",
+      "category": "source",
+      "physical_lines": 124,
+      "nonblank_lines": 115,
+      "sha256": "8babddb8ca69f1d371c93a31a28e7415def452caaaea3305396e0fc29482d5bc"
+    },
+    {
+      "path": "crates/std/src/tool/circle.rs",
+      "category": "source",
+      "physical_lines": 63,
+      "nonblank_lines": 54,
+      "sha256": "e0bb52b7c055cef4f2a696f9456d08465efb4b215385b5c35ca1fd984ba8956b"
+    },
+    {
+      "path": "crates/std/src/tool/cone.rs",
+      "category": "source",
+      "physical_lines": 85,
+      "nonblank_lines": 73,
+      "sha256": "fae5a2356784454074745a26374e7ca0f7f37f7b6d9da83c3911fee498371139"
+    },
+    {
+      "path": "crates/std/src/tool/cuboid.rs",
+      "category": "source",
+      "physical_lines": 71,
+      "nonblank_lines": 59,
+      "sha256": "e650f4c452fd4e33915f58fb1c0ca1dfcfe8d2ac973c825ca499b350fc840a17"
+    },
+    {
+      "path": "crates/std/src/tool/cylinder.rs",
+      "category": "source",
+      "physical_lines": 115,
+      "nonblank_lines": 98,
+      "sha256": "26dcc29ede506970829edd036e65f9082454121ee4c9395d6a13d80588ccf3ac"
+    },
+    {
+      "path": "crates/std/src/tool/ellipsoid.rs",
+      "category": "source",
+      "physical_lines": 97,
+      "nonblank_lines": 86,
+      "sha256": "b0fc0c091607d72d06c3a1ba78c7361215725c8c80ec2ddb5e2e2fa7f6927799"
+    },
+    {
+      "path": "crates/std/src/tool/extrude.rs",
+      "category": "source",
+      "physical_lines": 180,
+      "nonblank_lines": 155,
+      "sha256": "2ca17e861687c88dda38c3f3cc7a890df6dba9ccc045f95e7e9efe706f33404d"
+    },
+    {
+      "path": "crates/std/src/tool/group.rs",
+      "category": "source",
+      "physical_lines": 65,
+      "nonblank_lines": 56,
+      "sha256": "89fadc7e3beb574a64a0c654e4932a631a63e43c1d0bc1f20ee091577b8db569"
+    },
+    {
+      "path": "crates/std/src/tool/loft.rs",
+      "category": "source",
+      "physical_lines": 354,
+      "nonblank_lines": 318,
+      "sha256": "61c740e6e2dbca813f8e9ec13e00cf9b6ff6cd7667c9b9879b2750ae1f657926"
+    },
+    {
+      "path": "crates/std/src/tool/mirror.rs",
+      "category": "source",
+      "physical_lines": 89,
+      "nonblank_lines": 77,
+      "sha256": "b33900bf27012bc5f76d8ef10d72b26c696b2739f3e482022e3bc486a88e2dda"
+    },
+    {
+      "path": "crates/std/src/tool/mod.rs",
+      "category": "source",
+      "physical_lines": 227,
+      "nonblank_lines": 208,
+      "sha256": "06703218e4e7ec453ad125ceedc76d2c269b2cc08449b396e7977106441de441"
+    },
+    {
+      "path": "crates/std/src/tool/pattern.rs",
+      "category": "source",
+      "physical_lines": 105,
+      "nonblank_lines": 89,
+      "sha256": "e0612de1ee6a0356522ac789a101bacaf9e84f20a17e68777359046e5d79f33e"
+    },
+    {
+      "path": "crates/std/src/tool/pipe.rs",
+      "category": "source",
+      "physical_lines": 384,
+      "nonblank_lines": 353,
+      "sha256": "816e1635a97199611897a0d95ade37368136ae2b8a6c554fbbf32886f45a6305"
+    },
+    {
+      "path": "crates/std/src/tool/profile.rs",
+      "category": "source",
+      "physical_lines": 372,
+      "nonblank_lines": 331,
+      "sha256": "2f61ead26bd1f52b58a7b054a417ebb25f0ef0c38549300212fd085e06c983e2"
+    },
+    {
+      "path": "crates/std/src/tool/rectangle.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 63,
+      "sha256": "6a1283930f2881731a6b1305a0e68a2a7822e9b93d311d6d26ee96177795f702"
+    },
+    {
+      "path": "crates/std/src/tool/revolve.rs",
+      "category": "source",
+      "physical_lines": 278,
+      "nonblank_lines": 244,
+      "sha256": "d4df09d8cfd05103403fd3adf7807fe59d881e759e943be19c06569fa164dd98"
+    },
+    {
+      "path": "crates/std/src/tool/sphere.rs",
+      "category": "source",
+      "physical_lines": 61,
+      "nonblank_lines": 52,
+      "sha256": "75f2775f0301b6c9ff962380042286f4bf12f9e92913561dec7e139d803876c2"
+    },
+    {
+      "path": "crates/std/src/tool/taper.rs",
+      "category": "source",
+      "physical_lines": 354,
+      "nonblank_lines": 326,
+      "sha256": "f2879ebbadc1a7b52ca90714d90a17625a4e7f0f36b66b9a17c55c62facc61b0"
+    },
+    {
+      "path": "crates/std/src/tool/torus.rs",
+      "category": "source",
+      "physical_lines": 64,
+      "nonblank_lines": 55,
+      "sha256": "2fe1add8dbaca8f872a28861398b9f4c84a1ba6ace869aa78e16c705002d2b1f"
+    },
+    {
+      "path": "crates/std/src/tool/transform.rs",
+      "category": "source",
+      "physical_lines": 149,
+      "nonblank_lines": 130,
+      "sha256": "3d247e935664c4355eb0c4720cbae363607837fa7f98a20ab0621a8ee341195e"
+    },
+    {
+      "path": "crates/std/src/trim/crossing.rs",
+      "category": "source",
+      "physical_lines": 122,
+      "nonblank_lines": 114,
+      "sha256": "25740314835161a15a7a6f7f1057e2c03064828a52ee2ba941958db87bb56a95"
+    },
+    {
+      "path": "crates/std/src/trim/mod.rs",
+      "category": "source",
+      "physical_lines": 100,
+      "nonblank_lines": 88,
+      "sha256": "38dc5e78d92e64e693b7f8ffbe8251623973166567d89c71365835620ce504b4"
+    },
+    {
+      "path": "crates/std/src/trim/nurbs.rs",
+      "category": "source",
+      "physical_lines": 46,
+      "nonblank_lines": 42,
+      "sha256": "a475ee8ccb8f816f550f0d1a315985fbe9a806fa1c5fa26d74f1f7c0abeeba16"
+    },
+    {
+      "path": "crates/std/src/trim/plane.rs",
+      "category": "source",
+      "physical_lines": 77,
+      "nonblank_lines": 73,
+      "sha256": "381cf4e4f09024e00971d2b910e04ed788c481e3ad12a8c8db98259d7eaaef7d"
+    },
+    {
+      "path": "crates/std/src/trim/walk.rs",
+      "category": "source",
+      "physical_lines": 87,
+      "nonblank_lines": 81,
+      "sha256": "4d3b356d585e0370a44046f6554db167d92463b1a35f52d4bae39c643e379c4b"
+    },
+    {
+      "path": "crates/std/src/write/k3d.rs",
+      "category": "source",
+      "physical_lines": 19,
+      "nonblank_lines": 15,
+      "sha256": "89347252617e2c38e81183ef9494b6cdb84bcb7b55b69e584d7ecb6c04250d1a"
+    },
+    {
+      "path": "crates/std/src/write/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "a3db25f5a36ffa24c5b11e03b5aa96fdb5da013bcc5c1871d75c7228899973ee"
+    },
+    {
+      "path": "crates/std/tests/kernel.rs",
+      "category": "test",
+      "physical_lines": 302,
+      "nonblank_lines": 242,
+      "sha256": "bfd9482822d73340319d49a5a85e4b635ecc6f428f9b799d48f8a29edaf35a37"
+    },
+    {
+      "path": "crates/std/tests/legacy_reference.rs",
+      "category": "test",
+      "physical_lines": 112,
+      "nonblank_lines": 98,
+      "sha256": "fe269aa70b8a2495ad67391b4b22cbbf2179751f4ec7925196e4ecc22f3329ea"
+    },
+    {
+      "path": "crates/std/tests/models.rs",
+      "category": "test",
+      "physical_lines": 34,
+      "nonblank_lines": 29,
+      "sha256": "2034b48a7172e424381d4e776fd634c5ea0146c61f171a0e4a91c58a0bf818a6"
+    },
+    {
+      "path": "crates/std/tests/queries.rs",
+      "category": "test",
+      "physical_lines": 427,
+      "nonblank_lines": 365,
+      "sha256": "32c16dafd4a2767d7c64c48084155ca5139b9fee6a631d5b82f5a7608746915c"
+    },
+    {
+      "path": "crates/std/tests/session.rs",
+      "category": "test",
+      "physical_lines": 200,
+      "nonblank_lines": 160,
+      "sha256": "a6c667bd85f1a8bdfbd4dbcb34560358ad6dd82409f56783f0d58d87309489c1"
+    },
+    {
+      "path": "crates/view/src/base64.rs",
+      "category": "source",
+      "physical_lines": 96,
+      "nonblank_lines": 82,
+      "sha256": "6fe0e7a82a8d704cea079d38cca714d418fa26f78d87e59aa3c5b5da8ceb810a"
+    },
+    {
+      "path": "crates/view/src/control_tests.rs",
+      "category": "test",
+      "physical_lines": 321,
+      "nonblank_lines": 300,
+      "sha256": "a65d607cc3b98933c331ff41f0da6cd1fa917f81092623c36107bbdcd0152c5e"
+    },
+    {
+      "path": "crates/view/src/lib.rs",
+      "category": "source",
+      "physical_lines": 435,
+      "nonblank_lines": 406,
+      "sha256": "2566deab77a34fcb16fee41436f0b2480f057df6afb6e400099b713ca946fab7"
+    },
+    {
+      "path": "crates/view/src/likeness.rs",
+      "category": "source",
+      "physical_lines": 459,
+      "nonblank_lines": 427,
+      "sha256": "7db6e41aaed8f55a060839787568f86577f0bb9dcbc858ee40f860d5b329984f"
+    },
+    {
+      "path": "crates/view/src/likeness/report.rs",
+      "category": "source",
+      "physical_lines": 334,
+      "nonblank_lines": 323,
+      "sha256": "e8129d652de069e11494da724422dc6a6dee37f51e3123f8e06e944213164644"
+    },
+    {
+      "path": "crates/view/src/outline.rs",
+      "category": "source",
+      "physical_lines": 241,
+      "nonblank_lines": 221,
+      "sha256": "65cf2c22958ad229ca38fa2e5392cf6ed536b328043588f50316e03e65ae0373"
+    },
+    {
+      "path": "crates/view/src/pick.rs",
+      "category": "source",
+      "physical_lines": 130,
+      "nonblank_lines": 119,
+      "sha256": "35f2e2f5193c2de9b4500614eba68f9dea68f029957b886bf7b429d0a38a1e3e"
+    },
+    {
+      "path": "crates/view/src/picture.rs",
+      "category": "source",
+      "physical_lines": 177,
+      "nonblank_lines": 148,
+      "sha256": "04d29db656b7369e2e6d444c84f2220501b1ca4a8280ef0758be9c2b294467c4"
+    },
+    {
+      "path": "crates/view/src/png.rs",
+      "category": "source",
+      "physical_lines": 264,
+      "nonblank_lines": 236,
+      "sha256": "6c5bf3fb828c86093c55f6e5366ccf6260d8d4cc06157137532a27cb3bfc64ce"
+    },
+    {
+      "path": "crates/view/src/ports/mod.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "345657d22c8db1fc4c3586bec0c56a5f95376f7a6977792a3163dda2eec77ce4"
+    },
+    {
+      "path": "crates/view/src/ports/render/contract.rs",
+      "category": "source",
+      "physical_lines": 88,
+      "nonblank_lines": 84,
+      "sha256": "a2b86326551098ab21e6fb78aafc4526b5ace0bf4c0a252581c6324ee478a8f6"
+    },
+    {
+      "path": "crates/view/src/ports/render/mod.rs",
+      "category": "source",
+      "physical_lines": 373,
+      "nonblank_lines": 324,
+      "sha256": "af95f73acc189949720876ad6ac0e8e9dcbb287b900bce048eb032b5d0bde7f8"
+    },
+    {
+      "path": "crates/view/src/ports/render/style.rs",
+      "category": "source",
+      "physical_lines": 29,
+      "nonblank_lines": 24,
+      "sha256": "5092c1754f2efa270ae23ba1fd25022a6da3bcc9e4e45d858f1356bb624abab0"
+    },
+    {
+      "path": "crates/view/src/raycast.rs",
+      "category": "source",
+      "physical_lines": 576,
+      "nonblank_lines": 511,
+      "sha256": "544f6ee1840f8bfae72e3706086322ce0a30484b04101b662fef62fd6f58194e"
+    },
+    {
+      "path": "crates/view/src/view.rs",
+      "category": "source",
+      "physical_lines": 179,
+      "nonblank_lines": 151,
+      "sha256": "8af3f8d554e48eb5dc27d3843da5929accf59c2f05db7605b1255b9f64ab9939"
+    },
+    {
+      "path": "crates/view/tests/likeness.rs",
+      "category": "test",
+      "physical_lines": 408,
+      "nonblank_lines": 391,
+      "sha256": "d9f297ec2f7b5d040b9df8a78cd9dd1ff9b256fbbaa25ed0064069481f023b9d"
+    },
+    {
+      "path": "crates/view/tests/likeness_peer.py",
+      "category": "test",
+      "physical_lines": 100,
+      "nonblank_lines": 93,
+      "sha256": "667a2bd558fe1fda722a7b77a9dc8849c89d79dfe7053306a7331c681cc67bac"
+    },
+    {
+      "path": "crates/view/tests/render.rs",
+      "category": "test",
+      "physical_lines": 338,
+      "nonblank_lines": 285,
+      "sha256": "2660f797a1a670bf007e89342668b77978386b0868b3044975779c9d66e504e3"
+    },
+    {
+      "path": "package/krlyvis/crates/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 104,
+      "nonblank_lines": 95,
+      "sha256": "27a0eb6e38c96084d98e29c359499f9aea30effc309240555696c3705266723e"
+    },
+    {
+      "path": "package/krlyvis/crates/cli/src/lib.rs",
+      "category": "source",
+      "physical_lines": 6,
+      "nonblank_lines": 5,
+      "sha256": "e1cdf3024be9f5087e969e0144bc9001263e6e191b49a53600e9353b47b133d4"
+    },
+    {
+      "path": "package/krlyvis/crates/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 70,
+      "nonblank_lines": 64,
+      "sha256": "b97abbea1cbc0094d2e65ea8dfc7f82be756c3e0340afcd5cb2da3fdb790a8c9"
+    },
+    {
+      "path": "package/krlyvis/crates/cli/src/session.rs",
+      "category": "source",
+      "physical_lines": 676,
+      "nonblank_lines": 631,
+      "sha256": "d02e0e798419693a50ff4108f666b344adc84d2df6c0625dde146c7ca5619fce"
+    },
+    {
+      "path": "package/krlyvis/crates/cli/tests/program.rs",
+      "category": "test",
+      "physical_lines": 113,
+      "nonblank_lines": 96,
+      "sha256": "93e0d46cc1dad27333810b58ff2f83d9f8d8d706c1f209f5af278a04d2e9c3be"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/builder.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 47,
+      "sha256": "f676ad8a0799db510700ee7f6d278dbed695e5bbd61723a121ae4bfdd7a91a7b"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/context.rs",
+      "category": "source",
+      "physical_lines": 146,
+      "nonblank_lines": 125,
+      "sha256": "d07235d67c3d2f18421504c54e11056f54fbef599f1f79640935f98c4cc299d1"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/datum.rs",
+      "category": "source",
+      "physical_lines": 230,
+      "nonblank_lines": 217,
+      "sha256": "bba6bb159ce0809640044bfaee7a8985420a80a185516fc43658730c6306dd1e"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/frame.rs",
+      "category": "source",
+      "physical_lines": 177,
+      "nonblank_lines": 156,
+      "sha256": "3dcd3c33696a186a3d89e1b7ffa07afafa8bed41bd4a4a34a0f745b39e3abf5c"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/image.rs",
+      "category": "source",
+      "physical_lines": 84,
+      "nonblank_lines": 68,
+      "sha256": "a1ecc7f6669cef8e30fac08416dc5a82c2bac4505f68a721fb62931a95163da4"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/lib.rs",
+      "category": "source",
+      "physical_lines": 27,
+      "nonblank_lines": 25,
+      "sha256": "2501b06546c5bf354dfd0be4506d3f648ddae32185daeb9d488978d1d1ff5ce7"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/model.rs",
+      "category": "source",
+      "physical_lines": 120,
+      "nonblank_lines": 105,
+      "sha256": "31bbf2b3212ed0b2c8a4cc9feb10ab03080791ad3e9d27b09968617a8004daf8"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/plugin.rs",
+      "category": "source",
+      "physical_lines": 3,
+      "nonblank_lines": 2,
+      "sha256": "8109a4bca753581a00a2a6847b813a4b317d484de8bc64aa09ebca41067ab054"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/camera/contract.rs",
+      "category": "source",
+      "physical_lines": 60,
+      "nonblank_lines": 56,
+      "sha256": "c0bda7434f46fac4e99a3f7552f231c6054385e84ebcd93e2edcbd2768ba68fe"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/camera/mod.rs",
+      "category": "source",
+      "physical_lines": 129,
+      "nonblank_lines": 109,
+      "sha256": "c5d945b86f254e84f462012aa8e671df1f9519763c3f98232d0d9919b149d369"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/depth/contract.rs",
+      "category": "source",
+      "physical_lines": 74,
+      "nonblank_lines": 68,
+      "sha256": "cefbdce7c57df1bd9c104a42d9349c9075196c63447087e0b35686380a1e637d"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/depth/mod.rs",
+      "category": "source",
+      "physical_lines": 69,
+      "nonblank_lines": 60,
+      "sha256": "dccc1941f3a3d1ab23602072891ad741d26c9644ff88cd80ca6aba88c6916b3d"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/detect/contract.rs",
+      "category": "source",
+      "physical_lines": 66,
+      "nonblank_lines": 58,
+      "sha256": "1059f7c2c59938eb2bb074f24d9711c15ce5d5acd225ecf40d0b1e7081c87555"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/detect/mod.rs",
+      "category": "source",
+      "physical_lines": 75,
+      "nonblank_lines": 61,
+      "sha256": "288673554d34d62b0f8b2bde9c20d0da600e9dd9292cbcc8f6bbc420358bdd19"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/make/mod.rs",
+      "category": "source",
+      "physical_lines": 28,
+      "nonblank_lines": 23,
+      "sha256": "4630afb44a44482fbdbfa0abd930b66fdbfa03bd4c9895bfc00cdcaa6d057185"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/measure/contract.rs",
+      "category": "source",
+      "physical_lines": 57,
+      "nonblank_lines": 54,
+      "sha256": "895e0e040016ebf7e860d22d017dd84c4311de89b0ffdb65a7dbc08af01cf325"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/measure/mod.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 44,
+      "sha256": "13ec51ea01e930e2e1083271a7973fcc9d96067e71cdaadc148d0801ef86ad61"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/mod.rs",
+      "category": "source",
+      "physical_lines": 13,
+      "nonblank_lines": 12,
+      "sha256": "b16114f97b04c0d771710763a6f59256968e7ca3cea4aa1e5d2bbd3c37f116a3"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/outline/contract.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 44,
+      "sha256": "edde4f6965fa619ac8a16d80e79cd5265be216ab85eb947debac37f2b372d7a0"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/outline/mod.rs",
+      "category": "source",
+      "physical_lines": 54,
+      "nonblank_lines": 47,
+      "sha256": "bb40be385f8f2a90d22c6e17ad438b030e79becc79b37bb9bc5b5896eaa27318"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/read/contract.rs",
+      "category": "source",
+      "physical_lines": 19,
+      "nonblank_lines": 17,
+      "sha256": "773d8edd008e09334ab15448b1e2fd7484eca7d35308536033056650c9b0d8d5"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/read/mod.rs",
+      "category": "source",
+      "physical_lines": 22,
+      "nonblank_lines": 17,
+      "sha256": "ec7cb95057ca39a653b432d6af3015976812e299e92a82b958f6ca906f408000"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/sample.rs",
+      "category": "source",
+      "physical_lines": 168,
+      "nonblank_lines": 148,
+      "sha256": "3348a474987620a564972d7ada86682478cb8ca492c1505319412248dabf896b"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/stage/contract.rs",
+      "category": "source",
+      "physical_lines": 16,
+      "nonblank_lines": 14,
+      "sha256": "301711cccaedf17db7e6480f21ccfddfd41bfd3170c3c30e2013e608763bb2d8"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/stage/mod.rs",
+      "category": "source",
+      "physical_lines": 19,
+      "nonblank_lines": 15,
+      "sha256": "e94ed35de93c719b932dea8e9b87e67327cf60a76a77a4ef1741a5860db51de4"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/vanish/contract.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 65,
+      "sha256": "c0109e52bf2224a18b959cd407b78f335ccd9911b97a2506c71d4dd4a748bbd2"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/ports/vanish/mod.rs",
+      "category": "source",
+      "physical_lines": 90,
+      "nonblank_lines": 75,
+      "sha256": "c32fc2b4534050df31955d6e619b4422753667f42b924ad4228a2ec7f7958d38"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/report.rs",
+      "category": "source",
+      "physical_lines": 202,
+      "nonblank_lines": 190,
+      "sha256": "cf39bd9aba86a951247e7a2e89605293c03e5890b4739f058979ee193e3e950b"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/scene.rs",
+      "category": "source",
+      "physical_lines": 171,
+      "nonblank_lines": 154,
+      "sha256": "51435530f39202ee013ff17a68e14e07cd9c6de590a54414d457881680f34e02"
+    },
+    {
+      "path": "package/krlyvis/crates/kernel/src/vision.rs",
+      "category": "source",
+      "physical_lines": 107,
+      "nonblank_lines": 90,
+      "sha256": "bc08d226e0c8bd0f652bae3bc756a122d4fd59012aeaf111347d1db82d60846c"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/camera/centred.rs",
+      "category": "source",
+      "physical_lines": 67,
+      "nonblank_lines": 59,
+      "sha256": "4fc2316fcccf519c60da4514962a6b795005f01208edc43107b546817d70434e"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/camera/given.rs",
+      "category": "source",
+      "physical_lines": 48,
+      "nonblank_lines": 39,
+      "sha256": "42ab87cac0e70081edd3ef9f79cf39e236acaf4a2b8b862afc701107fd8f59a3"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/camera/mod.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 66,
+      "sha256": "bfc3d1af6f31f12b2019c71a2c346f908a3051743a4ad95867bc58357e94ce77"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/camera/orthocentre.rs",
+      "category": "source",
+      "physical_lines": 71,
+      "nonblank_lines": 61,
+      "sha256": "94a8bb68eba9e6ad632011e26f70c896630398b5c7ae25f54a7b31c3bd2862b9"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/depth/ground.rs",
+      "category": "source",
+      "physical_lines": 127,
+      "nonblank_lines": 115,
+      "sha256": "21c454943c21dcfaa450fa016b158e7e4331b84a87890f2b390fe3b59cbd897a"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/depth/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "80cd819bb2f1209ecf5ce9b2b2e4e07b1752ff5296177ab652f5837b8071b487"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/field.rs",
+      "category": "source",
+      "physical_lines": 113,
+      "nonblank_lines": 94,
+      "sha256": "76f9b0d87c847aa06650b939c50adb906e96f2b31c3c0109f0082e7d3790cb0d"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/mod.rs",
+      "category": "source",
+      "physical_lines": 156,
+      "nonblank_lines": 141,
+      "sha256": "048d7d8a4c778f812c4300453304b0352eba97f800988dc2f01b09a12f1e0c44"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/nfa.rs",
+      "category": "source",
+      "physical_lines": 116,
+      "nonblank_lines": 104,
+      "sha256": "9f4beefb3dc1017eec5451f9f95f7b46af5a1d1be94ab7341f613224d7ea745e"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/rect.rs",
+      "category": "source",
+      "physical_lines": 186,
+      "nonblank_lines": 171,
+      "sha256": "a6b58f8bc4291cce93fa812ccadb10b2cc77275ad79e7b48645a84b4d4958675"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/region.rs",
+      "category": "source",
+      "physical_lines": 154,
+      "nonblank_lines": 143,
+      "sha256": "27fe49789741e0118e4032f2120cb2ba40acf05b5ffa55250106bdf12cc0f912"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/lsd/sampling.rs",
+      "category": "source",
+      "physical_lines": 105,
+      "nonblank_lines": 91,
+      "sha256": "c71f3e708a62e225e2a165cc17853dc60c55d313f109ab7e77efccc12769f775"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/detect/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "e677aaec5e2f6d71934d7d1455d035a8e2a6052c8a968bdcf46554b9ae53c4a8"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/lib.rs",
+      "category": "source",
+      "physical_lines": 31,
+      "nonblank_lines": 28,
+      "sha256": "98faacf8fc81588eebbda41763ab400c10b080e1d9f1ca1e975c9a3f0389dc31"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/make/frame.rs",
+      "category": "source",
+      "physical_lines": 69,
+      "nonblank_lines": 63,
+      "sha256": "c98015c32f21d5c876ad6a20803533d5dcc4eeef35bd9a65f0aa2ff3cec7897d"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/make/mod.rs",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 21,
+      "sha256": "0a2a337d2dbbfd07f35321842f601f2662c1c0a899ac31c0b5d3470dc0b889bb"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/make/outline.rs",
+      "category": "source",
+      "physical_lines": 64,
+      "nonblank_lines": 58,
+      "sha256": "ed2908f9615a0a564258c7adc95eed8d81586e7642ae4df8753e00a46e5061b2"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/make/picture.rs",
+      "category": "source",
+      "physical_lines": 52,
+      "nonblank_lines": 45,
+      "sha256": "fb8a902bee38d1870430f3a953b253c8ee296ad9e97d09eeeb42ae6615ab5687"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/measure/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "35a0402308f2324186c4f551e55891eee4c952da25f74939f1bb5ffbcdc5ec89"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/measure/plane.rs",
+      "category": "source",
+      "physical_lines": 92,
+      "nonblank_lines": 83,
+      "sha256": "aa0915c5ebf8a5d227079b7a007d75fab3399996a2e157f017fa62a71d7cb0ca"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/holes.rs",
+      "category": "source",
+      "physical_lines": 262,
+      "nonblank_lines": 256,
+      "sha256": "f2f2fb55dc6308d1ed0824bea9959763fb38cbc34f2552253717a2e041ec1c01"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/mask.rs",
+      "category": "source",
+      "physical_lines": 351,
+      "nonblank_lines": 334,
+      "sha256": "b8e6a7ab5ac31d44039a23b960067f9aa66c933fecc0bd69e24a5f4480270d4a"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/mod.rs",
+      "category": "source",
+      "physical_lines": 75,
+      "nonblank_lines": 64,
+      "sha256": "30ae587be132fcf1fad57b40a8fa1bda36be61103ebad175925ffc7a6c4da917"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/simplify.rs",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 73,
+      "sha256": "25b3d77c76655fa29585839435ec48a5dcd59e2785000479e23409217ae03000"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/simplify_holes.rs",
+      "category": "source",
+      "physical_lines": 240,
+      "nonblank_lines": 227,
+      "sha256": "cef57157bf52c973855d7156f06c6074807351f812cfcd6666c664c660088747"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/outline/trace.rs",
+      "category": "source",
+      "physical_lines": 99,
+      "nonblank_lines": 88,
+      "sha256": "d13c9eab79dfc8b26efe00bd927c933099ee9b9b0cc9057a050064d7689af8da"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/read/jpeg.rs",
+      "category": "source",
+      "physical_lines": 70,
+      "nonblank_lines": 58,
+      "sha256": "53bad7d40743d3fd435cc28aecfac025e45a203c1018bfa4751bdfb95373e80a"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/read/mod.rs",
+      "category": "source",
+      "physical_lines": 30,
+      "nonblank_lines": 24,
+      "sha256": "2b7fb6529afba6d2f270ebffe6f328df04901c40c69415f52c666600b50580d0"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/read/png.rs",
+      "category": "source",
+      "physical_lines": 98,
+      "nonblank_lines": 82,
+      "sha256": "e936e5c483e6d63039209ff3c5fa642bb063a4858715b53f61fca28ec3b017f6"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/read/pnm.rs",
+      "category": "source",
+      "physical_lines": 161,
+      "nonblank_lines": 141,
+      "sha256": "a1c3135e98b7a724971468c3ee8362a1f5967ab0a0644811f826ed6d6666c126"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/calibrate.rs",
+      "category": "source",
+      "physical_lines": 56,
+      "nonblank_lines": 47,
+      "sha256": "3673e0d53b4a70f46437571716db2c93e5c2c0bce5c3f6d48f778ffb31fe637f"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/depth.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 63,
+      "sha256": "6b1b93a4488acdaafa4183a5537c3e457b9c1ce2b1c65be3425ef152170e524d"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/detect.rs",
+      "category": "source",
+      "physical_lines": 71,
+      "nonblank_lines": 62,
+      "sha256": "b60a24fa886e49bdfe0c7c745aeda20bae0e9e625feec2110d122aaf5bdb785b"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/measure.rs",
+      "category": "source",
+      "physical_lines": 112,
+      "nonblank_lines": 98,
+      "sha256": "3dab41293b126f3ba5e3310e76a85e92903aab0aa6e258a3d0099f2c540f6aa8"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/mod.rs",
+      "category": "source",
+      "physical_lines": 36,
+      "nonblank_lines": 32,
+      "sha256": "0e3139476d4719b8bdf917b7425fc7871ce2f0973144757c579f862cacd62d5e"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/stage/vanish.rs",
+      "category": "source",
+      "physical_lines": 58,
+      "nonblank_lines": 49,
+      "sha256": "724a247ae9b14d26defb16f0a2419c5ea131575c5d8fba7b7832858c56824fdf"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/vanish/mod.rs",
+      "category": "source",
+      "physical_lines": 10,
+      "nonblank_lines": 7,
+      "sha256": "4fe70776e45e589c8a3fd7a0fa50a30ce55e0d6a58cead941dab8295a32c65a2"
+    },
+    {
+      "path": "package/krlyvis/crates/std/src/vanish/vote.rs",
+      "category": "source",
+      "physical_lines": 196,
+      "nonblank_lines": 180,
+      "sha256": "4b133c51f7cfd2c07a91a1ffbfc577d0dd3d5b11e39dd98b694c80b144b80bd8"
+    },
+    {
+      "path": "package/krlyvis/crates/std/tests/pipeline.rs",
+      "category": "test",
+      "physical_lines": 179,
+      "nonblank_lines": 160,
+      "sha256": "4a48198b7987061693d566885abf3e7f192166ddf173df926ea52b3a071fc656"
+    },
+    {
+      "path": "porting/corinthian2.rs",
+      "category": "source",
+      "physical_lines": 419,
+      "nonblank_lines": 395,
+      "sha256": "ec6158d44b55d2e2342b2812e54a647dbe920f639455809320e5a2be55c53e48"
+    },
+    {
+      "path": "porting/src/bin/krly3d.rs",
+      "category": "source",
+      "physical_lines": 20,
+      "nonblank_lines": 19,
+      "sha256": "0d1c1e028784293eec2a386a29a3d6ada4214939353e071c1825bae1ddf395dc"
+    },
+    {
+      "path": "porting/src/boolean/legacy.rs",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 22,
+      "sha256": "90c5aad7154e0a7c3cb299994873f6dedd526cbe0d0b96509e39e32b9c3544c0"
+    },
+    {
+      "path": "porting/src/boolean/mod.rs",
+      "category": "source",
+      "physical_lines": 118,
+      "nonblank_lines": 106,
+      "sha256": "e447fef1a559240bafae37ff3bab45d8cac548ff74c22be4481e52e1e2db2f08"
+    },
+    {
+      "path": "porting/src/boolean/tests.rs",
+      "category": "source",
+      "physical_lines": 84,
+      "nonblank_lines": 74,
+      "sha256": "412e3cd5b2700993497cacb6eb8c8645f2385edcc4df5a4c56253e4552520dbe"
+    },
+    {
+      "path": "porting/src/kernel/mod.rs",
+      "category": "source",
+      "physical_lines": 139,
+      "nonblank_lines": 126,
+      "sha256": "aff364d2d1c587fa7ccfd1d6de0eede0343b00bf823dc256a769e72426b331f1"
+    },
+    {
+      "path": "porting/src/kernel/probe.rs",
+      "category": "source",
+      "physical_lines": 162,
+      "nonblank_lines": 147,
+      "sha256": "ab56ec5d190cb354ed183e750f507a00c0bb1dac6597ca4d5aea77613401f8be"
+    },
+    {
+      "path": "porting/src/kernel/tests.rs",
+      "category": "source",
+      "physical_lines": 101,
+      "nonblank_lines": 94,
+      "sha256": "ef975a08f78ce04f90fcd34ba237b93b114f5e2f50069f30642719e79207934f"
+    },
+    {
+      "path": "porting/src/kernel/visit.rs",
+      "category": "source",
+      "physical_lines": 111,
+      "nonblank_lines": 103,
+      "sha256": "80af592cd95facbd7802c8fe88c7f800aacff23c9604ae0e5901ba5738fcf071"
+    },
+    {
+      "path": "porting/src/naming/mod.rs",
+      "category": "source",
+      "physical_lines": 190,
+      "nonblank_lines": 178,
+      "sha256": "8e8c7e1404e2813c2e9102549989f7cc903afa7fd2092bc86400ea9c799ab34c"
+    },
+    {
+      "path": "porting/src/naming/tests.rs",
+      "category": "source",
+      "physical_lines": 81,
+      "nonblank_lines": 75,
+      "sha256": "645c281b0884dfc3028dedf751c2d6d0f8d28256bbeb0f2ae15dabf85e87016d"
+    },
+    {
+      "path": "porting/src/perception/index.rs",
+      "category": "source",
+      "physical_lines": 277,
+      "nonblank_lines": 256,
+      "sha256": "5708650b4439e93315db74122291fa3d9b08332d5f1e493805424a24a8bada9e"
+    },
+    {
+      "path": "porting/src/perception/mod.rs",
+      "category": "source",
+      "physical_lines": 189,
+      "nonblank_lines": 175,
+      "sha256": "3957e5b34a17680700ae3ec54bbeda47e286c68f2010a4bbb3ae4e380324f473"
+    },
+    {
+      "path": "porting/src/perception/probe.rs",
+      "category": "source",
+      "physical_lines": 204,
+      "nonblank_lines": 190,
+      "sha256": "90e85c1b623b4d528ede605e70fc8d159a29bf30fe4832d5172a56801ecb7a25"
+    },
+    {
+      "path": "porting/src/protocol/mod.rs",
+      "category": "source",
+      "physical_lines": 260,
+      "nonblank_lines": 242,
+      "sha256": "48e5ef3f31d6662fc5dd6c0a5239df32420475314c4da77687d5bd571ad1e0b4"
+    },
+    {
+      "path": "porting/src/section/mod.rs",
+      "category": "source",
+      "physical_lines": 123,
+      "nonblank_lines": 112,
+      "sha256": "6116f7a961cd2a5782633445504f266b03417abc547587551672b19f82b4e3d1"
+    },
+    {
+      "path": "porting/src/section/rules.rs",
+      "category": "source",
+      "physical_lines": 196,
+      "nonblank_lines": 186,
+      "sha256": "cb64cb0bcc71836e15514b2569b587fae921e08e15d1147a9922ab1321f5c951"
+    },
+    {
+      "path": "porting/src/section/tests.rs",
+      "category": "source",
+      "physical_lines": 105,
+      "nonblank_lines": 96,
+      "sha256": "9947484a16deb65b728a6ad6380418e4a39d104a19b1c2149528e6f166456259"
+    },
+    {
+      "path": "products/krly2d/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 251,
+      "nonblank_lines": 229,
+      "sha256": "17a4c51b51bdf69e3d1a9d0a042c3a128dc711996c155a70fba2e1de04f4c03b"
+    },
+    {
+      "path": "products/krly2d/api/tests/contract.rs",
+      "category": "test",
+      "physical_lines": 309,
+      "nonblank_lines": 291,
+      "sha256": "b7602d3939c0a674c0a5289d1addd3ceb2053739683fa083d0f06ac2e55cf686"
+    },
+    {
+      "path": "products/krly3d/brep/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 27,
+      "nonblank_lines": 23,
+      "sha256": "6aa5113eab8845dfbb12cebd2af4aac07b632589f805b98deb5390a5995c67e8"
+    },
+    {
+      "path": "products/krly3d/brep/api/src/planar/codec.rs",
+      "category": "source",
+      "physical_lines": 140,
+      "nonblank_lines": 133,
+      "sha256": "864d2c13e4fdb3eed22dcb39646ffe9b94a998116d75c0b0eca096f8cea12c69"
+    },
+    {
+      "path": "products/krly3d/brep/api/src/planar/descriptor.rs",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 75,
+      "sha256": "60f57e1c2b1c85c55037304784a160603ab57230075bb4ddd85f5286f8663531"
+    },
+    {
+      "path": "products/krly3d/brep/api/src/planar/mod.rs",
+      "category": "source",
+      "physical_lines": 156,
+      "nonblank_lines": 142,
+      "sha256": "8b12ec047d2a6dee8048e88bf835f882a493893e5c813ca08ed51bd34b4a405c"
+    },
+    {
+      "path": "products/krly3d/brep/api/tests/planar.rs",
+      "category": "test",
+      "physical_lines": 226,
+      "nonblank_lines": 212,
+      "sha256": "dc3ea668b54b81982ad2242efb8ea8967a68d227a3da23bb394606650f246a63"
+    },
+    {
+      "path": "products/krly3d/brep/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 57,
+      "nonblank_lines": 52,
+      "sha256": "fa8160d0b3d0475ebaacf0c4c21917083eec07e870e53b8ca2b5a610ae24702f"
+    },
+    {
+      "path": "products/krly3d/brep/cli/src/input.rs",
+      "category": "source",
+      "physical_lines": 55,
+      "nonblank_lines": 50,
+      "sha256": "3bd8647978ae5b80a815e85bf5a2d6bc33450a3a2bb9ec31a5eedcba3726815e"
+    },
+    {
+      "path": "products/krly3d/brep/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 45,
+      "nonblank_lines": 40,
+      "sha256": "8ee638cae1de325d1cae53739bad0ff2ae5ea95e2bdf69c9f827f7ba0296c2ff"
+    },
+    {
+      "path": "products/krly3d/brep/cli/tests/process.rs",
+      "category": "test",
+      "physical_lines": 245,
+      "nonblank_lines": 223,
+      "sha256": "95f18733e75176d9b1b103654fbf9cebeedcf1cff81082c67624a9102bfcdb5c"
+    },
+    {
+      "path": "products/krly3d/brep/engine/src/lib.rs",
+      "category": "source",
+      "physical_lines": 170,
+      "nonblank_lines": 148,
+      "sha256": "d7c859418f03363eb8780f115afecf01d8ec28e51346065fcc816f03ae0680b0"
+    },
+    {
+      "path": "products/krly3d/brep/engine/src/planar.rs",
+      "category": "source",
+      "physical_lines": 365,
+      "nonblank_lines": 345,
+      "sha256": "00e3ae5af6bc69192026206a786b9c9507d74c133df40c8fc114cadf42837b0d"
+    },
+    {
+      "path": "products/krly3d/brep/engine/src/planar/control_tests.rs",
+      "category": "test",
+      "physical_lines": 399,
+      "nonblank_lines": 369,
+      "sha256": "46d3475f1ec282f8a4d6df68c4c2caeaefad72dd50fdfec7cf01a3e7a2fcca6d"
+    },
+    {
+      "path": "products/krly3d/brep/engine/tests/control.rs",
+      "category": "test",
+      "physical_lines": 149,
+      "nonblank_lines": 145,
+      "sha256": "03de95b092bc9c57644a45b471141a3fb10d08379face2f17fe46d8dd1d24572"
+    },
+    {
+      "path": "products/krly3d/brep/engine/tests/planar.rs",
+      "category": "test",
+      "physical_lines": 264,
+      "nonblank_lines": 248,
+      "sha256": "2045f3148d60f2ecf74b9478511a3090af20b80a0c30ab9da03d2f26688ab06e"
+    },
+    {
+      "path": "products/krly3d/brep/engine/tests/region.rs",
+      "category": "test",
+      "physical_lines": 75,
+      "nonblank_lines": 69,
+      "sha256": "4177ed55d1fcecdf835dc3cca093094727f405f8f8eb35fec013edec361efbd1"
+    },
+    {
+      "path": "products/krly3d/brep/engine/tests/snapshot.rs",
+      "category": "test",
+      "physical_lines": 251,
+      "nonblank_lines": 233,
+      "sha256": "1731f78836bf68951676e7fb54cedd76b21af9069e864b86c56e2b3bfa3d1245"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/src/json.rs",
+      "category": "source",
+      "physical_lines": 119,
+      "nonblank_lines": 101,
+      "sha256": "147e017be935ab1f3663c8ded75bef1493ef17e2cf6464be07dc09c0755732ab"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/src/lib.rs",
+      "category": "source",
+      "physical_lines": 184,
+      "nonblank_lines": 168,
+      "sha256": "a3041a11d1eb49fdf18817f5727db2287552a09757a4e5db9216edbe965dfd6b"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/src/main.rs",
+      "category": "source",
+      "physical_lines": 39,
+      "nonblank_lines": 35,
+      "sha256": "e2f2bea8db2c579bf3b91cea3397e255ac70068a0eda1bc01cb7613830fcd05c"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/src/tests.rs",
+      "category": "source",
+      "physical_lines": 312,
+      "nonblank_lines": 291,
+      "sha256": "9e35c0537d09c67b5264c36e415d6bab3b7ce4ce73e3bc08d6ce6160389cf154"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/src/transport.rs",
+      "category": "source",
+      "physical_lines": 53,
+      "nonblank_lines": 49,
+      "sha256": "50fc68da7e3bce9c2962cf97ef7b671472172d51e0822532622b8fcd5b8bfc16"
+    },
+    {
+      "path": "products/krly3d/brep/mcp/tests/process.rs",
+      "category": "test",
+      "physical_lines": 196,
+      "nonblank_lines": 179,
+      "sha256": "90fc62c94c45ddb93644e8527dcd2ed5d0755b018e5a6ea0328fd1948aec6860"
+    },
+    {
+      "path": "products/krly3d/exchange/mesh/src/lib.rs",
+      "category": "source",
+      "physical_lines": 211,
+      "nonblank_lines": 198,
+      "sha256": "f01ec400ec0f35ceb2b82830d1263d99c4d6b8722968637d4f01246b3a717382"
+    },
+    {
+      "path": "products/krly3d/exchange/mesh/src/main.rs",
+      "category": "source",
+      "physical_lines": 138,
+      "nonblank_lines": 130,
+      "sha256": "9190ebff1cc0f3e7b1235df139f7aa3a20e156d982cd7e0d1829fa104824f2d9"
+    },
+    {
+      "path": "products/krly3d/exchange/mesh/tests/process.rs",
+      "category": "test",
+      "physical_lines": 134,
+      "nonblank_lines": 125,
+      "sha256": "5089ebf9485ff07c27b0de729aecce18196033efd95cb3bb160808e59d080142"
+    },
+    {
+      "path": "products/krly3d/field/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 203,
+      "nonblank_lines": 193,
+      "sha256": "cde46d88839bad015623d9c8568ee5efe0d93ac4faa461fb4940d518e87175d5"
+    },
+    {
+      "path": "products/krly3d/field/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 169,
+      "nonblank_lines": 168,
+      "sha256": "027a1d842c7a6e92530a146964b9f271d67b74fea25f13530053ca52530ad09d"
+    },
+    {
+      "path": "products/krly3d/field/cli/tests/process.rs",
+      "category": "test",
+      "physical_lines": 101,
+      "nonblank_lines": 101,
+      "sha256": "800ef2f044e30f6cc980243084d1faf0ec35d58035aa36ea24f58deba41ea601"
+    },
+    {
+      "path": "products/krly3d/field/engine/src/field.rs",
+      "category": "source",
+      "physical_lines": 77,
+      "nonblank_lines": 76,
+      "sha256": "6db7b5d7e418176f1485afd6a172675fb0dc81653922bde7a9f80c723047a087"
+    },
+    {
+      "path": "products/krly3d/field/engine/src/lib.rs",
+      "category": "source",
+      "physical_lines": 86,
+      "nonblank_lines": 80,
+      "sha256": "b9c536ff5011994f7fe2d32ca7c6bd03d2ff297b499f9698e897f86a1049425f"
+    },
+    {
+      "path": "products/krly3d/field/engine/src/marching.rs",
+      "category": "source",
+      "physical_lines": 140,
+      "nonblank_lines": 138,
+      "sha256": "9702c899b821b3143677c402da73447fc2d0d5d10bd3f239e20e47e9512d7f14"
+    },
+    {
+      "path": "products/krly3d/field/engine/tests/meshing.rs",
+      "category": "test",
+      "physical_lines": 216,
+      "nonblank_lines": 214,
+      "sha256": "5303c30b15712c22a9b05b77b50fee5842f58a0e529741b82841040617a016e6"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/codec.rs",
+      "category": "source",
+      "physical_lines": 228,
+      "nonblank_lines": 206,
+      "sha256": "cad80e9ac6531d62a9fcdc494e07e9fa7d4882fe37e1389e7f52cb087c464eb2"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/descriptor.rs",
+      "category": "source",
+      "physical_lines": 148,
+      "nonblank_lines": 143,
+      "sha256": "e7ccb78814e7451e148585a30cf2f35e0c15b6910a3057424f814b94493fc471"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 138,
+      "nonblank_lines": 123,
+      "sha256": "1489a0fbd377badde8ff07b4d5035ff61439f5f7bccc7dfd1c9a00dd3979854d"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/operation.rs",
+      "category": "source",
+      "physical_lines": 221,
+      "nonblank_lines": 204,
+      "sha256": "6dfc1467e6fcf3aa61a281e870c2fae7d116331dabd8d5ceb4e318dd482958a6"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/preview.rs",
+      "category": "source",
+      "physical_lines": 130,
+      "nonblank_lines": 121,
+      "sha256": "448f1c326552e75f8c70684aca4b1fd9380ad023da5dd65f4d3df5024ba5fb05"
+    },
+    {
+      "path": "products/krly3d/mesh/api/src/print.rs",
+      "category": "source",
+      "physical_lines": 852,
+      "nonblank_lines": 807,
+      "sha256": "b1ff9aba221459f6acbb516083fe21e762e088e0a1218f47d0420be1af141ffa"
+    },
+    {
+      "path": "products/krly3d/mesh/api/tests/contract.rs",
+      "category": "test",
+      "physical_lines": 257,
+      "nonblank_lines": 243,
+      "sha256": "5c7667d4ac274716228cddbf9fdbceec420f3151f3a1492c48c0a8aa64f67e2b"
+    },
+    {
+      "path": "products/krly3d/mesh/api/tests/operation.rs",
+      "category": "test",
+      "physical_lines": 489,
+      "nonblank_lines": 465,
+      "sha256": "abce0391c1d1f56b1b9e80d1079d08e0b09044207bbc9a4d7198ddda84abfffb"
+    },
+    {
+      "path": "products/krly3d/mesh/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 65,
+      "sha256": "09e556d42160656dfe88964901d2188983c27d58aec17d1e21483a2efc9dfc95"
+    },
+    {
+      "path": "products/krly3d/mesh/cli/src/input.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 48,
+      "sha256": "4d9e1733a0d4ac52c5ed08a6ffa4449f514c9f3edc0f9cd8617cf8985eba7163"
+    },
+    {
+      "path": "products/krly3d/mesh/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 125,
+      "nonblank_lines": 115,
+      "sha256": "a86c7c5a7b54c162cbe40dcbc6af0647e9f0f58c92ca0052c31f4d380c585e7b"
+    },
+    {
+      "path": "products/krly3d/mesh/cli/src/output.rs",
+      "category": "source",
+      "physical_lines": 93,
+      "nonblank_lines": 90,
+      "sha256": "371e29eb03a8ecfec9ddc0738c2355d44065c805d4cdc35d6296a59af5ad3bfe"
+    },
+    {
+      "path": "products/krly3d/mesh/cli/tests/process.rs",
+      "category": "test",
+      "physical_lines": 518,
+      "nonblank_lines": 482,
+      "sha256": "0560a756e7d4b275303c5ec65725f58908dd49e003375fb5719f995c3d83e5b7"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/src/lib.rs",
+      "category": "source",
+      "physical_lines": 229,
+      "nonblank_lines": 201,
+      "sha256": "fcf286c55de596bc565eccdbcc6eb47117dc920aabbfa0f71145a911ddda0a77"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/src/preview.rs",
+      "category": "source",
+      "physical_lines": 519,
+      "nonblank_lines": 492,
+      "sha256": "6c9cd71802ed21056fdddeb88fd9d23597089a3704a601da39be1672c5144856"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/src/runner.rs",
+      "category": "source",
+      "physical_lines": 395,
+      "nonblank_lines": 366,
+      "sha256": "151c6ed9d3b3723ef6fba987b722bbd9f3d59696568b5023b13b212d8b0e478a"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/tests/bridge.rs",
+      "category": "test",
+      "physical_lines": 362,
+      "nonblank_lines": 335,
+      "sha256": "e8e08097fd1fede513b75509c9065c6af946c2ca48611043924edc5541621ef7"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/tests/native_document.rs",
+      "category": "test",
+      "physical_lines": 27,
+      "nonblank_lines": 24,
+      "sha256": "5935f4fafa1374968dd12b5c6c5ad73c5b192442c43b75d8b6ea980dd6e74aae"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/tests/operation_parity.rs",
+      "category": "test",
+      "physical_lines": 51,
+      "nonblank_lines": 49,
+      "sha256": "3966affaf0cd76eb5f014a2026ce01a9f89cd234d6a6de65577bf7526cfa8f0a"
+    },
+    {
+      "path": "products/krly3d/mesh/engine/tests/runner.rs",
+      "category": "test",
+      "physical_lines": 531,
+      "nonblank_lines": 487,
+      "sha256": "c32813740520d1b99331a4434ab182e79427c836e35d4b3ec9a9dbb4ca98995d"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/src/json.rs",
+      "category": "source",
+      "physical_lines": 118,
+      "nonblank_lines": 100,
+      "sha256": "f90ef29dfefc3605e665439963e01c127dbb4ad94d88daf10c66cbc40149affa"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/src/lib.rs",
+      "category": "source",
+      "physical_lines": 236,
+      "nonblank_lines": 219,
+      "sha256": "a6bb3b94726905105bb4e920203416cd51f8579a1a77b4348cc0a61af7590d81"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/src/main.rs",
+      "category": "source",
+      "physical_lines": 82,
+      "nonblank_lines": 78,
+      "sha256": "d2c4fd8f4cacee7b3bb2ed1fda01a71609bb77097dab632a1edc83af019c09d3"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/src/tests.rs",
+      "category": "source",
+      "physical_lines": 508,
+      "nonblank_lines": 474,
+      "sha256": "34828bc6aa1517c334d25d73780047d5e549052fee9d789ff9e45e1d457b557e"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/src/transport.rs",
+      "category": "source",
+      "physical_lines": 201,
+      "nonblank_lines": 189,
+      "sha256": "473d8e749a051ccc717efe74bcd6bef963764562698a6ada359d816418223789"
+    },
+    {
+      "path": "products/krly3d/mesh/mcp/tests/process.rs",
+      "category": "test",
+      "physical_lines": 356,
+      "nonblank_lines": 334,
+      "sha256": "dafdcebeb78a6abfc1b3af8c4568464b4156ea428b51b2937fb089c12b606723"
+    },
+    {
+      "path": "products/krly3d/reconstruction/cli/drawing_flow.py",
+      "category": "source",
+      "physical_lines": 381,
+      "nonblank_lines": 354,
+      "sha256": "95a0f2bf142cd71c8a708e2b4836342449a1412364e337326a527ff9974294b9"
+    },
+    {
+      "path": "products/krly3d/reconstruction/cli/sheet_flow.py",
+      "category": "source",
+      "physical_lines": 230,
+      "nonblank_lines": 209,
+      "sha256": "8affdd21b70a1160a9b78f2ffc6db2f430e8e1bb11beff3e2d30ae1ab479c27d"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/io_control.rs",
+      "category": "source",
+      "physical_lines": 192,
+      "nonblank_lines": 179,
+      "sha256": "1ecc2a13da57759f1c8718a50d7dcbc8b0aeebcd20342cbc2442243d8543fd52"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/lifecycle.rs",
+      "category": "source",
+      "physical_lines": 72,
+      "nonblank_lines": 67,
+      "sha256": "c88a4c36d3a9e67befec3a49fd7330711f17e3ec3a378ca306f58c42da8ba534"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 55,
+      "nonblank_lines": 51,
+      "sha256": "1abde6db64a1d8a1952dc2f4e85e6e51c9767947cb967f47ff21e3dd18adeacb"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/options.rs",
+      "category": "source",
+      "physical_lines": 215,
+      "nonblank_lines": 204,
+      "sha256": "e07be31067b1bd1299a168f3affc333d56a1ed7fb177b3dd48c476bc3cfa33d0"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/output.rs",
+      "category": "source",
+      "physical_lines": 251,
+      "nonblank_lines": 229,
+      "sha256": "b6a72fb5ec2c086005716e2296b46244a7d217ebc90418e92d3bb15eecbb5943"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/parts.rs",
+      "category": "source",
+      "physical_lines": 165,
+      "nonblank_lines": 142,
+      "sha256": "589f09c3bc5697fb6ab67cb96dc4277216a431f5c4dc02be5dbda719bda525a1"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/sheet.rs",
+      "category": "source",
+      "physical_lines": 536,
+      "nonblank_lines": 507,
+      "sha256": "b8c103a7a7ff4a57709378f01b303ebfce0d45cd525214897d562013bea0d2d6"
+    },
+    {
+      "path": "products/krly3d/reconstruction/host-cli/src/stream.rs",
+      "category": "source",
+      "physical_lines": 469,
+      "nonblank_lines": 438,
+      "sha256": "2d9df37f91c4505f6e83a9ca4461d125a6a56cf5d02b4688a913968c102f0b26"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/src/coarse.rs",
+      "category": "source",
+      "physical_lines": 253,
+      "nonblank_lines": 236,
+      "sha256": "889f5a9f3e89d92e2a41d0a896057e442fb1dd983ec7d0654d82756a2d26b40f"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/src/frame.rs",
+      "category": "source",
+      "physical_lines": 71,
+      "nonblank_lines": 65,
+      "sha256": "e568011a12d37488c3b01ae4e7f02a8e6dc34fc51b4034974726f96db5b7e248"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/src/lib.rs",
+      "category": "source",
+      "physical_lines": 455,
+      "nonblank_lines": 416,
+      "sha256": "16fd3d2c33586abb7b9d726dc9f105400b04d2fdcb9691f60d1ecdf8e1839147"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/src/review.rs",
+      "category": "source",
+      "physical_lines": 73,
+      "nonblank_lines": 68,
+      "sha256": "a32e8c6d96bd2ee55a9d1872acfbc53fc2c0a0e1d6c777f21c2485d84cd6e47b"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/src/sheet.rs",
+      "category": "source",
+      "physical_lines": 284,
+      "nonblank_lines": 265,
+      "sha256": "e5de5fe160c7157c8fe18ee9a97744c9824211797b369dbf13790be2decf42cf"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/tests/coarse.rs",
+      "category": "test",
+      "physical_lines": 208,
+      "nonblank_lines": 197,
+      "sha256": "a9e97177f8354454a99c0e4e2fba7fa6729578167902ce602b62a25047ef1106"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/tests/host.rs",
+      "category": "test",
+      "physical_lines": 299,
+      "nonblank_lines": 283,
+      "sha256": "3d0d6f338fbb5513efb48f4e67ce96b12a41c7bb69f542feedbfebb4d4f4ffb1"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/tests/review.rs",
+      "category": "test",
+      "physical_lines": 169,
+      "nonblank_lines": 145,
+      "sha256": "f273672de27194812a8174d89ab22c76b1ebaa7b9a4808731f2f0390a90639be"
+    },
+    {
+      "path": "products/krly3d/reconstruction/runtime/tests/sheet.rs",
+      "category": "test",
+      "physical_lines": 213,
+      "nonblank_lines": 205,
+      "sha256": "941f6af87494d70692ebde8f6f1d7626991757beb63931c8712589afbd2bb2ce"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/character.spec.ts",
+      "category": "test",
+      "physical_lines": 76,
+      "nonblank_lines": 74,
+      "sha256": "63ece51b80903a18fedb52c332b295e7cdb0feebef7d371e9ae8f9ba0cf7454a"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/expert.config.ts",
+      "category": "test",
+      "physical_lines": 27,
+      "nonblank_lines": 26,
+      "sha256": "041ef26a8eaaf1b082bd15bf5c36977a37b374a5ccaaba02163a526ca107b008"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/expert.spec.ts",
+      "category": "test",
+      "physical_lines": 236,
+      "nonblank_lines": 229,
+      "sha256": "075489716b2938b7a64327bf74e381598f4738b1854dba5957bd82b477e5567d"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/helpers.ts",
+      "category": "test",
+      "physical_lines": 195,
+      "nonblank_lines": 183,
+      "sha256": "14b334fba4737e2dcdf4b27f43a8c46fc7b37177216f164ab1afeca9c86cc4a4"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/mobile.spec.ts",
+      "category": "test",
+      "physical_lines": 31,
+      "nonblank_lines": 30,
+      "sha256": "0bfb0c6f74602ab117cbe6d7259953905fa401f679963506b6dab6a9888d7793"
+    },
+    {
+      "path": "products/krly3d/studio/e2e/studio.spec.ts",
+      "category": "test",
+      "physical_lines": 302,
+      "nonblank_lines": 291,
+      "sha256": "907a6f9030183ecebd1107ffbf4b4cf53a2551401fb105872e69d973db8a9702"
+    },
+    {
+      "path": "products/krly3d/studio/gen/krly/studio/v1/studio_pb.ts",
+      "category": "generated",
+      "physical_lines": 926,
+      "nonblank_lines": 790,
+      "sha256": "366c8e820324d418f30220a641cf14ce741f0b272c56a8cc7652dd2d58f74f07"
+    },
+    {
+      "path": "products/krly3d/studio/playwright.config.ts",
+      "category": "source",
+      "physical_lines": 38,
+      "nonblank_lines": 36,
+      "sha256": "aac0869b21668a5d8406e4db15e17cf6bf459d98c0d45e8a4d55abd5d60e6576"
+    },
+    {
+      "path": "products/krly3d/studio/protocol/krly/studio/v1/studio.proto",
+      "category": "source",
+      "physical_lines": 132,
+      "nonblank_lines": 131,
+      "sha256": "a57ba5987dd1dabaa2da7385fbc34d317892e3f92d373dfd6627501202cc9419"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/cad-guidance.ts",
+      "category": "source",
+      "physical_lines": 26,
+      "nonblank_lines": 26,
+      "sha256": "21bb56a56ed31b3b07ecb60611a109f41d305781f40ab3015b38fe9bff1c67f5"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/cad-recipe.ts",
+      "category": "source",
+      "physical_lines": 784,
+      "nonblank_lines": 759,
+      "sha256": "7cdb31c1675305de4b9eb24b6d0e335ed73c7bf573ba408e5576629ca264e2ec"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/cad-recipe_test.ts",
+      "category": "test",
+      "physical_lines": 715,
+      "nonblank_lines": 686,
+      "sha256": "cf20cdb92d0dd05c4e4fff0879d94b5e814eb53f9b71bbe4c3a7b7c2a05b9c13"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/cad-review.ts",
+      "category": "source",
+      "physical_lines": 235,
+      "nonblank_lines": 227,
+      "sha256": "8852d6000a5595c5b0b40b91804338720adad4fe12aee4bba5d367dd5e0f6c1f"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/cad-review_test.ts",
+      "category": "test",
+      "physical_lines": 534,
+      "nonblank_lines": 522,
+      "sha256": "5c4b9a7ca7419c170f134918d043b09d629730f17ec9ee4675e60ec5b1361f6f"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/errors.ts",
+      "category": "source",
+      "physical_lines": 25,
+      "nonblank_lines": 24,
+      "sha256": "de67e89f97f11020bf8d9a0cba2425c475b7d008f8de2d48e13d4a56cd78c8e4"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/expert-types.ts",
+      "category": "source",
+      "physical_lines": 52,
+      "nonblank_lines": 51,
+      "sha256": "faac65b8725e1ca0d4b2279168fb63404c1acdfa7c07e3c3418c5e5f343e1da8"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/expert.ts",
+      "category": "source",
+      "physical_lines": 755,
+      "nonblank_lines": 743,
+      "sha256": "292b3d2489ad0cd237f24ba329cb7b1971f0ccca8e940cba3c91f9e447671c99"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/expert_test.ts",
+      "category": "test",
+      "physical_lines": 859,
+      "nonblank_lines": 845,
+      "sha256": "7b5aa676f274cf1173abc95b5e6020c4304d276e9042c24a298b9aace225015a"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/image_search.ts",
+      "category": "source",
+      "physical_lines": 284,
+      "nonblank_lines": 274,
+      "sha256": "9f0beb86c4ddc61a985752f308a7e0596f42150a1301dec314b6e853408b0137"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/image_search_test.ts",
+      "category": "test",
+      "physical_lines": 182,
+      "nonblank_lines": 174,
+      "sha256": "9b2c64e334774f005a9280bdc2d75a093b126b455d339696140bfa0478058639"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/provider.ts",
+      "category": "source",
+      "physical_lines": 844,
+      "nonblank_lines": 815,
+      "sha256": "298fd186589de459cf1905be8372c40670360bf105f982bc05c2e60170ee2859"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/provider_test.ts",
+      "category": "test",
+      "physical_lines": 409,
+      "nonblank_lines": 400,
+      "sha256": "3b6bb6c4d4a107b4b66c7ac8611d41c31a409bea4addb0f89ac190ed5c0b340d"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/research-cache.ts",
+      "category": "source",
+      "physical_lines": 108,
+      "nonblank_lines": 100,
+      "sha256": "77d9228e047d5dddf6af8fadf869130d0176bc740e8123cb89c9f67e10871e74"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/research-cache_test.ts",
+      "category": "test",
+      "physical_lines": 290,
+      "nonblank_lines": 280,
+      "sha256": "752372b9125c2a680930bf1302964e090286fc511e414702dbb0da1e858deb77"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/research.ts",
+      "category": "source",
+      "physical_lines": 165,
+      "nonblank_lines": 158,
+      "sha256": "76ce4f29905f237b1105e4d54558542dfd0f7f5096320fa8dcf697e7e8d8aaff"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/research_test.ts",
+      "category": "test",
+      "physical_lines": 307,
+      "nonblank_lines": 301,
+      "sha256": "73948804a06b55a83c57226a03baf224a3a57de4a3536a6c32de9cd988a34df6"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/speech-config.ts",
+      "category": "source",
+      "physical_lines": 80,
+      "nonblank_lines": 78,
+      "sha256": "e0df1bbdc50a2d981ef13aac3703b3f4dcb7097c354d4f74f346cf2b992b97d6"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/speech.ts",
+      "category": "source",
+      "physical_lines": 464,
+      "nonblank_lines": 454,
+      "sha256": "9c08c972042282b7944aab73de5df005bf045a2b6aaa0eb2a1f305a7ffbb69c4"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/speech_test.ts",
+      "category": "test",
+      "physical_lines": 349,
+      "nonblank_lines": 338,
+      "sha256": "2315a459b60174c26ccfb0bc5c988c0e9ff37a8d335c9a35e0225ee7143f3f63"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/test_support.ts",
+      "category": "source",
+      "physical_lines": 97,
+      "nonblank_lines": 90,
+      "sha256": "48de82adffd038f3e35ebc655c355babe7607d4d3f4326de9d8e2dd0afc5ebc5"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/usage.ts",
+      "category": "source",
+      "physical_lines": 95,
+      "nonblank_lines": 92,
+      "sha256": "e414f9949c908bd88902c3962abd9a2a6e8b53c0e5caf1e3e042b38c936bebfb"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/usage_test.ts",
+      "category": "test",
+      "physical_lines": 192,
+      "nonblank_lines": 188,
+      "sha256": "3ebdca440fa8fb49e196d84d672acfb098f7bd973b42cb0dffc820a2e2a187f8"
+    },
+    {
+      "path": "products/krly3d/studio/service/ai/voice_test.ts",
+      "category": "test",
+      "physical_lines": 247,
+      "nonblank_lines": 236,
+      "sha256": "0fbc5491e2d5b7d136f4a86a26a7f9bc2f518ca7fa289cfbed6339e6c9c3c622"
+    },
+    {
+      "path": "products/krly3d/studio/service/cad-execution.ts",
+      "category": "source",
+      "physical_lines": 245,
+      "nonblank_lines": 233,
+      "sha256": "4fe20c314f7570ba5ca311ba2c5b8daa62feb938967f2b857eb81e85fb0d2033"
+    },
+    {
+      "path": "products/krly3d/studio/service/cad-execution_test.ts",
+      "category": "test",
+      "physical_lines": 438,
+      "nonblank_lines": 418,
+      "sha256": "005e56e6f5ef20e39fba5630cb6cd8a087a9a0afa0ba71b2165027af81081910"
+    },
+    {
+      "path": "products/krly3d/studio/service/cad-parametric_test.ts",
+      "category": "test",
+      "physical_lines": 723,
+      "nonblank_lines": 709,
+      "sha256": "4d03cd231839a94810ffaf2257b98f5804e85b951ac1ca27c60a4d2257dcfca8"
+    },
+    {
+      "path": "products/krly3d/studio/service/channel.ts",
+      "category": "source",
+      "physical_lines": 41,
+      "nonblank_lines": 41,
+      "sha256": "2290c3112c99b866595466f76be41ea9600cc8bfbc447324af664b55b3428baa"
+    },
+    {
+      "path": "products/krly3d/studio/service/channel_test.ts",
+      "category": "test",
+      "physical_lines": 27,
+      "nonblank_lines": 27,
+      "sha256": "ff4748de7c57f1cd40ef17d2e5c520fd6ed91af1da85d2d8292a7d941a64979a"
+    },
+    {
+      "path": "products/krly3d/studio/service/character_test.ts",
+      "category": "test",
+      "physical_lines": 118,
+      "nonblank_lines": 117,
+      "sha256": "62f6828e057ff467bd129245f0716f64dbe08d89a7921b957f75e78a0d169532"
+    },
+    {
+      "path": "products/krly3d/studio/service/errors.ts",
+      "category": "source",
+      "physical_lines": 40,
+      "nonblank_lines": 38,
+      "sha256": "1b4e079c7e1b91c64bf845da19ce5ffa1df85e822e655a409b42b83e18885fde"
+    },
+    {
+      "path": "products/krly3d/studio/service/main.ts",
+      "category": "source",
+      "physical_lines": 106,
+      "nonblank_lines": 105,
+      "sha256": "27a31e33d4c7b7636ae80d275d31dbb9c8e4b109b07a11511834a734ce7dfc4a"
+    },
+    {
+      "path": "products/krly3d/studio/service/native.ts",
+      "category": "source",
+      "physical_lines": 1491,
+      "nonblank_lines": 1457,
+      "sha256": "411292a23b4ea61218a73790a056eadda88384e8cbfa6b60f403da20ec04d012"
+    },
+    {
+      "path": "products/krly3d/studio/service/native_construction.ts",
+      "category": "source",
+      "physical_lines": 281,
+      "nonblank_lines": 279,
+      "sha256": "7faddd541f48f51fa38cc41af8ec55ad97f206be26f66eee8dacd4ef95ea4ed2"
+    },
+    {
+      "path": "products/krly3d/studio/service/native_test.ts",
+      "category": "test",
+      "physical_lines": 1520,
+      "nonblank_lines": 1468,
+      "sha256": "627aa8312199d3783dc3a4f97128929e9811346885b561cde7e0423bd598f839"
+    },
+    {
+      "path": "products/krly3d/studio/service/questions.ts",
+      "category": "source",
+      "physical_lines": 70,
+      "nonblank_lines": 67,
+      "sha256": "72bedab96d65dc4879bb5bc70fe5abe1c4e0a3218d7905dd3928eb8d21f82c33"
+    },
+    {
+      "path": "products/krly3d/studio/service/questions_test.ts",
+      "category": "test",
+      "physical_lines": 75,
+      "nonblank_lines": 72,
+      "sha256": "3513259b296d01720c41b21142bdbffdd7dbf92b3424c40f793200efe369a61b"
+    },
+    {
+      "path": "products/krly3d/studio/service/rpc.ts",
+      "category": "source",
+      "physical_lines": 325,
+      "nonblank_lines": 323,
+      "sha256": "23118ae3a5e202c52fdbf3e3a6b4beae7624e674954ab9fbaaa7e2c51b0299d6"
+    },
+    {
+      "path": "products/krly3d/studio/service/rpc_lifecycle_test.ts",
+      "category": "test",
+      "physical_lines": 139,
+      "nonblank_lines": 135,
+      "sha256": "755fa1fc7c23a33c81484e5f308ec8c7b60f55675a0d372afc55609dc3c9dca2"
+    },
+    {
+      "path": "products/krly3d/studio/service/rpc_questions_test.ts",
+      "category": "test",
+      "physical_lines": 176,
+      "nonblank_lines": 172,
+      "sha256": "d7153ba21156fe29d5a29e6186dffe41adfa22f840c6bc726c0b2e22f043e319"
+    },
+    {
+      "path": "products/krly3d/studio/service/rpc_test.ts",
+      "category": "test",
+      "physical_lines": 109,
+      "nonblank_lines": 108,
+      "sha256": "df828704df7304422f52510d5265ee5368ddde35e4c1a650674d37374d0f1586"
+    },
+    {
+      "path": "products/krly3d/studio/service/store.ts",
+      "category": "source",
+      "physical_lines": 135,
+      "nonblank_lines": 132,
+      "sha256": "5b7fd3c02ad929b81047edd0ad0bf95380de1c840cbe58e500370465f4a1de9a"
+    },
+    {
+      "path": "products/krly3d/studio/service/store_test.ts",
+      "category": "test",
+      "physical_lines": 45,
+      "nonblank_lines": 45,
+      "sha256": "46b1522c43d99d660a5a587786ef687baa22d82aa4571838369bbc0b937d9a3d"
+    },
+    {
+      "path": "products/krly3d/studio/service/workflow.ts",
+      "category": "source",
+      "physical_lines": 823,
+      "nonblank_lines": 821,
+      "sha256": "6803df2ddf22dd927555dac54572ff6442f77b448a270ee05912f61290973deb"
+    },
+    {
+      "path": "products/krly3d/studio/service/workflow_test.ts",
+      "category": "test",
+      "physical_lines": 997,
+      "nonblank_lines": 976,
+      "sha256": "7a6a2a4816fff0d7804dd789982b097c2ec28254e594e374b8e33711ed9bb954"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/App.tsx",
+      "category": "source",
+      "physical_lines": 408,
+      "nonblank_lines": 394,
+      "sha256": "89afb94f10d215a23f594d2002d58fcca71450e9b27948c5e831e5b7652602e2"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/CadFeatureTree.tsx",
+      "category": "source",
+      "physical_lines": 52,
+      "nonblank_lines": 52,
+      "sha256": "bd5d5bd020d1472b6bf1ec556f0311b6f86f83091a9927724dfac20648892455"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/ExpertQuestion.tsx",
+      "category": "source",
+      "physical_lines": 31,
+      "nonblank_lines": 30,
+      "sha256": "39477ce202af86c3e404bff2a3c094d20c9a4795be93b3e42695632bed1af202"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/UsageDetails.tsx",
+      "category": "source",
+      "physical_lines": 59,
+      "nonblank_lines": 54,
+      "sha256": "ededa9529f61f052701752fc95e93a1f60aee63722542afd576928f8338e4484"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/Viewport.tsx",
+      "category": "source",
+      "physical_lines": 891,
+      "nonblank_lines": 877,
+      "sha256": "bae1e63c81750da6346728f7e093f932d43833989cfbb32b430fb5ca453077fc"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/cadConstruction.ts",
+      "category": "source",
+      "physical_lines": 106,
+      "nonblank_lines": 101,
+      "sha256": "f79c8dc415852b19d048ec8804c7877d9c6a5e568f29e70e7b90b974cb2b5a59"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/client.ts",
+      "category": "source",
+      "physical_lines": 21,
+      "nonblank_lines": 20,
+      "sha256": "d32de79e43e01f40ebbe60d33b1452ed9733cf7ba0c42e22a8049a1d1c06e98c"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/main.tsx",
+      "category": "source",
+      "physical_lines": 15,
+      "nonblank_lines": 13,
+      "sha256": "c614c694701bb0b9d0989fbdb4be01bb180aff30a755b602a686eb377728ae9a"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/model.ts",
+      "category": "source",
+      "physical_lines": 54,
+      "nonblank_lines": 48,
+      "sha256": "e3a5dd41b90b684f69423de140826f0b92a8af551be2e97f86c3f6383bce7c91"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/renderGeometry.ts",
+      "category": "source",
+      "physical_lines": 39,
+      "nonblank_lines": 38,
+      "sha256": "b92789aa7ee462ec8b4cb73468a24cd64f269a5031562d2346aaeb57220da171"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/reveal.ts",
+      "category": "source",
+      "physical_lines": 42,
+      "nonblank_lines": 36,
+      "sha256": "6921a935e481e5c9ab88a66a6bb75c0edf527cd1bbc373e13f507fb465a9f737"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/scene.ts",
+      "category": "source",
+      "physical_lines": 29,
+      "nonblank_lines": 26,
+      "sha256": "d00c19d6176c96579f036103585542e4db49367ca45c6f43fbae4d0939007cf7"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/styles.css",
+      "category": "source",
+      "physical_lines": 442,
+      "nonblank_lines": 434,
+      "sha256": "53b0cf1a2319dec9f66fff5ec34c75487e2f174e13706f08a13ca118811c24c4"
+    },
+    {
+      "path": "products/krly3d/studio/web/src/voice.ts",
+      "category": "source",
+      "physical_lines": 248,
+      "nonblank_lines": 237,
+      "sha256": "cc42e28d09125f51782d417d3fa0a9738cb1750d9ce04f67924fb413fbc0326c"
+    },
+    {
+      "path": "products/krly3d/studio/web/tests/cad.spec.ts",
+      "category": "test",
+      "physical_lines": 124,
+      "nonblank_lines": 122,
+      "sha256": "6d9d78ef7cbf757991f3e5ec409723faa2270beb4483732ca3b56b4e52dab19f"
+    },
+    {
+      "path": "products/krly3d/studio/web/tests/cadConstruction_test.ts",
+      "category": "test",
+      "physical_lines": 195,
+      "nonblank_lines": 187,
+      "sha256": "ad7064082ba1cfe0988793a722c4ec38331bd477bb276b072a2b68883ed5a51d"
+    },
+    {
+      "path": "products/krly3d/studio/web/tests/cadFixtures.ts",
+      "category": "test",
+      "physical_lines": 12,
+      "nonblank_lines": 12,
+      "sha256": "4242049b93fe319079090ebddf22cc24de42d9885cf34040573261218d0fef33"
+    },
+    {
+      "path": "products/krly3d/studio/web/tests/playwright.config.ts",
+      "category": "test",
+      "physical_lines": 7,
+      "nonblank_lines": 7,
+      "sha256": "b83c73e44ddaae9bc95362ddeae32b3a74d491703b96bd3f0c7d562b923a4b99"
+    },
+    {
+      "path": "products/krly3d/studio/web/vite.config.ts",
+      "category": "source",
+      "physical_lines": 21,
+      "nonblank_lines": 20,
+      "sha256": "bde87469534344ed8b71c32a5d989df73aeb8255c5516ba661f0bf5ce0dd07a7"
+    },
+    {
+      "path": "products/krly3d/view/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 197,
+      "nonblank_lines": 176,
+      "sha256": "80dde19c24d1fb79d34f1919ae359be2a9f7ea3c804a353ec3cae3d5d163b6b8"
+    },
+    {
+      "path": "products/krly3d/view/api/src/likeness.rs",
+      "category": "source",
+      "physical_lines": 361,
+      "nonblank_lines": 339,
+      "sha256": "62b72364c49cb11b37892dc63583e4ef1cdc43effc73bbfead549042e03749df"
+    },
+    {
+      "path": "products/krly3d/view/api/src/operation.rs",
+      "category": "source",
+      "physical_lines": 170,
+      "nonblank_lines": 162,
+      "sha256": "9178aadf4380d0a783c5c7ecdb79d801225c2db78e6deb2ff054d38cce8dd83c"
+    },
+    {
+      "path": "products/krly3d/view/api/src/wire/mod.rs",
+      "category": "source",
+      "physical_lines": 115,
+      "nonblank_lines": 107,
+      "sha256": "2ffbeb4e0f5c8062d9363c39057d9a4e6576f4ecf853a872869d5b3a31b9513b"
+    },
+    {
+      "path": "products/krly3d/view/api/src/wire/request.rs",
+      "category": "source",
+      "physical_lines": 159,
+      "nonblank_lines": 157,
+      "sha256": "af4e04d1c64d8287c7762d584844325ed63f7964625ed812d5c1f5aa9842782a"
+    },
+    {
+      "path": "products/krly3d/view/api/src/wire/schema.rs",
+      "category": "source",
+      "physical_lines": 100,
+      "nonblank_lines": 98,
+      "sha256": "93bf9ec84ec7092d6130ac61e32dee93ab4cbfa2bb4540da6436551e1d445b3e"
+    },
+    {
+      "path": "products/krly3d/view/api/tests/operations.rs",
+      "category": "test",
+      "physical_lines": 28,
+      "nonblank_lines": 28,
+      "sha256": "70c7792010ab666d4d62780f85a48606615b342f702003aeda1b247bb9cd30a0"
+    },
+    {
+      "path": "products/krly3d/view/api/tests/validation.rs",
+      "category": "test",
+      "physical_lines": 92,
+      "nonblank_lines": 86,
+      "sha256": "b1dfd60730d74df9067d4fdf2f75db377fa049e1f0eaf9720dc788ede6493ce2"
+    },
+    {
+      "path": "products/krly3d/view/api/tests/wire.rs",
+      "category": "test",
+      "physical_lines": 137,
+      "nonblank_lines": 131,
+      "sha256": "53f70ad5356ee2dbb2d0f2265eb5d75a69f2f60f309e45881584a3a49c619c4f"
+    },
+    {
+      "path": "products/krly3d/view/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 90,
+      "nonblank_lines": 84,
+      "sha256": "44f45f111d354a2f68aa42b90545adde27a42d901718355d0eafb29a35e69432"
+    },
+    {
+      "path": "products/krly3d/view/cli/src/input.rs",
+      "category": "source",
+      "physical_lines": 58,
+      "nonblank_lines": 53,
+      "sha256": "167c84e3fdf3a4508e940fa99104a7ae7e9643f3cdc6fdf1f3a4881257c05e25"
+    },
+    {
+      "path": "products/krly3d/view/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 70,
+      "nonblank_lines": 66,
+      "sha256": "d8500658e882c90edcc49bbdcad7b5e659f2197451f0fb38f74b4c0bf3fe28ed"
+    },
+    {
+      "path": "products/krly3d/view/cli/tests/process.rs",
+      "category": "test",
+      "physical_lines": 510,
+      "nonblank_lines": 471,
+      "sha256": "fc8600492431904a8e839f44e525d7386d8e8d538bc7a8125f2d0fdca56b1aff"
+    },
+    {
+      "path": "products/krly3d/view/mcp/src/json.rs",
+      "category": "source",
+      "physical_lines": 118,
+      "nonblank_lines": 100,
+      "sha256": "f90ef29dfefc3605e665439963e01c127dbb4ad94d88daf10c66cbc40149affa"
+    },
+    {
+      "path": "products/krly3d/view/mcp/src/lib.rs",
+      "category": "source",
+      "physical_lines": 252,
+      "nonblank_lines": 234,
+      "sha256": "3b4dc4919827adcff3de5c21a761183913fa8e62e96812489d13858d9ea02a3d"
+    },
+    {
+      "path": "products/krly3d/view/mcp/src/main.rs",
+      "category": "source",
+      "physical_lines": 53,
+      "nonblank_lines": 49,
+      "sha256": "8125f6fa28a6dd6c7ec1124d6108129782d2eb3f098aa22be1a58222b163ef97"
+    },
+    {
+      "path": "products/krly3d/view/mcp/src/tests.rs",
+      "category": "source",
+      "physical_lines": 345,
+      "nonblank_lines": 322,
+      "sha256": "b3a8d9ea0b07f121087ebef57e13c9dec6173efbf85ce8d8d68e63811f3f6e9c"
+    },
+    {
+      "path": "products/krly3d/view/mcp/src/transport.rs",
+      "category": "source",
+      "physical_lines": 52,
+      "nonblank_lines": 48,
+      "sha256": "8b70f626b54639cfce184f4dd88e933d8fdc9d8d7a5145daa0d8bb1006acc683"
+    },
+    {
+      "path": "products/krly3d/view/mcp/tests/process.rs",
+      "category": "test",
+      "physical_lines": 240,
+      "nonblank_lines": 217,
+      "sha256": "24d8765079facb038d2927f6dfa4a6e0270ef806ec248fc1fb45421880400284"
+    },
+    {
+      "path": "products/krly3d/view/mesh/examples/preview_timing.rs",
+      "category": "source",
+      "physical_lines": 47,
+      "nonblank_lines": 46,
+      "sha256": "af8e12a1df61d35df7a1862b92dec5b085b39d782e5f90f0df23cc1df4999041"
+    },
+    {
+      "path": "products/krly3d/view/mesh/src/lib.rs",
+      "category": "source",
+      "physical_lines": 528,
+      "nonblank_lines": 498,
+      "sha256": "4276c953ca384f81bb894bcb53140521869318f10d3537a632e4e562a46b9b44"
+    },
+    {
+      "path": "products/krly3d/view/mesh/src/tests.rs",
+      "category": "source",
+      "physical_lines": 296,
+      "nonblank_lines": 273,
+      "sha256": "8eb214a82d1b278df301aa38de351c0cd29d927911104cedb8783e729908cf06"
+    },
+    {
+      "path": "products/krly3d/view/mesh/tests/raster.rs",
+      "category": "test",
+      "physical_lines": 247,
+      "nonblank_lines": 230,
+      "sha256": "9535bde89663bfbae97abc98e470cfc7549d4afc8949ecdf577e4e130a37f8d4"
+    },
+    {
+      "path": "products/krly3d/view/renderer/examples/render_snapshot.rs",
+      "category": "source",
+      "physical_lines": 44,
+      "nonblank_lines": 43,
+      "sha256": "f71e92f337ad4f90cf1d9b7bc6fa73fbfae82a40cfd1dc4b836dc885c18a760e"
+    },
+    {
+      "path": "products/krly3d/view/renderer/src/lib.rs",
+      "category": "source",
+      "physical_lines": 262,
+      "nonblank_lines": 238,
+      "sha256": "b16dece1e18726e90e97e132b4d501129b5a8776aca66e87d70f61cb3dd819c7"
+    },
+    {
+      "path": "products/krly3d/view/renderer/src/likeness.rs",
+      "category": "source",
+      "physical_lines": 157,
+      "nonblank_lines": 152,
+      "sha256": "4932861c2af9f21307018793fbd420f26c9653132acc75214a4a7beb402f7ac5"
+    },
+    {
+      "path": "products/krly3d/view/renderer/src/runner.rs",
+      "category": "source",
+      "physical_lines": 451,
+      "nonblank_lines": 419,
+      "sha256": "977b93d33637ca3a669eff59e51cbfa86851c29aa63fae65efb925ccb377fb87"
+    },
+    {
+      "path": "products/krly3d/view/renderer/tests/control.rs",
+      "category": "test",
+      "physical_lines": 212,
+      "nonblank_lines": 197,
+      "sha256": "53024b0a99e117eebeada34b9f650253364c8b070e8b0d770f16a195d7e55d45"
+    },
+    {
+      "path": "products/krly3d/view/renderer/tests/operations.rs",
+      "category": "test",
+      "physical_lines": 161,
+      "nonblank_lines": 161,
+      "sha256": "e9ceaf6c8a4f13e17ef98cf6391eabc42e73b84b3b969ffc1578f2a8ea20c723"
+    },
+    {
+      "path": "products/krly3d/view/renderer/tests/render.rs",
+      "category": "test",
+      "physical_lines": 274,
+      "nonblank_lines": 260,
+      "sha256": "8b48ec823a620b06fb657a80c45b16c6aea1373274ba87654f4974e0f65a9a95"
+    },
+    {
+      "path": "products/krly3d/view/renderer/tests/shared_likeness.rs",
+      "category": "test",
+      "physical_lines": 462,
+      "nonblank_lines": 436,
+      "sha256": "e9b72e81d89634472b7a2623d8a0e771c138ce66df617118bcef3f25d0bf2c5b"
+    },
+    {
+      "path": "products/krly3d/view/renderer/tests/snapshot_render.rs",
+      "category": "test",
+      "physical_lines": 356,
+      "nonblank_lines": 338,
+      "sha256": "eb3de96397927c1286c1d736cc50c6090adc7038b038655b6eb97623be46cb9f"
+    },
+    {
+      "path": "products/krlyvis/api/src/codec.rs",
+      "category": "source",
+      "physical_lines": 98,
+      "nonblank_lines": 90,
+      "sha256": "894297a3a12c01834cf2de2e6b5bacca06ca8c6e7347999bf8d084e06db320a5"
+    },
+    {
+      "path": "products/krlyvis/api/src/descriptor.rs",
+      "category": "source",
+      "physical_lines": 153,
+      "nonblank_lines": 142,
+      "sha256": "83f91054f5a7ca6f07626a6aff645e24b7756c189cb94c1b9aff54ebc4dea0e1"
+    },
+    {
+      "path": "products/krlyvis/api/src/lib.rs",
+      "category": "source",
+      "physical_lines": 126,
+      "nonblank_lines": 113,
+      "sha256": "ee2eb5a483d130d9e8363d9934e00929f290cc018ff536a391693e545ccec18e"
+    },
+    {
+      "path": "products/krlyvis/api/src/result.rs",
+      "category": "source",
+      "physical_lines": 228,
+      "nonblank_lines": 216,
+      "sha256": "5c026aa9e295c827a3f4a3a7bc41876946b7a70da4d592a0e0fb4548cf9349b4"
+    },
+    {
+      "path": "products/krlyvis/api/tests/contract.rs",
+      "category": "test",
+      "physical_lines": 272,
+      "nonblank_lines": 260,
+      "sha256": "699aec980efc80a8ca01444171e23b0590447e5495bb86fd184b5ae6034bbab4"
+    },
+    {
+      "path": "products/krlyvis/cli/src/args.rs",
+      "category": "source",
+      "physical_lines": 58,
+      "nonblank_lines": 53,
+      "sha256": "6a901b65366c285a600e651b9859823a20991e84ad7921af87e3b81f9df9967a"
+    },
+    {
+      "path": "products/krlyvis/cli/src/input.rs",
+      "category": "source",
+      "physical_lines": 77,
+      "nonblank_lines": 70,
+      "sha256": "29627900b9810f66b1bd5506c359b51c657a8f862014792b831274c2f6c90b9d"
+    },
+    {
+      "path": "products/krlyvis/cli/src/main.rs",
+      "category": "source",
+      "physical_lines": 44,
+      "nonblank_lines": 39,
+      "sha256": "641c16bf1bb7f1524ce25b04e3f4b25d9c0365654c384f7434d135eca45239f8"
+    },
+    {
+      "path": "products/krlyvis/cli/tests/process.rs",
+      "category": "test",
+      "physical_lines": 247,
+      "nonblank_lines": 225,
+      "sha256": "76b3e1557b6a0ccd436fb96ca9530b0b8f2cd5b1a5a43b9c4372453dec5d72c1"
+    },
+    {
+      "path": "products/krlyvis/engine/src/lib.rs",
+      "category": "source",
+      "physical_lines": 54,
+      "nonblank_lines": 45,
+      "sha256": "b461065b0954673b3d130db6a50e434614baeafcc8b47e36d7de55dfbd7f8407"
+    },
+    {
+      "path": "products/krlyvis/engine/src/shared.rs",
+      "category": "source",
+      "physical_lines": 162,
+      "nonblank_lines": 152,
+      "sha256": "2eef28b4beb0c614b2cf6a3f3540df471a31fd62271b272ea067dd7b4c644c1e"
+    },
+    {
+      "path": "products/krlyvis/engine/src/source.rs",
+      "category": "source",
+      "physical_lines": 313,
+      "nonblank_lines": 295,
+      "sha256": "6463a78a71a6cc62c62710c553cba69d211833d5d17c537d0914253d8b45c2ef"
+    },
+    {
+      "path": "products/krlyvis/engine/src/value.rs",
+      "category": "source",
+      "physical_lines": 51,
+      "nonblank_lines": 48,
+      "sha256": "53fbe339135ec0c0c9db55a6985afd0d90fc3296fa06a061bcf97e40aaa29c79"
+    },
+    {
+      "path": "products/krlyvis/engine/tests/control.rs",
+      "category": "test",
+      "physical_lines": 118,
+      "nonblank_lines": 110,
+      "sha256": "0747cd7f126dd257c6899adfebd08b1c80273bd79fbca1f9d5cd408565d55a58"
+    },
+    {
+      "path": "products/krlyvis/engine/tests/drawing.rs",
+      "category": "test",
+      "physical_lines": 421,
+      "nonblank_lines": 396,
+      "sha256": "0f563d321059ba20e0ba065a9df79c5ca93dda0766395bee68cb023cdf19be3e"
+    },
+    {
+      "path": "products/krlyvis/engine/tests/source.rs",
+      "category": "test",
+      "physical_lines": 211,
+      "nonblank_lines": 198,
+      "sha256": "7e95d27f094a12b58a51315c12958c1eeab5095b7fae0b9156568a2408c75149"
+    },
+    {
+      "path": "products/krlyvis/mcp/src/json.rs",
+      "category": "source",
+      "physical_lines": 119,
+      "nonblank_lines": 101,
+      "sha256": "f13e7b90c5cc790e9f88e815f3b16ba8290c14bddc821488894db183485bf4f2"
+    },
+    {
+      "path": "products/krlyvis/mcp/src/lib.rs",
+      "category": "source",
+      "physical_lines": 183,
+      "nonblank_lines": 167,
+      "sha256": "5e7b4785c2a97d77ba8dcc078620757817ca7a6fb57058ae45dbd3046db821ca"
+    },
+    {
+      "path": "products/krlyvis/mcp/src/main.rs",
+      "category": "source",
+      "physical_lines": 39,
+      "nonblank_lines": 35,
+      "sha256": "bbd5b29a203b72855b2e79bd9a37a23fda0cc81d51b412ffebaa9e341f868733"
+    },
+    {
+      "path": "products/krlyvis/mcp/src/tests.rs",
+      "category": "source",
+      "physical_lines": 336,
+      "nonblank_lines": 313,
+      "sha256": "9fe555767bceb4f5607de2e6c24af49d551e27b656a5c6736b709eb9703bf4ea"
+    },
+    {
+      "path": "products/krlyvis/mcp/src/transport.rs",
+      "category": "source",
+      "physical_lines": 111,
+      "nonblank_lines": 101,
+      "sha256": "e66c59cf7e956f583d3d03c5737eb312ad3c4bad9c4c5be3bc3de2e16ba54783"
+    },
+    {
+      "path": "products/krlyvis/mcp/tests/process.rs",
+      "category": "test",
+      "physical_lines": 182,
+      "nonblank_lines": 165,
+      "sha256": "af7971a427ed71d5be8b6225b4311f142d93afc9f8213501e821f8a71e968ddd"
+    },
+    {
+      "path": "tests/brep_adapter_smoke.py",
+      "category": "test",
+      "physical_lines": 98,
+      "nonblank_lines": 90,
+      "sha256": "63def552f170fec6520af908612a7ce81763b6b122e04ae389483348f694eba0"
+    },
+    {
+      "path": "tests/drawing_flow_smoke.py",
+      "category": "test",
+      "physical_lines": 154,
+      "nonblank_lines": 144,
+      "sha256": "b84a2603cd38bb48af67a9adca5e46c158a610982608f32820d57f3d4a1530eb"
+    },
+    {
+      "path": "tests/drawing_sheet_smoke.py",
+      "category": "test",
+      "physical_lines": 501,
+      "nonblank_lines": 457,
+      "sha256": "6177e1e767c0c1f83871acf43927b399cc60acdc83dce357e5cb4523d60f832c"
+    },
+    {
+      "path": "tests/field_print_geometry.py",
+      "category": "test",
+      "physical_lines": 211,
+      "nonblank_lines": 185,
+      "sha256": "e4ac0211cdbdd2222ffa8ff05abfb93c4aeedfae10193ba6a4fb5c52a0926ee6"
+    },
+    {
+      "path": "tests/mesh_adapter_smoke.py",
+      "category": "test",
+      "physical_lines": 179,
+      "nonblank_lines": 158,
+      "sha256": "e78f107b3eaad99d1bfaa3ba2b0b3f3408d9648a034b6953714f3918079aeb2c"
+    },
+    {
+      "path": "tests/shared_lifecycle_smoke.py",
+      "category": "test",
+      "physical_lines": 470,
+      "nonblank_lines": 430,
+      "sha256": "9f3a543376911125aec16c4f185e4277b57973b6afb081f71edc715b77af54de"
+    },
+    {
+      "path": "tests/shared_runtime_smoke.py",
+      "category": "test",
+      "physical_lines": 115,
+      "nonblank_lines": 103,
+      "sha256": "e5afc5304088a969a8e3feba08bb1ed9c2b741b15c72736e1d9efa61381da7a9"
+    },
+    {
+      "path": "tests/shared_sheet_smoke.py",
+      "category": "test",
+      "physical_lines": 602,
+      "nonblank_lines": 555,
+      "sha256": "bed6bad63ca60ed8ab6c4f9ff82d222bc28d933b2bb7fc44d8f300305da684cf"
+    },
+    {
+      "path": "tests/shared_stream_smoke.py",
+      "category": "test",
+      "physical_lines": 256,
+      "nonblank_lines": 222,
+      "sha256": "4717a35be18d8e73376c98646090141bc706d76c851737cdd456a39e14b1e7dc"
+    },
+    {
+      "path": "tests/view_adapter_smoke.py",
+      "category": "test",
+      "physical_lines": 206,
+      "nonblank_lines": 187,
+      "sha256": "b5528a1f52062c7e041567d4ed9e72803ab4b3091eb73d02dc8ec8f4f27877fa"
+    },
+    {
+      "path": "tests/vis_adapter_smoke.py",
+      "category": "test",
+      "physical_lines": 118,
+      "nonblank_lines": 106,
+      "sha256": "1604b56b56eea7a4838958cb4b39896992e73c64a123dbc5e7f015cb1a845cb2"
+    }
+  ]
+}

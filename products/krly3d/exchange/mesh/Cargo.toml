@@ -1,0 +1,17 @@
+[package]
+name = "krly3d-mesh-exchange"
+description = "Generic mesh print preflight and explicit-millimetre binary STL export"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-print"
+path = "src/main.rs"
+
+[dependencies]
+krly3d-mesh = { path = "../../mesh/api" }
+serde_json.workspace = true
+
+[lints]
+workspace = true

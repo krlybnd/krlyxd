@@ -25,8 +25,12 @@ use crate::ports::read::read;
 use crate::ports::tool::Tool;
 use crate::ports::write::write;
 use crate::schema::{Kind, Param, Params, Schema, Value};
-use krly3d_core::{Error, Exactness, Id};
+use krly3d_core::{CallControl, Error, Exactness, Id};
 use std::collections::BTreeMap;
+use std::sync::Arc;
+
+#[cfg(test)]
+mod control_tests;
 
 /// What a method does to the model.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -137,19 +141,46 @@ impl Session {
     /// The arguments are checked against the schema of the method: a missing or unknown
     /// argument, or one of the wrong kind, fails the call with a message that names it.
     pub fn call(&mut self, method: &str, args: &Params) -> Reply {
-        self.dispatch(method, args).unwrap_or_else(Reply::failed)
+        self.dispatch(method, args, None).unwrap_or_else(Reply::failed)
     }
 
-    fn dispatch(&mut self, method: &str, args: &Params) -> Result<Reply, Error> {
+    /// A call with cooperative stopping for read-only queries (including in batches).
+    ///
+    /// A stopped control prevents dispatch. Once a mutating tool or an individual
+    /// session verb has started, it uses the original context and reports its actual
+    /// outcome. Batches forward control to nested calls; a failed entry restores the
+    /// document, model and marks. This cannot undo arbitrary plugin side effects or
+    /// discard all derived caches. The persistent context never receives the control.
+    pub fn call_with_control(&mut self, method: &str, args: &Params, control: Arc<CallControl>) -> Reply {
+        self.dispatch(method, args, Some(&control)).unwrap_or_else(Reply::failed)
+    }
+
+    fn dispatch(
+        &mut self,
+        method: &str,
+        args: &Params,
+        control: Option<&Arc<CallControl>>,
+    ) -> Result<Reply, Error> {
+        if let Some(control) = control {
+            control.check()?;
+        }
         let id = Id::new(method);
         if let Some((_, schema)) = verbs().into_iter().find(|(name, _)| *name == method) {
-            return self.verb(method, &schema.admit(&id, args, 0)?);
+            return self.verb(method, &schema.admit(&id, args, 0)?, control);
         }
         let cx = self.kernel.context();
         if cx.registry::<Tool>().is_some_and(|tools| tools.contains(&id)) {
             return self.statement(&id, args);
         }
         if cx.registry::<Query>().is_some_and(|queries| queries.contains(&id)) {
+            let controlled;
+            let cx = match control {
+                Some(control) => {
+                    controlled = cx.with_call_control(Arc::clone(control));
+                    &controlled
+                }
+                None => cx,
+            };
             let (document, model) = self.kernel.snapshot();
             let answer = query::ask(cx, &id, args, &document, &model).into_result()?;
             return Ok(Reply::done(answer.text, answer.data, answer.exact));
@@ -204,7 +235,12 @@ impl Session {
             .unwrap_or(stem)
     }
 
-    fn verb(&mut self, verb: &str, args: &Params) -> Result<Reply, Error> {
+    fn verb(
+        &mut self,
+        verb: &str,
+        args: &Params,
+        control: Option<&Arc<CallControl>>,
+    ) -> Result<Reply, Error> {
         match verb {
             "methods" => Ok(self.described()),
             "open" => {
@@ -243,20 +279,26 @@ impl Session {
                     Exactness::Exact,
                 ))
             }
-            "batch" => self.batch(args.list("calls")?),
+            "batch" => self.batch(args.list("calls")?, control),
             other => Err(Error::not_found(format!("the session has no verb `{other}`"))),
         }
     }
 
     /// Calls in order; the first that fails undoes the ones before it.
-    fn batch(&mut self, calls: &[Value]) -> Result<Reply, Error> {
+    fn batch(&mut self, calls: &[Value], control: Option<&Arc<CallControl>>) -> Result<Reply, Error> {
         let before = self.kernel.checkpoint();
-        let marks = self.marks.len();
+        let marks = self.marks.clone();
         let (mut replies, mut text) = (Vec::with_capacity(calls.len()), String::new());
         for (index, call) in calls.iter().enumerate() {
-            let (method, args) = one_call(call)
-                .map_err(|error| Error::input(format!("call {}: {}", index + 1, error.message)))?;
-            let reply = self.call(&method, &args);
+            let (method, args) = match one_call(call) {
+                Ok(call) => call,
+                Err(error) => {
+                    self.kernel.rollback(before);
+                    self.marks = marks;
+                    return Err(Error::input(format!("call {}: {}", index + 1, error.message)));
+                }
+            };
+            let reply = self.dispatch(&method, &args, control).unwrap_or_else(Reply::failed);
             text.push_str(&reply.text);
             if !reply.text.ends_with('\n') {
                 text.push('\n');
@@ -265,7 +307,7 @@ impl Session {
             replies.push(reply);
             if failed {
                 self.kernel.rollback(before);
-                self.marks.truncate(marks);
+                self.marks = marks;
                 text.push_str(&format!("call {} of {} failed; nothing was kept\n", index + 1, calls.len()));
                 break;
             }

@@ -9,13 +9,20 @@ publish.workspace = true
 name = "krly3d"
 path = "src/main.rs"
 
+[[bin]]
+name = "krly3d-cad-check"
+path = "src/cad_check.rs"
+
 [dependencies]
 krly3d-core = { workspace = true }
 krly3d-kernel = { workspace = true }
 krly3d-std = { workspace = true }
 krly3d-view = { workspace = true }
+krly3d-view-mesh = { workspace = true }
 krly3d-exchange = { workspace = true }
 serde_json = { workspace = true }
+serde = { workspace = true }
+libc = { workspace = true }
 
 [lints]
 workspace = true

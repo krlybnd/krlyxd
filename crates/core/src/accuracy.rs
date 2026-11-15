@@ -1,4 +1,7 @@
 //! Tolerances scaled to the size of the model.
+//!
+//! Domain geometry support: deliberately retains krly3d error/accuracy semantics.
+//! This is not part of the neutral krlyxd API (see ADR 0008).
 
 use crate::error::Error;
 use crate::math::{Point3, Vec3};

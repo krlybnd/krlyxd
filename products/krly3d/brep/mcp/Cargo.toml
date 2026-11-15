@@ -1,0 +1,19 @@
+[package]
+name = "krly3d-brep-mcp"
+description = "Synchronous planar B-rep MCP stdio adapter"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-brep-mcp"
+path = "src/main.rs"
+
+[dependencies]
+krly-mcp-json = { path = "../../../../crates/mcp-json" }
+krly3d-brep = { path = "../api" }
+krly3d-brep-engine = { path = "../engine" }
+serde_json = { workspace = true, features = ["raw_value"] }
+
+[lints]
+workspace = true

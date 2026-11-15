@@ -1,0 +1,25 @@
+[package]
+name = "krly3d-reconstruction-cli"
+description = "Single-process drawing to editable B-rep and mesh"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[[bin]]
+name = "krly3d-reconstruct"
+path = "src/main.rs"
+
+[dependencies]
+libc.workspace = true
+signal-hook = { version = "0.3", default-features = false }
+krlyxd.workspace = true
+krly3d-reconstruction.workspace = true
+krlyvis-api.workspace = true
+krly3d-mesh.workspace = true
+serde_json.workspace = true
+serde = { version = "1", features = ["derive"] }
+
+krly3d-view-api.workspace = true
+
+[lints]
+workspace = true

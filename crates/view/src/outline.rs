@@ -4,7 +4,7 @@
 //! The file is named after the shape it reads, as `picture.rs` is; `silhouette` is the
 //! query's name on the protocol.
 
-use super::{shot_params, Shot};
+use super::{image_params, Shot};
 use krly3d_core::text::num;
 use krly3d_core::{Attempt, Error, Id};
 use krly3d_kernel::ports::query::{Answer, Query, QueryRequest};
@@ -23,7 +23,7 @@ impl Plugin<Query> for Silhouette {
     }
 
     fn schema(&self) -> Option<Schema> {
-        let mut params = shot_params();
+        let mut params = image_params();
         params.push(Param::alternative(
             "against",
             Kind::Any,
@@ -37,23 +37,32 @@ impl Plugin<Query> for Silhouette {
     }
 
     fn call(&self, cx: &Context, request: &QueryRequest) -> Attempt<Answer> {
-        let against = match request.params.get("against").map(spans_of).transpose() {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
+        let against = match request.params.get("against").map(|value| spans_of(cx, value)).transpose() {
             Ok(against) => against,
             Err(error) => return Attempt::Failed(error),
         };
-        Shot::take(cx, request).map(|shot| outlined(&shot, against.as_ref()))
+        let result = match Shot::take(cx, request) {
+            Attempt::Done(shot) => outlined(cx, &shot, against.as_ref()).into(),
+            Attempt::Declined(reason) => Attempt::Declined(reason),
+            Attempt::Failed(error) => Attempt::Failed(error),
+        };
+        cx.publish_control(|| result).unwrap_or_else(Attempt::Failed)
     }
 }
 
 /// Covered columns per row, as sorted half-open spans.
 type Spans = BTreeMap<usize, Vec<(usize, usize)>>;
 
-fn spans_of(value: &Value) -> Result<Spans, Error> {
+fn spans_of(cx: &Context, value: &Value) -> Result<Spans, Error> {
     let Value::List(items) = value else {
         return Err(Error::input("`against` is a list of [row, from, to] spans"));
     };
     let mut spans = Spans::new();
     for item in items {
+        cx.check_control()?;
         let numbers: Option<Vec<usize>> = match item {
             Value::List(parts) if parts.len() == 3 => parts
                 .iter()
@@ -74,15 +83,17 @@ fn spans_of(value: &Value) -> Result<Spans, Error> {
         }
     }
     for row in spans.values_mut() {
+        cx.check_control()?;
         row.sort_unstable();
     }
     Ok(spans)
 }
 
-fn covered(shot: &Shot) -> Spans {
+fn covered(cx: &Context, shot: &Shot) -> Result<Spans, Error> {
     let (width, height) = (shot.image.width(), shot.image.height());
     let mut spans = Spans::new();
     for row in 0..height {
+        cx.check_control()?;
         let mut column = 0;
         while column < width {
             if shot.image.seen[row * width + column].is_none() {
@@ -96,7 +107,7 @@ fn covered(shot: &Shot) -> Spans {
             spans.entry(row).or_default().push((from, column));
         }
     }
-    spans
+    Ok(spans)
 }
 
 fn count(row: &[(usize, usize)]) -> usize {
@@ -108,8 +119,8 @@ fn common(a: &[(usize, usize)], b: &[(usize, usize)]) -> usize {
     a.iter().flat_map(|(af, at)| b.iter().map(move |(bf, bt)| at.min(bt).saturating_sub(*af.max(bf)))).sum()
 }
 
-fn outlined(shot: &Shot, against: Option<&Spans>) -> Answer {
-    let model = covered(shot);
+fn outlined(cx: &Context, shot: &Shot, against: Option<&Spans>) -> Result<Answer, Error> {
+    let model = covered(cx, shot)?;
     let pixels: usize = model.values().map(|row| count(row)).sum();
     let rows = model.keys().next().zip(model.keys().last());
     let mut text = format!(
@@ -118,12 +129,13 @@ fn outlined(shot: &Shot, against: Option<&Spans>) -> Answer {
         rows.map_or_else(String::new, |(top, bottom)| format!(" in rows {top}..{bottom}"))
     );
     let mut data = shot.data();
-    let listed: Vec<Value> = model
-        .iter()
-        .flat_map(|(row, spans)| {
-            spans.iter().map(move |(from, to)| Value::List(vec![(*row).into(), (*from).into(), (*to).into()]))
-        })
-        .collect();
+    let mut listed = Vec::new();
+    for (row, spans) in &model {
+        cx.check_control()?;
+        listed.extend(
+            spans.iter().map(|(from, to)| Value::List(vec![(*row).into(), (*from).into(), (*to).into()])),
+        );
+    }
     data.insert("spans".into(), Value::List(listed));
     data.insert("pixels".into(), Value::from(pixels));
     if let Some(reference) = against {
@@ -140,6 +152,7 @@ fn outlined(shot: &Shot, against: Option<&Spans>) -> Answer {
         let (mut both, mut either) = (0, 0);
         let mut off: Vec<(usize, i64, i64)> = Vec::new();
         for row in &all_rows {
+            cx.check_control()?;
             let (mine, theirs) = (model.get(row).unwrap_or(&empty), reference.get(row).unwrap_or(&empty));
             let shared = common(mine, theirs);
             both += shared;
@@ -171,7 +184,8 @@ fn outlined(shot: &Shot, against: Option<&Spans>) -> Answer {
             .collect();
         data.insert("worst".into(), Value::List(worst));
     }
-    Answer { text, data: Value::Map(data), exact: shot.exactness() }
+    let answer = Answer { text, data: Value::Map(data), exact: shot.exactness() };
+    cx.publish_control(|| answer)
 }
 
 #[cfg(test)]

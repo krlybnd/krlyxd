@@ -1,5 +1,6 @@
 //! The one error type of the kernel.
 
+use crate::CallStop;
 use std::fmt;
 
 /// What went wrong, coarse enough for a caller to act on.
@@ -17,6 +18,10 @@ pub enum ErrorKind {
     Topology,
     /// Text or bytes could not be read as the expected format.
     Format,
+    /// The caller requested cooperative cancellation.
+    Cancelled,
+    /// The call reached its injected-clock deadline.
+    DeadlineExceeded,
 }
 
 impl ErrorKind {
@@ -29,6 +34,8 @@ impl ErrorKind {
             Self::Geometry => "geometry",
             Self::Topology => "topology",
             Self::Format => "format",
+            Self::Cancelled => "cancelled",
+            Self::DeadlineExceeded => "deadline_exceeded",
         }
     }
 }
@@ -77,9 +84,32 @@ impl fmt::Display for Error {
 
 impl std::error::Error for Error {}
 
+impl From<CallStop> for Error {
+    fn from(stop: CallStop) -> Self {
+        let kind = match stop {
+            CallStop::Cancelled => ErrorKind::Cancelled,
+            CallStop::DeadlineExceeded => ErrorKind::DeadlineExceeded,
+        };
+        Self::new(kind, stop.to_string())
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use super::Error;
+    use super::{Error, ErrorKind};
+    use crate::CallStop;
+
+    #[test]
+    fn call_stops_keep_their_typed_kind() {
+        for (stop, kind) in [
+            (CallStop::Cancelled, ErrorKind::Cancelled),
+            (CallStop::DeadlineExceeded, ErrorKind::DeadlineExceeded),
+        ] {
+            let error = Error::from(stop);
+            assert_eq!(error.kind, kind);
+            assert_eq!(error.message, stop.to_string());
+        }
+    }
 
     #[test]
     fn display_leads_with_the_kind() {

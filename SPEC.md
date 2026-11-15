@@ -4,10 +4,12 @@ krly3d is an exact B-rep geometry kernel that an AI agent can model with quickly
 reliably. This document specifies the architecture of the rebuilt kernel. HANDOFF.md says
 which parts exist today.
 
-Revision of 2026-11-14: chapter 8 makes B-rep one interpretation of a foundation shared with
-meshes, fields and level sets, moves the camera out of the kernel into a package, and adds the
-game, exchange and fluid packages. Where chapter 8 and an earlier chapter disagree, chapter 8
-holds; chapter 5 shows the layout of today.
+Revision of 2026-11-14: chapter 8 records the accepted target architecture: a raw shared kernel,
+separate `krly3d-*` domain packages, a CTM assembly/extension host, and the separate `krlyvis`
+product. It is a target, not a claim that those package boundaries have all been implemented.
+Chapters 1–7 describe the rebuilt B-rep kernel and include older design sketches; the layout in
+chapter 5 is historical and is not the current Cargo workspace. HANDOFF.md records current
+implementation and verification evidence.
 
 ## 1. Principles
 
@@ -419,7 +421,16 @@ One algorithm in five steps; pairwise knowledge lives only in `section` and `mee
 - PMI attributes (`pmi.sem.*`, `pmi.gfx.*`); a `step` writer with shared definitions.
 - An `offset` axis, winding number on curved faces, free-form surfaces, ornament stored as its rule.
 
-## 5. Layout
+## 5. Historical kernel layout sketch
+
+The tree below is the original kernel design sketch, not the current workspace and not the
+accepted product target. The implemented code includes `crates/krlyxd`, `crates/core`,
+`crates/kernel`, `crates/std`, `crates/cli`, `crates/view`, `crates/exchange`,
+`package/krlyvis/crates/*`, `products/krly3d/brep/{api,engine}`,
+`products/krly3d/mesh/{api,engine,cli,mcp}` and
+`products/krly3d/view/{api,renderer,mesh,cli,mcp}`. Raw, mesh and view boundaries
+are implemented migration slices; the full domain split and CTM
+extension host remain future work. See chapter 8 and `docs/PRODUCT-ARCHITECTURE-HANDOFF.md`.
 
 ```
 krly3d/
@@ -510,15 +521,20 @@ A large plugin may be a folder (`tool/boolean/` with `candidates.rs`, `split.rs`
 - The first `wall` and the break points of a sweep are not closed forms; the answer says so.
 - After the removal, the only external oracle is `tests/reference/` and the closed forms.
 
-## 8. One foundation, many interpretations (revision of 2026-11-14)
+## 8. One foundation, many interpretations (target architecture, revised 2026-11-14)
+
+This chapter describes the accepted product direction. Items explicitly identified as current
+are implemented in the existing workspace; the remaining package and feature descriptions are
+target architecture and must not be read as shipped behavior.
 
 ### 8.1 Why
 
-A B-rep kernel builds parts; it cannot express a draped statue, a sculpted surface or water,
-and it has nothing for a game engine (meshes, levels of detail, UVs, glTF). The owner asked
-for one foundation that CAD, games and fluids share, with B-rep as one exact reading of it,
-the camera outside the kernel, every missing CAD and game tool, and no duplicated code: a
-CAD loft must not reappear in a game-side module.
+A B-rep kernel builds parts; it cannot express every implicit or subdivided shape or simulate
+fluid. The accepted product direction keeps a raw, domain-independent `krlyxd` foundation,
+separate `krly3d-*` domains, a `krly3d-ctm` assembly/extension host, and `krlyvis` as a separate
+vision product. Mesh is a geometry domain; SubD is separate from mesh and owns subdivision and
+related surface tools. Hydraulic network design is separate from 3D CFD. Shared algorithms
+must have one definition, rather than being copied into product-specific packages.
 
 ### 8.2 Principles
 
@@ -535,8 +551,9 @@ CAD loft must not reappear in a game-side module.
    (`crates/core/tests/one_copy.rs`) fails when one of them is written twice.
 4. Exactness marks stay: `=` closed form, `~` numeric, `?` sampled. An interpretation never
    claims an exactness it does not have.
-5. The kernel knows no implementation. Camera, game, exchange and fluid are packages that
-   register themselves.
+5. The raw kernel knows no domain implementation. View, exchange, B-rep, mesh, field, SubD,
+   hydraulic network, CFD, CTM and krlyvis have explicit product boundaries. These boundaries
+   are the target architecture; the current crates have not all been migrated into them.
 
 ### 8.3 The foundation: `Shape`
 
@@ -545,6 +562,18 @@ which every existing tool keeps making), a `field` leaf (a sparse voxel grid for
 sculpting and fluids), a `subd` leaf (a Catmull–Clark cage whose limit surface is exact NURBS
 on regular patches), and operators (union, subtract, intersect as min/max; blend as a smooth
 minimum; offset; shell; transform).
+
+Current: `Shape` exists, and current tools still produce B-rep `Body` values exposed as shape
+leaves. The field, SubD and composed operator examples above describe intended future
+representations; they are not implemented by the current workspace.
+
+`Shape` is a geometry-domain abstraction in the krly3d layer, not a primitive of the raw
+`krlyxd` kernel and not a mandatory universal representation for every domain package.
+Domain packages may keep their native data types; explicit, quality-marked conversions are
+used when domains interoperate. Current B-rep tools wrap their bodies in `Leaf` for the shape
+and interpretation ports.
+[The current Shape port](crates/kernel/src/ports/shape/mod.rs) defines this geometry-layer
+abstraction.
 
 ```rust
 pub trait Shape: Debug + Send + Sync + 'static {
@@ -565,28 +594,71 @@ pub trait Shape: Debug + Send + Sync + 'static {
 | `field` | Shape → sparse grid | sampled from `distance` |
 | `levelset` | field + velocity → field over time | the shared engine of fluids and sculpting |
 
-The model memoises every reading per node. A tool that needs a B-rep input asks the `brep`
-reading; that adapter is the only conversion point.
+The target model memoises readings by explicit, versioned package contracts. In the current
+tree, successful document node builds use the document key cache; node build failures are
+retried. B-rep mesh successes are separately cached by body `Arc`, context and tolerance.
+Deterministic triangulation-budget declines are now memoized within that scope and reported
+through `BrepMesh::decline_stats`; untyped declines, layout declines and transient failures
+are retried. This cache has no content hash or formal API/solver version key yet. A tool that
+needs a B-rep input should ask the B-rep reading; that adapter is the target conversion point
+([mesh_of](crates/kernel/src/ports/interpret/mod.rs),
+[BrepMesh](crates/std/src/interpret/mesh/mod.rs)).
 
-### 8.5 Packages
+### 8.5 Target package boundaries
 
-`view` (camera, ray-cast and sphere-traced rendering, `render`, `view`, `silhouette`, `pick`),
-`game` (LOD by quadric error, UV by LSCM, normals and tangents, materials, normal-map baking),
-`exchange` (STEP AP242 exact, STL, OBJ, glTF), `fluid` (MAC grid, semi-Lagrangian advection,
-pressure projection by conjugate gradients, level-set reinitialisation; the free surface is a
-`field` Shape). Each registers into a `KernelBuilder`; the CLI assembles them.
+The current workspace has `crates/view` (render, view, silhouette, pick and likeness) and
+`crates/exchange` (STEP writing), alongside the combined `crates/kernel` and `crates/std`.
+The [raw contract](docs/RAW-KERNEL.md) lives in `crates/krlyxd`;
+[ADR 0008](docs/decisions/0008-raw-foundation-contract.md) settles neutral metadata/quality
+primitives versus domain-owned Accuracy/frame/NURBS and aggregate provenance. The
+[typed mesh API and synchronous bridge](docs/MESH-API.md) live in
+`products/krly3d/mesh/{api,engine}`. The bridge temporarily consumes the legacy geometry
+implementation. Local controlled execution and the separate
+[v2 operation runner](docs/MESH-OPERATIONS.md) now provide cooperative cancellation,
+deadlines and bounded Started/terminal events. Separate [mesh CLI/MCP adapters](docs/MESH-ADAPTERS.md)
+now expose that pilot contract; other domain adapters remain pending.
+The accepted target splits functionality into `krly3d-brep`, `krly3d-mesh`, `krly3d-field`,
+`krly3d-subd`, `krly3d-view`, `krly3d-exchange`, `krly3d-cfd` and
+`krly3d-hydraulic-network`; `krly3d-ctm` hosts assemblies, constraints and extensions.
+SubD owns subdivision, LOD and any adopted UV/baking work; it is not folded into mesh. CFD
+owns continuum and free-surface simulation; the hydraulic package owns pipe-network design
+and flow. Each domain's versioned API is shared by its CLI and MCP adapters. These target
+packages and adapters do not all exist yet. `krlyvis` is already a separate product, but its
+current API/package structure is still documented in `package/krlyvis/SPEC.md` and is not
+yet migrated to the full target package pattern.
 
-### 8.6 Missing tools, each in one place
+### 8.6 Target capabilities
 
-CAD: blends on any edge by the rolling ball (centre line = section of offset surfaces, canal
-surface around it), corner blends through the field reading, shell/thicken/offset, sweep
-(the loft's skinning along a rotation-minimising frame), helix and thread, split, pattern
-along a curve, face draft, polyhedron and mesh import, a 2D constraint solver for sketches,
-surface–surface marching for booleans with free-form faces, mass properties, `gap` and `wall`,
-STEP AP242 export, and the AI layer of chapter 4. Game: SubD modelling, LOD, UVs, normals,
-materials, baking, sculpting, glTF, texture projection from photographs.
+The target product architecture assigns these capabilities to separate domains. The current
+subset and its limits are in HANDOFF.md; the list below is target scope and does not mark an
+operation shipped.
 
-### 8.7 Phases
+- **B-rep/CAD:** rolling-ball blends across general edges, corner blends, offset/shell/thicken,
+  sweeps with a rotation-minimising frame, helix/thread, split, pattern along a curve, face
+  draft, polyhedra, a 2D sketch constraint solver, general surface–surface intersections for
+  booleans, mass properties, `gap`/`wall`, and STEP AP242 with PMI.
+- **Mesh:** reconstruction and mesh operations, import/export for STL, OBJ and glTF, and
+  conversion from other geometry domains under explicit quality and tolerance contracts.
+- **Field:** implicit leaves and operators, sphere tracing, dual contouring and field-to-B-rep
+  conversion; it may support field-based blend and sculpting workflows.
+- **SubD:** control-cage modelling and subdivision, limit-surface conversion, and any adopted
+  LOD, UV/LSCM, normals, materials and baking features. These stay outside the mesh package.
+- **3D CFD:** MAC-grid flow, advection, pressure projection and level sets/free surfaces.
+  **Hydraulic network:** a separate domain for pipes, nodes, valves, pumps and network
+  pressure/flow; it is not part of 3D CFD.
+- **System-level AI/PMI and image workflow:** anchored notes, proposals, history, watchers,
+  provenance and PMI; a vision-to-mesh-to-editable-B-rep flow coordinated across packages.
+
+Every domain exposes its versioned public API to its CLI and MCP adapters. `krly3d-ctm`
+hosts assembly, constraints and cross-domain extensions; it does not replace the domains'
+standalone APIs.
+
+### 8.7 Historical implementation phases and remaining target work
+
+The table records an earlier roadmap, not current package status. Current implementation
+evidence is summarized in HANDOFF.md. In particular, the old phase-0 note below that said the
+krlyvis switch to the core mould was pending is obsolete: krlyvis now re-exports the shared
+`krly3d_core` plugin mould. Its domain-specific `Context` remains separate.
 
 | # | Phase | Acceptance |
 |---|---|---|
@@ -599,5 +671,39 @@ materials, baking, sculpting, glTF, texture projection from photographs.
 | 6 | Fluid package | dam break: volume loss measured per step; still water stays still |
 | 7 | AI layer and the photograph chain | the acceptance of chapter 6, phase 7 |
 
-State on 2026-11-14: phases 0 and 1 are done (the krlyvis switch to the core mould still waits); HANDOFF.md records what was verified.
+As of the second development wave, the current tree also includes the separate raw seed
+and versioned synchronous mesh API/engine. The plugin/document support remains in core;
+the shape abstraction, tessellation and B-rep implementation remain in the legacy geometry
+crates behind the bridge. Controlled execution and the v2 runner were added in waves three
+and four; wave five adds the standalone mesh CLI/MCP adapters. Completing the domain
+split, other domain adapters, CTM and field/SubD/CFD/hydraulic packages remains future work.
+Wave six adds full-disconnect cancellation to legacy Unix-socket local queries while
+preserving normal write half-close. Renderer/probe and PNG/base64 work use the shared
+cooperative control; the legacy reply shapes remain unchanged. Already-running mutating
+tools and remote peer work are not preempted; legacy progress events and wire timeout
+parameters are not added. HANDOFF.md and
+[development status](docs/DEVELOPMENT-STATUS.md) record current verification.
 
+
+The opt-in [mesh preview backend](docs/MESH-PREVIEW.md) now lives in
+`products/krly3d/view/mesh`. It consumes source-face/corner-normal metadata through
+the mesh engine bridge and shares shading rules with exact rendering. The legacy
+image facade accepts `renderer: "mesh"`, reports requested tolerance and timing,
+and retains raycast as its default and exact picking path. Broader standalone
+view migration remains work under #26; the user retired named-model benchmarks under #18. The implemented #1 preview is
+closed under revised acceptance; alternative validation will be selected later.
+
+B-rep source ownership now lives in `products/krly3d/brep/{api,engine}`. Its
+[immutable snapshot boundary](docs/BREP-SNAPSHOTS.md) owns native loading,
+source identity and version resolution; mesh composes this owner and converts the
+pinned geometry through the explicit legacy bridge. This is an in-process migration
+slice, not a new B-rep wire protocol or completed removal of kernel/std dependencies.
+
+The local [typed view API and renderer](docs/VIEW-API.md) now live under
+`products/krly3d/view/{api,renderer}`. One pinned node is rendered with a named,
+orthographic or pinhole camera through the existing ray/mesh implementations.
+PNG bytes, face coverage, source provenance, sampled quality and timings are returned
+through Rust API 1.0, with cooperative controlled execution. The
+[synchronous wire 1.0 and standalone CLI/MCP](docs/VIEW-ADAPTERS.md) now expose this
+call using one strict codec and descriptor. Multi-node scenes, paint, pick, likeness,
+wire cancellation/deadlines and a progress stream remain pending.

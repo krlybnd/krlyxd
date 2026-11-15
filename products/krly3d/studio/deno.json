@@ -1,0 +1,16 @@
+{
+  "nodeModulesDir": "manual",
+  "compilerOptions": {
+    "strict": true
+  },
+  "tasks": {
+    "service": "deno run --env-file=.env --allow-net --allow-read --allow-write --allow-run --allow-env --allow-sys=homedir service/main.ts",
+    "check": "deno check service/main.ts",
+    "test": "deno test --allow-read --allow-write --allow-run --allow-env --allow-sys=homedir --allow-net service/"
+  },
+  "exclude": [
+    "web",
+    "node_modules",
+    "dist"
+  ]
+}

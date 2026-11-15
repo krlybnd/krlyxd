@@ -2,3 +2,16 @@
 **/target/
 # machine-local linker shim for hosts without a C toolchain
 /.cargo/
+# Python orchestration/test bytecode (generated locally)
+__pycache__/
+*.py[cod]
+# Studio application build and machine-local credentials.
+products/krly3d/studio/node_modules/
+products/krly3d/studio/dist/
+products/krly3d/studio/web/dist/
+products/krly3d/studio/.env
+products/krly3d/studio/.proxy.env
+products/krly3d/studio/test-results/
+products/krly3d/studio/playwright-report/
+# Local scratch files and reversible refactor quarantine (ledger stays in docs).
+/.tmp/

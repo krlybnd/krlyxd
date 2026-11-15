@@ -183,6 +183,13 @@ impl Nurbs {
         &self.surface
     }
 
+    /// Effective projection data for the mesh owner's exact in-process cache key.
+    /// Transforms retain/move these samples rather than rebuilding them from the net;
+    /// the control net alone therefore does not identify numerical projection behavior.
+    pub(crate) fn projection_data(&self) -> (&[(Uv, Point3)], f64) {
+        (&self.grid, self.spacing)
+    }
+
     /// `uv` taken into the domain: `u` wrapped when it closes, both clamped otherwise.
     fn inside(&self, uv: Uv) -> Uv {
         let (start, end) = self.surface.u.domain();

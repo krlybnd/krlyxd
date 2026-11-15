@@ -7,6 +7,7 @@
 //! back into the model, and any renderer can stand in for another.
 
 pub mod contract;
+pub mod style;
 
 use krly3d_core::math::bounds::Bounds;
 use krly3d_core::math::{Point3, Vec3};

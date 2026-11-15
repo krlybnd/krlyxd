@@ -16,6 +16,9 @@ pub mod ports;
 pub mod raycast;
 pub mod view;
 
+#[cfg(test)]
+mod control_tests;
+
 use crate::ports::render::{render, Frame, Image, Paint, Render, RenderRequest, Seen, View, CHANNELS};
 use krly3d_core::math::{Point3, Vec3};
 use krly3d_core::text::{direction, num};
@@ -33,6 +36,7 @@ pub fn register(builder: &mut KernelBuilder) {
     builder
         .plugin::<Render>(raycast::Raycast)
         .plugin::<krly3d_kernel::ports::likeness::Likeness>(likeness::Raster)
+        .plugin::<krly3d_kernel::ports::likeness::report::StationLikeness>(likeness::Raster)
         .plugin::<Query>(picture::Picture)
         .plugin::<Query>(view::Visible)
         .plugin::<Query>(outline::Silhouette)
@@ -81,6 +85,18 @@ fn shot_params() -> Vec<Param> {
     ]
 }
 
+/// Renderer selection applies only to image queries; exact picking keeps its schema.
+fn image_params() -> Vec<Param> {
+    let mut params = shot_params();
+    params.push(Param::optional(
+        "renderer",
+        Kind::Text,
+        "raycast",
+        "raycast for exact surface rays, mesh for cached triangle preview",
+    ));
+    params
+}
+
 /// One look at the model: what was drawn, from where, and the image of it.
 struct Shot {
     /// The nodes drawn, as they were asked for.
@@ -89,33 +105,54 @@ struct Shot {
     /// The view in words: its name, or its direction of sight.
     view: String,
     image: Image,
+    preview_ms: Option<f64>,
 }
 
 impl Shot {
     fn take(cx: &Context, request: &QueryRequest) -> Attempt<Self> {
+        if let Err(error) = cx.check_control() {
+            return Attempt::Failed(error);
+        }
         let asked = nodes(request).and_then(|(nodes, bodies)| {
-            let paint = paints(&request.params, &nodes, &bodies)?;
+            let paint = paints(cx, &request.params, &nodes, &bodies)?;
             Ok(((nodes, bodies), view(cx, &request.params)?, size(&request.params)?, paint))
         });
         let ((nodes, bodies), (view, look), size, paint) = match asked {
             Ok(asked) => asked,
             Err(error) => return Attempt::Failed(error),
         };
-        let drawn =
-            render(cx, raycast::NAME, &RenderRequest { bodies: bodies.clone(), view: look, size, paint });
-        drawn.map(|image| Self { nodes, bodies, view, image })
+        let renderer = match request.params.text("renderer") {
+            Ok("raycast") => raycast::NAME,
+            Ok("mesh") => "mesh",
+            Ok(other) => {
+                return Attempt::Failed(Error::input(format!(
+                    "unknown renderer `{other}`; use raycast or mesh"
+                )))
+            }
+            Err(error) => return Attempt::Failed(error),
+        };
+        let started = (renderer == "mesh").then(|| cx.clock().now());
+        let drawn = render(cx, renderer, &RenderRequest { bodies: bodies.clone(), view: look, size, paint });
+        let preview_ms =
+            started.map(|started| cx.clock().now().saturating_sub(started).as_secs_f64() * 1000.0);
+        drawn.map(|image| Self { nodes, bodies, view, image, preview_ms })
     }
 
     /// The faces seen with the number of pixels that show each, the largest first.
-    fn tally(&self) -> Vec<(Seen, usize)> {
+    fn tally(&self, cx: &Context) -> Result<Vec<(Seen, usize)>, Error> {
+        cx.check_control()?;
         let mut pixels: BTreeMap<Seen, usize> = BTreeMap::new();
-        for seen in self.image.seen.iter().flatten() {
-            *pixels.entry(*seen).or_insert(0) += 1;
+        for batch in self.image.seen.chunks(1024) {
+            cx.check_control()?;
+            for seen in batch.iter().flatten() {
+                *pixels.entry(*seen).or_insert(0) += 1;
+            }
         }
         let mut tally: Vec<(Seen, usize)> = pixels.into_iter().collect();
         // The order of bodies and faces settles ties, so the same look reads the same.
         tally.sort_by_key(|(_, pixels)| Reverse(*pixels));
-        tally
+        cx.check_control()?;
+        Ok(tally)
     }
 
     /// `view size of nodes: n faces seen, 1 px = length` — the line both answers open with.
@@ -125,24 +162,53 @@ impl Shot {
         } else {
             format!("{} nodes", self.nodes.len())
         };
-        format!(
+        let mut headline = format!(
             "{verb} {} {}x{} of {nodes}: {faces} face{} seen, 1 px = {}",
             self.view,
             self.image.width(),
             self.image.height(),
             if faces == 1 { "" } else { "s" },
             num(self.image.projection.pixel),
-        )
+        );
+        if let Some(elapsed) = self.preview_ms {
+            headline.push_str(&format!(
+                "; triangle preview, tolerance {} model (achieved error unknown), mesh+raster {} ms",
+                num(krly3d_mesh::DEFAULT_TOLERANCE),
+                num(elapsed),
+            ));
+        }
+        headline
     }
 
     /// The entries every answer about a look carries as data.
     fn data(&self) -> BTreeMap<String, Value> {
-        BTreeMap::from([
+        let mut data = BTreeMap::from([
             ("view".to_string(), Value::from(self.view.as_str())),
             ("width".to_string(), Value::from(self.image.width())),
             ("height".to_string(), Value::from(self.image.height())),
             ("pixel".to_string(), Value::from(self.image.projection.pixel)),
-        ])
+        ]);
+        if let Some(elapsed) = self.preview_ms {
+            data.insert("renderer".into(), Value::from("mesh"));
+            data.insert(
+                "quality".into(),
+                Value::map([
+                    ("representation", Value::from("triangle-preview")),
+                    ("format", Value::from(krly3d_mesh::preview::FORMAT)),
+                    ("tolerance", Value::from(krly3d_mesh::DEFAULT_TOLERANCE)),
+                    ("unit", Value::from("model")),
+                    ("achieved_error", Value::from("unknown")),
+                ]),
+            );
+            data.insert(
+                "timing".into(),
+                Value::map([
+                    ("mesh_and_raster_ms", Value::from(elapsed)),
+                    ("includes_encoding", Value::from(false)),
+                ]),
+            );
+        }
+        data
     }
 
     /// A face is one of finitely many lines of sight away from being missed or seen.
@@ -193,13 +259,20 @@ fn paint_param() -> Param {
 }
 
 /// The colour of each drawn body from the `paint` parameter, in the order of `names`.
-fn paints(params: &Params, names: &[String], bodies: &[Arc<Body>]) -> Result<Vec<Paint>, Error> {
+fn paints(
+    cx: &Context,
+    params: &Params,
+    names: &[String],
+    bodies: &[Arc<Body>],
+) -> Result<Vec<Paint>, Error> {
+    cx.check_control()?;
     let Some(given) = params.get("paint") else { return Ok(Vec::new()) };
     let Value::Map(entries) = given else {
         return Err(Error::input("`paint` is a map from names to colours, such as {\"plate\": \"#c04030\"}"));
     };
     let mut paint = vec![Paint::default(); bodies.len()];
     for (key, value) in entries {
+        cx.check_control()?;
         let colour = match value {
             Value::Text(text) => hex_colour(text)?,
             other => {
@@ -221,14 +294,16 @@ fn paints(params: &Params, names: &[String], bodies: &[Arc<Body>]) -> Result<Vec
                     Some(start) => name.starts_with(start),
                     None => name == face,
                 };
-                let found: Vec<usize> = (0..bodies[index].faces.len())
-                    .filter(|at| matches(&bodies[index].faces[*at].name))
-                    .collect();
-                if found.is_empty() {
-                    return Err(Error::input(format!("`{node}` has no face `{face}` to paint")));
+                let mut found = false;
+                for (at, face) in bodies[index].faces.iter().enumerate() {
+                    cx.check_control()?;
+                    if matches(&face.name) {
+                        paint[index].faces.insert(at, colour);
+                        found = true;
+                    }
                 }
-                for at in found {
-                    paint[index].faces.insert(at, colour);
+                if !found {
+                    return Err(Error::input(format!("`{node}` has no face `{face}` to paint")));
                 }
             }
         }
@@ -246,24 +321,26 @@ fn hex_colour(text: &str) -> Result<[u8; CHANNELS], Error> {
     }
 }
 
+/// Resolve a named fitted camera using the same conventions as legacy image queries.
+pub fn named_view(name: &str) -> Result<View, Error> {
+    match VIEWS.iter().find(|(known, ..)| *known == name) {
+        Some((_, toward, up)) => {
+            Ok(View { toward: Vec3::from(*toward), up: Vec3::from(*up), frame: Frame::Fit })
+        }
+        None => {
+            let known: Vec<&str> = VIEWS.iter().map(|(name, ..)| *name).collect();
+            Err(Error::input(format!(
+                "there is no view `{name}`; the views are {}, or a direction of sight as x,y,z",
+                known.join(", ")
+            )))
+        }
+    }
+}
+
 /// The view asked for, in words and as the renderer takes it.
 fn view(cx: &Context, params: &Params) -> Result<(String, View), Error> {
-    let looking = |toward: [f64; 3], up: [f64; 3]| View {
-        toward: Vec3::from(toward),
-        up: Vec3::from(up),
-        frame: Frame::Fit,
-    };
     match params.get("view") {
-        Some(Value::Text(name)) => match VIEWS.iter().find(|(known, ..)| known == name) {
-            Some((name, toward, up)) => Ok((name.to_string(), looking(*toward, *up))),
-            None => {
-                let known: Vec<&str> = VIEWS.iter().map(|(name, ..)| *name).collect();
-                Err(Error::input(format!(
-                    "there is no view `{name}`; the views are {}, or a direction of sight as x,y,z",
-                    known.join(", ")
-                )))
-            }
-        },
+        Some(Value::Text(name)) => named_view(name).map(|view| (name.clone(), view)),
         Some(Value::List(_)) => {
             let toward = params.vector("view")?;
             // Looking straight up or down, the world's up says nothing; the back is up then.

@@ -54,13 +54,22 @@ pub fn ask(
     document: &Arc<Document>,
     model: &Arc<Model>,
 ) -> Attempt<Answer> {
+    if let Err(error) = cx.check_control() {
+        return Attempt::Failed(error);
+    }
     let Some(schema) = cx.registry::<Query>().and_then(|registry| registry.schema(query)) else {
         return Attempt::declined(format!("no query is registered as `{query}`"));
     };
     match schema.admit(query, params, 0) {
         Ok(params) => {
             let request = QueryRequest { params, document: Arc::clone(document), model: Arc::clone(model) };
-            cx.call::<Query>(query, &request)
+            let answer = cx.call::<Query>(query, &request);
+            // Even a query without internal checkpoints cannot publish a successful
+            // answer after it observes a stop at this final read-only boundary.
+            match cx.publish_control(|| answer) {
+                Ok(answer) => answer,
+                Err(error) => Attempt::Failed(error),
+            }
         }
         Err(error) => Attempt::Failed(error),
     }

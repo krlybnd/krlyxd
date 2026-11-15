@@ -1,0 +1,22 @@
+[package]
+name = "krly3d-reconstruction"
+description = "Revisioned in-process drawing, B-rep and mesh composition"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+krly2d-api.workspace = true
+krlyxd.workspace = true
+krlyvis-api.workspace = true
+krlyvis-engine.workspace = true
+krly3d-brep.workspace = true
+krly3d-brep-engine.workspace = true
+krly3d-mesh.workspace = true
+krly3d-mesh-engine.workspace = true
+
+krly3d-view-api.workspace = true
+krly3d-view-renderer.workspace = true
+
+[lints]
+workspace = true
