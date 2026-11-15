@@ -87,14 +87,29 @@ export function routes(
   const cad = dependencies.cad ?? new CadDocuments();
   const blobs = new BlobStore();
   const sessions = new SessionStore();
+  const cadQueues = new Map<string, Promise<void>>();
   let active = 0;
   router.service(StudioService, {
     async cad(req, ctx) {
-      const session = sessions.acquire(req.sessionId);
+      // A refresh can issue a show while the previous request is still releasing
+      // its session. Keep CAD reads and writes in one order per document.
+      const previous = cadQueues.get(req.sessionId) ?? Promise.resolve();
+      let finish!: () => void;
+      const current = new Promise<void>((resolve) => { finish = resolve; });
+      const tail = previous.then(() => current);
+      cadQueues.set(req.sessionId, tail);
       try {
-        return await cad.apply(req, ctx.signal);
+        await previous;
+        ctx.signal.throwIfAborted();
+        const session = sessions.acquire(req.sessionId);
+        try {
+          return await cad.apply(req, ctx.signal);
+        } finally {
+          sessions.release(session);
+        }
       } finally {
-        sessions.release(session);
+        finish();
+        if (cadQueues.get(req.sessionId) === tail) cadQueues.delete(req.sessionId);
       }
     },
     async health() {
